@@ -1,0 +1,3 @@
+
+G	cpp:S5945"2Use "std::string" instead of a C-style char array.(ÏËÿÅ
+P	cpp:S5416";"using" should be preferred to "typedef" for type aliasing.(ö³¤¸

@@ -1,0 +1,3 @@
+/home/luis/git/uc/Sistemas-operativos-y-redes/Proyecto 01/P1-SSO/cmake-build-debug/CMakeFiles/P1_SSO.dir
+/home/luis/git/uc/Sistemas-operativos-y-redes/Proyecto 01/P1-SSO/cmake-build-debug/CMakeFiles/edit_cache.dir
+/home/luis/git/uc/Sistemas-operativos-y-redes/Proyecto 01/P1-SSO/cmake-build-debug/CMakeFiles/rebuild_cache.dir

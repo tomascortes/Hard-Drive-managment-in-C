@@ -1,0 +1,17 @@
+
+
+- Nro bloque
+X Nro pag. dentro del bloque
+X Puede o no comenzar al inicio de la página
+X Puede o no terminar en el final de una página
+- Cada bloque corresponde a una y solo una págian
+
+
+
+Exist ->
+Open -> Carga puntero a memoria
+Read -> Carga el contenido a buffer
+Write -> Escribe archivo en memoria
+Close ->
+
+N Bloque =  1024 ** 3
