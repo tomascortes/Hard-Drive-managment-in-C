@@ -8,18 +8,16 @@ int main(int argc, char** const argv[])
 {
   printf("BITMAP P1!\n");
   os_mount(argv[1], 5000);
-  unsigned char buffer[256];
-  FILE *f = fopen(global_diskname, "rb");
+  
 
-  os_bitmap(1, f);
+  os_bitmap(1);
   printf("\n");
-  os_bitmap(2, f);
+  os_bitmap(2);
   printf("\n");
-  os_bitmap(7, f);
+  os_bitmap(7);
   printf("\n");
-  os_bitmap(8, f);
+  os_bitmap(8);
 
-  fclose(f);
 
   return 0;
 }
