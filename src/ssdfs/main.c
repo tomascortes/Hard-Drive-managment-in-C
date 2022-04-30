@@ -1,23 +1,19 @@
 #include <stdio.h>
+#include "./os_API.h"
 
 int main(int argc, char** const argv[])
-{
-  printf("BITMAP P1!\n");
-  
-  unsigned char buffer[256];
+{ 
   FILE *f = fopen("simdiskfilled.bin", "rb");
 
-  fread(buffer, sizeof(buffer),1,f);
-
+  os_bitmap(1, f);
   printf("\n");
-  for(int i = 0; i<256; i++){
-    for (int j = 7; j >= 0; j--){
-      printf("%d", (buffer[i] & (1 << j)) >> j );
-    }
-  }
+  os_bitmap(2, f);
   printf("\n");
-  /* TODO else read failed, empty file?? */
+  os_bitmap(7, f);
+  printf("\n");
+  os_bitmap(8, f);
 
   fclose(f);
+
   return 0;
 }

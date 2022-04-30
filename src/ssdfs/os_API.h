@@ -1,3 +1,3 @@
 #pragma once
 
-void os_mount(char* diskname, unsigned life);
+void os_bitmap(unsigned num, FILE* f);
