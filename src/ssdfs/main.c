@@ -1,11 +1,15 @@
 #include <stdio.h>
+#include "os_API.h"
+
+
+
 
 int main(int argc, char** const argv[])
 {
   printf("BITMAP P1!\n");
-  
+  os_mount(argv[1], 5000);
   unsigned char buffer[256];
-  FILE *f = fopen("simdiskfilled.bin", "rb");
+  FILE *f = fopen(global_diskname, "rb");
 
   fread(buffer, sizeof(buffer),1,f);
 
