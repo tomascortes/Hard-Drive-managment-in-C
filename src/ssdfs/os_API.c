@@ -23,7 +23,7 @@ void os_bitmap(unsigned num, FILE* f){
     printf("Ocupado: %d\nLibres: %d\n", oc, lb);
   } else if(num>=0 && num<=2048) {
     printf("%d\n", num/8);
-    printf("%d\n", num%7);
+    printf("%d\n", num%8);
     printf("%d\n", (buffer[num/8] & (1 << (7-num%7)) >> num%8 ));
   } else{
     printf("%s\n", "SEGFAULT");
