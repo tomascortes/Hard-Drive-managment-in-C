@@ -40,57 +40,63 @@ void os_mount(char* diskname, unsigned life) {
 
 /* - imprime el valor del bitmap para el bloque num.
  * Si num=0 se debe imprimir t */
-void os_bitmap(unsigned num){
-  // Abro el archivo
-  FILE *f = fopen(global_diskname, "rb");
+void os_bitmap(unsigned num) {
+    // Abro el archivo
+    FILE *f = fopen(global_diskname, "rb");
 
-  // El disco tiene 2048 bloques, por lo que para el bitmap necesitamos
-  // 2048 bits = 256 bytes
-  unsigned char buffer[256]; // Buffer para guardar los bytes
-  fread(buffer, sizeof(buffer), 1, f);
+    // El disco tiene 2048 bloques, por lo que para el bitmap necesitamos
+    // 2048 bits = 256 bytes
+    unsigned char buffer[256]; // Buffer para guardar los bytes
+    fread(buffer, sizeof(buffer), 1, f);
 
-  if(num == 0){
-    printf("\nBitmap del Disco\n");
-    int fill=0;
-    int free=0;
-    for(int i = 0; i < 256; i++){
-      for (int j = 7; j >= 0; j--){
-        int bit = (buffer[i] & (1 << j)) >> j; // Shift left para sacar el bit
-        printf("%d", bit );
-        bit ? fill++ : free++; // Se ve más cool así
-      }
+    if (num == 0) {
+        printf("\nBitmap del Disco\n");
+
+        int fill=0;
+        int free=0;
+
+        for (int i = 0; i < 256; i++) {
+            for (int j = 7; j >= 0; j--) {
+                int bit = (buffer[i] & (1 << j)) >> j; // Shift left para sacar el bit
+                printf("%d", bit );
+                bit ? fill++ : free++; // Se ve más cool así
+            }
+        }
+
+        printf("\nBloques Ocupados: %d\nBloques Libres: %d\n", fill, free);
+
+    } else if (num > 0 && num < 2048) {
+        printf("\nBitmap Bloque N°%d\n", num);
+        // num/8 es el byte donde se encuentra el bit deseado
+        // num%8 es el offset del bit dentro de ese byte
+        printf("%d\n", (buffer[num/8] & 1 << (7-num%8)) >> (7-num%8));
+
+        // En el momento 15:35 de la cápsula P1 dice que esto hay que entregarlo
+        // aunque el argumento no sea 0
+        int fill=0;
+        int free=0;
+
+        for (int i = 0; i < 256; i++) {
+            for (int j = 7; j >= 0; j--) {
+                int bit = (buffer[i] & (1 << j)) >> j; // Shift left para sacar el bit
+                bit ? fill++ : free++; // Se ve más cool así
+            }
+        }
+
+        printf("Bloques Ocupados: %d\nBloques Libres: %d\n", fill, free);
+
+    } else {
+        printf("\nBitmap Bloque N°%d\n", num);
+        printf("%s\n", "SEGFAULT uwu");
     }
-    printf("\nBloques Ocupados: %d\nBloques Libres: %d\n", fill, free);
-  } else if(num > 0 && num < 2048){
-    printf("\nBitmap Bloque N°%d\n", num);
-    // num/8 es el byte donde se encuentra el bit deseado
-    // num%8 es el offset del bit dentro de ese byte
-    printf("%d\n", (buffer[num/8] & 1 << (7-num%8)) >> (7-num%8));
 
-    // En el momento 15:35 de la cápsula P1 dice que esto hay que entregarlo
-    // aunque el argumento no sea 0
-    int fill=0;
-    int free=0;
-    for(int i = 0; i < 256; i++){
-      for (int j = 7; j >= 0; j--){
-        int bit = (buffer[i] & (1 << j)) >> j; // Shift left para sacar el bit
-        bit ? fill++ : free++; // Se ve más cool así
-      }
-    }
-    printf("Bloques Ocupados: %d\nBloques Libres: %d\n", fill, free);
-  } else {
-    printf("\nBitmap Bloque N°%d\n", num);
-    printf("%s\n", "SEGFAULT uwu");
-  }
-  
-  fclose(f); // Evitamos leaks
+    fclose(f); // Evitamos leaks
 }
 
 /* Imprime el estado P/E de las páginas desde lower y upper-1.
  * Si ambos valores son -1, se debe imprimir el lifemap completo.
  * Además se debe imprimir en una segunda lı́nea la cantidad de bloques rotten y la cantidad de bloques saludables. */
 void os_lifemap(int lower, int upper) {  // TODO: Pendiente
-    return;
 }
 
 /* Esta función debe recorrer el disco completo.
