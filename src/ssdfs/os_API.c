@@ -20,7 +20,7 @@ void os_bitmap(unsigned num){
   fread(buffer, sizeof(buffer), 1, f);
 
   if(num == 0){
-    printf("Bitmap del Disco\n");
+    printf("\nBitmap del Disco\n");
     int fill=0;
     int free=0;
     for(int i = 0; i < 256; i++){
@@ -30,10 +30,9 @@ void os_bitmap(unsigned num){
         bit ? fill++ : free++; // Se ve más cool así
       }
     }
-    printf("\n");
-    printf("Bloques Ocupados: %d\nBloques Libres: %d\n\n", fill, free);
+    printf("\nBloques Ocupados: %d\nBloques Libres: %d\n", fill, free);
   } else if(num > 0 && num < 2048){
-    printf("Bitmap Bloque N°%d\n", num);
+    printf("\nBitmap Bloque N°%d\n", num);
     // num/8 es el byte donde se encuentra el bit deseado
     // num%8 es el offset del bit dentro de ese byte
     printf("%d\n", (buffer[num/8] & 1 << (7-num%8)) >> (7-num%8));
@@ -48,10 +47,10 @@ void os_bitmap(unsigned num){
         bit ? fill++ : free++; // Se ve más cool así
       }
     }
-    printf("Bloques Ocupados: %d\nBloques Libres: %d\n\n", fill, free);
+    printf("Bloques Ocupados: %d\nBloques Libres: %d\n", fill, free);
   } else {
-    printf("Bitmap Bloque N°%d\n", num);
-    printf("%s\n\n", "SEGFAULT uwu");
+    printf("\nBitmap Bloque N°%d\n", num);
+    printf("%s\n", "SEGFAULT uwu");
   }
   
   fclose(f); // Evitamos leaks

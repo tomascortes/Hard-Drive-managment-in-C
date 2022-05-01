@@ -11,6 +11,7 @@ int main(int argc, char* const argv[])
   os_bitmap(8); // Bitmap bloque N°8 (Se espera 1)
   os_bitmap(2047); // Bitmap bloque N°395 (Se espera 0)
   os_bitmap(2048); // Bitmap bloque inexistente (Se espera SEGFAULT)
+  printf("\n");
 
   os_tree();
 
