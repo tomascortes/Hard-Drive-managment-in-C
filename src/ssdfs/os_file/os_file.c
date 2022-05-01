@@ -55,6 +55,13 @@ osFile* set_location(osFile* self, int start_pos, int length, int end_pos) {
     return self;
 }
 
+
+void osFile_destroy(osFile* self) {
+    // REVIEW: no debería tener que asegurarme de nada, porque no reservé más memoria
+    //  dentro de sí, pero si alguien la quiere revisar, se agradece
+    free(self)
+}
+
 // TODO: Sacar si no la uso.
 //  La deje de usar por ahora, pero no la quiero borrar por si la vuelvo a necesitar
 int interpret_mode(char* mode) {
