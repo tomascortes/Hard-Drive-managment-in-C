@@ -84,7 +84,8 @@ void os_tree() {  // TODO: Pendiente
 }
 
 
-// Funciones de manejo de archivos
+// ===== Funciones de manejo de archivos =====
+/* Permite revisar si un archivo existe o no. Retorna 1 en caso de que exista, 0 de caso contrario. */
 int os_exists(char* filename) {  // TODO: Pendiente
     return 0;
 }
