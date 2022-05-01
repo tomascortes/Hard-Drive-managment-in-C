@@ -5,7 +5,6 @@ int global_P_E;
 
 // Representación de archivos abiertos mediate struct
 struct os_file {  // NOTE: Trabajando en esto - Luis
-    int pid;  // NOTE: No sé si se va a usar. Lo puse por si a caso.
     char* name;  // Nombre del archivo
     char mode[2]; // r -> ReadOnly || {w,rw,wr,r+} -> ReadWrite
     unsigned int start_pos;  // Donde comienza el archivo
