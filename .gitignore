@@ -40,6 +40,7 @@ cmake-build-debug/*
 *.paq
 *.7z
 /CMakeLists.txt
+venv/
 
 ## Discos...
 simdiskfilled.bin
