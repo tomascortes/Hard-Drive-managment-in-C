@@ -32,18 +32,21 @@ osFile* osFile_new(char* name) {
     instance_pointer->length = -1;
     instance_pointer->end_pos = -1;
 
-    // https://stackoverflow.com/questions/19365901/how-do-i-modify-the-character-array-in-this-struct-c
-    strncpy(instance_pointer->mode,  // Atributo a modificar
-            "NN",  // Nuevo contenido
-            sizeof(instance_pointer->mode));  // Máximo espacio (Para evitar stack overflow)
+    instance_pointer = set_mode(instance_pointer, "NN");
 
     // Retorno el puntero a la representación del archivo
     return instance_pointer;
 }
 
-osFile* set_mode(osFile* file, char* mode) {
-    osFile* instance_pointer =
+osFile* set_mode(osFile* self, char* mode) {
+    // REVIEW: Revisar que funcione como debe
 
+    // https://stackoverflow.com/questions/19365901/how-do-i-modify-the-character-array-in-this-struct-c
+    strncpy(self->mode,  // Atributo a modificar
+            mode,  // Nuevo contenido
+            sizeof(self->mode));  // Máximo espacio (Para evitar stack overflow)
+
+    return self;
 }
 
 

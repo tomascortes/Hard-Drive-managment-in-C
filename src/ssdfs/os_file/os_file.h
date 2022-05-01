@@ -22,7 +22,7 @@
 // Representación de archivos abiertos mediate struct
 // REVIEW: Alguien por favor revise si esto se puede combinar dentro de os_file
 //  con 'typedef struct osFile {...} osFile;' a pesar de referenciarlo dentro
-//  de sí mismo para reservar memoria
+//  de sí mismo para reservar memoria en una función
 struct os_file;
 typedef struct os_file osFile;
 
@@ -35,9 +35,9 @@ struct os_file {
 };
 
 osFile* osFile_new(char* name);
-osFile* set_mode(osFile* file, char mode[2]);
-osFile* set_location(osFile* file,
+osFile* set_mode(osFile* self, char mode[2]);
+osFile* set_location(osFile* self,
                      int start_pos,
                      int length,
                      int end_pos);
-void osFile_destroy(osFile* file);
+void osFile_destroy(osFile* self);
