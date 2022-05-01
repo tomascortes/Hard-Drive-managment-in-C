@@ -4,8 +4,8 @@ char global_diskname[1023];
 int global_P_E;
 
 // Representación de archivos abiertos mediate struct
-typedef struct osFile {
-    int pid; // NOTE: No sé si se va a usar. Lo puse por si a caso.
+typedef struct osFile {  // NOTE: Trabajando en esto - Luis
+    int pid;  // NOTE: No sé si se va a usar. Lo puse por si a caso.
     char* name;  // Nombre del archivo
     char mode[2]; // r -> ReadOnly || {w,rw,wr,r+} -> ReadWrite
     unsigned int start_pos;  // Donde comienza el archivo
@@ -23,7 +23,7 @@ void os_tree();
 // Funciones de manejo de archivos
 int os_exists(char* filename);  // TODO: Pendiente
 osFile* os_open(char* filename, char mode);  // TODO: Pendiente
-int os_read(osFile* file_desc, void* buffer, int nbytes);
+int os_read(osFile* file_desc, void* buffer, int nbytes);  // NOTE: Trabajando en esto - Luis
 int os_write(osFile* file_desc, void* buffer, int nbytes);  // TODO: Pendiente
 int os_close(osFile* file_desc);  // TODO: Pendiente
 int os_rm(char* filename);  // TODO: Pendiente
