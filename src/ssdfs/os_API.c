@@ -52,7 +52,7 @@ void os_bitmap(unsigned num) {
         printf("%d\n", (buffer[num/8] & (1 << (7-num%7)) >> num%8 ));
 
     } else {
-        // num no pertenece al array (0-2047)
+        // num no pertenece al array (0..2047)
         printf("%s\n", "SEGFAULT");
     }
     
