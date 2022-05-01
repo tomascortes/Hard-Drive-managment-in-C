@@ -29,7 +29,8 @@ osFile* osFile_new(char* name) {
     instance_pointer->name = name;
 
     // Inicializo con valores por defecto. Inválidos para propósitos del FS
-    instance_pointer = set_location(instance_pointer, -1, -1, -1);
+    // TODO: Sacar línea innecesaria
+    // instance_pointer = set_location(instance_pointer, -1, -1, -1);
     instance_pointer = set_mode(instance_pointer, "N");
 
     // Retorno el puntero a la representación del archivo

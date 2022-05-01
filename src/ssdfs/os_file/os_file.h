@@ -31,6 +31,9 @@ typedef struct osFile {
     int start_pos;  // Donde comienza el archivo
     int length;  // Largo del archivo
     int end_pos; // Donde termina
+
+    unsigned int block;
+    unsigned int page;
 } osFile;
 
 osFile* osFile_new(char* name);
