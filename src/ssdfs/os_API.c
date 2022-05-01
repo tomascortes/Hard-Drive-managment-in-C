@@ -22,6 +22,7 @@ void os_bitmap(unsigned num) {
     fread(buffer, sizeof(buffer),1,f);
 
     if (num == 0) {
+        // Printear 't'
         int fill = 0;
         int free = 0;
 
@@ -43,11 +44,13 @@ void os_bitmap(unsigned num) {
         printf("Bloques Ocupados: %d\nBloques Libres: %d\n", fill, free);
 
     } else if (num>=0 && num<=2048) {
+        // Printea bitmap para el bloque num.
         printf("%d\n", num/8);
         printf("%d\n", num%8);
         printf("%d\n", (buffer[num/8] & (1 << (7-num%7)) >> num%8 ));
 
     } else {
+        // num no pertenece al array (0-2047)
         printf("%s\n", "SEGFAULT");
     }
     
