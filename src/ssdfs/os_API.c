@@ -2,11 +2,18 @@
 #include <string.h>
 #include "./os_API.h"
 
-// ===== Funciones generales =====
+// ===== API de ssdfs =====
+// ----- Structs -----
+// NOTE: Trabajando en esto
+/* Representa un archivo abierto con todos sus atributos
+ */
 
-/* - Monta el disco virtual
- * - Establece como variable global el archivo .bin correspondiente al disco
- * - Define como lı́mite de ciclos P/E al valor de life.
+
+// ----- Funciones generales -----
+
+/* Monta el disco virtual
+ * Establece como variable global el archivo .bin correspondiente al disco
+ * Define como lı́mite de ciclos P/E al valor de life.
  * La función debe poder ser llamada múltiples veces si se desea abrir
  * diferentes discos a lo largo de la ejecución de main.c.*/
 void os_mount(char* diskname, unsigned life) {
@@ -84,7 +91,7 @@ void os_tree() {  // TODO: Pendiente
 }
 
 
-// ===== Funciones de manejo de archivos =====
+// ----- Funciones de manejo de archivos -----
 /* Permite revisar si un archivo existe o no. Retorna 1 en caso de que exista, 0 de caso contrario. */
 int os_exists(char* filename) {  // TODO: Pendiente
     return 0;
@@ -101,7 +108,7 @@ osFile* os_open(char* filename, char mode) {  // TODO: Pendiente
  * Si ambos valores son -1, se debe imprimir el lifemap completo.
  * Además se debe imprimir en una segunda lı́nea la cantidad de bloques rotten y la
  * cantidad de bloques saludables. */
-int os_read(osFile* file_desc, void* buffer, int nbytes) {  // TODO: Pendiente
+int os_read(osFile* file_desc, void* buffer, int nbytes) {  // NOTE: Trabajando en esto
     return 0;
 }
 
