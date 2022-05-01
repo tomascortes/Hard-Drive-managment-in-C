@@ -4,6 +4,7 @@
 
 // ===== API de ssdfs =====
 // ----- Structs -----
+// NOTE: Trabajando en esto
 /* Representa un archivo abierto con todos sus atributos
  */
 
@@ -107,7 +108,7 @@ osFile* os_open(char* filename, char mode) {  // TODO: Pendiente
  * Si ambos valores son -1, se debe imprimir el lifemap completo.
  * Además se debe imprimir en una segunda lı́nea la cantidad de bloques rotten y la
  * cantidad de bloques saludables. */
-int os_read(osFile* file_desc, void* buffer, int nbytes) {  // TODO: Pendiente
+int os_read(osFile* file_desc, void* buffer, int nbytes) {  // NOTE: Trabajando en esto
     return 0;
 }
 
