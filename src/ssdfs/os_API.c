@@ -2,6 +2,11 @@
 #include <string.h>
 #include "./os_API.h"
 
+/* - Monta el disco virtual
+ * - Establece como variable global el archivo .bin correspondiente al disco
+ * - Define como lı́mite de ciclos P/E al valor de life.
+ * La función debe poder ser llamada múltiples veces si se desea abrir
+ * diferentes discos a lo largo de la ejecución de main.c.*/
 void os_mount(char* diskname, unsigned life) {
     strcpy(global_diskname, diskname);
     global_P_E = life;
