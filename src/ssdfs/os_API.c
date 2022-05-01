@@ -20,11 +20,6 @@
 #include "./os_API.h"
 
 // ===== API de ssdfs =====
-// ----- Structs -----
-// NOTE: Trabajando en esto
-/* Representa un archivo abierto con todos sus atributos
- */
-
 
 
 // ----- Funciones generales -----
