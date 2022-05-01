@@ -220,27 +220,34 @@ int os_load(char* orig) {  // TODO: Pendiente
 
 // Temporal ----- Esta función es para testear
 // Tira los nombres de todo lo que hay en el disco
-void print_names(){
+void print_names() {
     // Abro el archivo
     FILE *f = fopen(global_diskname, "rb");
 
     // Me muevo 3 MiB, para llegar al bloque N°3, del directorio base.
-    fseek(f, 3145728, SEEK_SET);
+    int offset = 3 * 1024 * 1024; // 3MiB
+    fseek(f, offset, SEEK_SET);
 
     // root está en el bloque 3 por convención, por lo que si
     // hubiese que moverlo para que no se pudra, se perdería para siempre
 
     // (La entrada 1672 tiene un archivo)
     // Son 32768 entradas en el bloque de directorio
-    for(int i = 0; i < 32768; i++){
-        unsigned char buffer[32]; // Buffer para guardar los bytes de una entrada
+    int max_buffer_size = 32;
+    int entries = max_buffer_size * 1024;
+
+    for (int i = 0; i < entries; i++) {
+        unsigned char buffer[max_buffer_size]; // Buffer para guardar los bytes de una entrada
         fread(buffer, sizeof(buffer), 1, f); // Leo una entrada
-        if(buffer[0]){ // Si hay archivo o directorio:
+
+        if (buffer[0]) { // Si hay archivo o directorio:
             printf("Primer byte entrada %i: %i\n", i, buffer[0]);
+
             // Printear nombre del archivo
             for(int j = 5; j < 32; j++){
                 printf("%c", buffer[j]);
             }
+
             printf("\n");
         }
     }
