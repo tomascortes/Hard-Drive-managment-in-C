@@ -6,9 +6,7 @@
 // ----- Structs -----
 /* Representa un archivo abierto con todos sus atributos
  */
-typedef struct osFile {
 
-} osFile;
 
 // ----- Funciones generales -----
 

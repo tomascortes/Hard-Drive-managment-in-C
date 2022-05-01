@@ -3,6 +3,11 @@
 char global_diskname[1023];
 int global_P_E;
 
+// Representación de archivos abiertos mediate struct
+typedef struct osFile {
+
+} osFile;
+
 // Funciones generales
 void os_mount(char* diskname, unsigned life);
 void os_bitmap(unsigned num);
