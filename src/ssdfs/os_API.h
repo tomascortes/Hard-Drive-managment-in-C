@@ -15,6 +15,7 @@
  * +------------------+----------------+-------------------+-------------+ */
 
 #pragma once
+#include <stdlib.h>
 
 #include "./os_file/os_file.h"  // NOTE: Trabajando en esto
 
