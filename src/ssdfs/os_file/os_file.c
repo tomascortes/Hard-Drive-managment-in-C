@@ -60,7 +60,7 @@ osFile* set_location(osFile* self, int start_pos, int length, int end_pos) {
 void osFile_destroy(osFile* self) {
     // REVIEW: no debería tener que asegurarme de nada, porque no reservé más memoria
     //  dentro de sí, pero si alguien la quiere revisar, se agradece
-    free(self)
+    free(self);
 }
 
 // TODO: Sacar si no la uso.
