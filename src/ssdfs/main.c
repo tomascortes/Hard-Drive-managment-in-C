@@ -17,7 +17,8 @@
 #include <stdio.h>
 #include "os_API.h"
 
-// FIXME: Second parameter of 'main' (argument array) must be type 'char **'
+// FIXME: "Second parameter of 'main' (argument array) must be of type 'char **'"
+//  Ni idea cómo se supone que uno corrija esto
 int main(int argc, char** const argv[]) {// Montar el disco pasado por consola con life = 5000
     os_mount(argv[1], 5000);
 

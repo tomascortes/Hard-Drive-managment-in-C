@@ -33,6 +33,8 @@ void os_mount(char* diskname, unsigned life) {
     /* Crea una variable global con el nombre del archivo y otra con el
      * valor de life */
     strcpy(global_diskname, diskname);
+    // FIXME: "Narrowing conversion from 'unsigned int' to signed type 'int' is implementation-defined"
+    //  Tal vez algún check o casteo lo arregla?
     global_P_E = life;
 }
 
