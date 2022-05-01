@@ -40,8 +40,9 @@ osFile* osFile_new(char* name) {
     return instance_pointer;
 }
 
+// Settea el modo de operación (read/write)
 osFile* set_mode(osFile* self, char* mode) {
-    // REVIEW: Revisar que funcione como debe
+    if
 
     // https://stackoverflow.com/questions/19365901/how-do-i-modify-the-character-array-in-this-struct-c
     strncpy(self->mode,  // Atributo a modificar
@@ -49,6 +50,10 @@ osFile* set_mode(osFile* self, char* mode) {
             sizeof(self->mode));  // Máximo espacio (Para evitar stack overflow)
 
     return self;
+}
+
+osFile* set_location(osFile* self, int start_pos, int length, int end_pos) {
+
 }
 
 
