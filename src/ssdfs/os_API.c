@@ -148,6 +148,8 @@ int os_rmrfdir(char* path) {  // TODO: Pendiente
     return 0;
 }
 
+/* Esta función que se encarga de copiar un archivo o carpeta referenciado por orig hacia un nuevo archivo
+ * o directorio de ruta dest en su computador. */
 int os_unload(char* orig, char* dest) {  // TODO: Pendiente
     return 0;
 }
