@@ -64,6 +64,14 @@ void os_lifemap(int lower, int upper) {  // TODO: Pendiente
     return;
 }
 
+/* Esta función debe recorrer el disco completo.
+ * Para cada bloque que contenga páginas cuyo valor P/E se encuentra a limit ciclos de pasar a estado rotten,
+ * reubicarla a un bloque que no contenga páginas en esta condición.
+ * Esta operación no debe corromper archivos ni directorios, por lo que mover un bloque implica
+ * actualizar todos los punteros que sea necesario para no perder su referencia. En caso de que no hayan
+ * suficientes bloques disponibles para realizar cualquiera de estas operaciones, se debe indicar la cantidad
+ * de estos, y además indicar que archivos o directorios se podrı́an ver afectados por pérdida de información
+ * en limit ciclos. Esta función retorna el número bloques que fueron reubicados exitosamente. */
 int os_trim(unsigned limit) {  // TODO: Pendiente
     return 0;
 }
