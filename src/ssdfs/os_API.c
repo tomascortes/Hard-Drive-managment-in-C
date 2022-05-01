@@ -47,4 +47,62 @@ void os_bitmap(unsigned num) {
     fclose(f);
 }
 
+void os_lifemap(int lower, int upper) {  // TODO: Pendiente
+    return;
+}
+
+int os_trim(unsigned limit) {  // TODO: Pendiente
+    return 0;
+}
+
+void os_tree() {  // TODO: Pendiente
+    return;
+}
+
+
+// Funciones de manejo de archivos
+int os_exists(char* filename) {  // TODO: Pendiente
+    return 0;
+}
+
+osFile* os_open(char* filename, char mode) {  // TODO: Pendiente
+    return 0;
+}
+
+int os_read(osFile* file_desc, void* buffer, int nbytes) {  // TODO: Pendiente
+    return 0;
+}
+
+int os_write(osFile* file_desc, void* buffer, int nbytes) {  // TODO: Pendiente
+    return 0;
+}
+
+int os_close(osFile* file_desc) {  // TODO: Pendiente
+    return 0;
+}
+
+int os_rm(char* filename) {  // TODO: Pendiente
+    return 0;
+}
+
+int os_mkdir(char* path) {  // TODO: Pendiente
+    return 0;
+}
+
+int os_rmdir(char* path) {  // TODO: Pendiente
+    return 0;
+}
+
+int os_rmrfdir(char* path) {  // TODO: Pendiente
+    return 0;
+}
+
+int os_unload(char* orig, char* dest) {  // TODO: Pendiente
+    return 0;
+}
+
+int os_load(char* orig) {  // TODO: Pendiente
+    return 0;
+}
+
 

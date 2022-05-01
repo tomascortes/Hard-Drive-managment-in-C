@@ -13,7 +13,7 @@ void os_tree();  // TODO: Pendiente
 // Funciones de manejo de archivos
 int os_exists(char* filename);  // TODO: Pendiente
 osFile* os_open(char* filename, char mode);  // TODO: Pendiente
-int os_read(osFile* file_desc, void* buffer, int nbytes);  // TODO: Pendiente
+int os_read(osFile* file_desc, void* buffer, int nbytes);
 int os_write(osFile* file_desc, void* buffer, int nbytes);  // TODO: Pendiente
 int os_close(osFile* file_desc);  // TODO: Pendiente
 int os_rm(char* filename);  // TODO: Pendiente
