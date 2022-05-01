@@ -34,7 +34,9 @@ struct os_file {
     int end_pos; // Donde termina
 };
 
-// REVIEW: Alguien por favor revise si esto se puede combinar dentro de os_file
-//  con 'typedef struct osFile {...} osFile;' a pesar de referenciarlo dentro
-//  de sí mismo para reservar memoria
-typedef struct os_file osFile;
+osFile* osFile_new(char* name);
+osFile* set_mode(char mode[2]);
+osFile* set_location(unsigned int start_pos,
+                     unsigned int length,
+                     unsigned int end_pos);
+void osFile_destroy(osFile* targeted_entity);
