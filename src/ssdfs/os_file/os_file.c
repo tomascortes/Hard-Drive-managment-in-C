@@ -44,16 +44,7 @@ osFile* osFile_new(char* name) {
 // Settea el modo de operación (read/write)
 osFile* set_mode(osFile* self, char* mode) {
     // Revisar validez
-    check_mode(mode);
-
     // https://stackoverflow.com/questions/19365901/how-do-i-modify-the-character-array-in-this-struct-c
-    // TODO: Sacar si no lo uso
-    /* // Limpio la variable (innecesario, pero por si acaso)
-    strncpy(self->mode,  // Atributo a modificar
-            "  ",  // Nuevo contenido
-            sizeof(self->mode));  // Máximo espacio (Para evitar stack overflow)
-
-    // Lo modifico */
     strncpy(self->mode,  // Atributo a modificar
             mode,  // Nuevo contenido
             sizeof(self->mode));  // Máximo espacio (Para evitar stack overflow)
