@@ -25,7 +25,7 @@ typedef struct osFile {
     //  malloc(sizeof(osFile))
     char* name;  // Nombre del archivo
     // Puse 2 caracteres para que sea un poco más a prueba de errores
-    char mode[2]; // r -> ReadOnly || {w,rw,wr,r+} -> ReadWrite || N -> Null
+    char mode[2]; // r -> ReadOnly || w-> WriteOnly || {rw,wr,r+} -> ReadWrite || N -> Null
     int start_pos;  // Donde comienza el archivo
     int length;  // Largo del archivo
     int end_pos; // Donde termina
@@ -38,3 +38,4 @@ osFile* set_location(osFile* self,
                      int length,
                      int end_pos);
 void osFile_destroy(osFile* self);
+

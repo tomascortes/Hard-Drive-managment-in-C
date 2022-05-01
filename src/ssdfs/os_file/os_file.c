@@ -14,6 +14,7 @@
  * | Luis González    | ljgonzalez1    | ljgonzalez@uc.cl  | 16625439    |
  * +------------------+----------------+-------------------+-------------+ */
 
+#include <stdbool.h>
 #include <stdlib.h>
 #include <string.h>
 #include "os_file.h"
@@ -42,9 +43,17 @@ osFile* osFile_new(char* name) {
 
 // Settea el modo de operación (read/write)
 osFile* set_mode(osFile* self, char* mode) {
-    if
+    // Revisar validez
+    check_mode(mode);
 
     // https://stackoverflow.com/questions/19365901/how-do-i-modify-the-character-array-in-this-struct-c
+    // TODO: Sacar si no lo uso
+    /* // Limpio la variable (innecesario, pero por si acaso)
+    strncpy(self->mode,  // Atributo a modificar
+            "  ",  // Nuevo contenido
+            sizeof(self->mode));  // Máximo espacio (Para evitar stack overflow)
+
+    // Lo modifico */
     strncpy(self->mode,  // Atributo a modificar
             mode,  // Nuevo contenido
             sizeof(self->mode));  // Máximo espacio (Para evitar stack overflow)
@@ -53,12 +62,30 @@ osFile* set_mode(osFile* self, char* mode) {
 }
 
 osFile* set_location(osFile* self, int start_pos, int length, int end_pos) {
+    self->start_pos = start_pos;
+    self->length = length;
+    self->end_pos = end_pos;
 
+    return self;
 }
 
 
+int interpret_mode(char* mode) {
+    if (strcmp(mode, "r") != 0) {
+        return 0;  // ReadOnly
 
+    } else if (strcmp(mode, "w") != 0) {
+        return 1;  // WriteOnly
 
+    } else if (strcmp(mode, "wr") != 0 ||
+            strcmp(mode, "rw") != 0 ||
+            strcmp(mode, "r+") != 0) {
+        return 2; //Read-Write
+
+    } else {
+        return -1;  // Null
+    }
+}
 
 
 
