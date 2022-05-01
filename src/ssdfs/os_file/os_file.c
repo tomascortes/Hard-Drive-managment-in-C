@@ -20,6 +20,8 @@
 
 // ----- Structs -----
 /* Representa un archivo abierto con todos sus atributos */
+// REVIEW: Revisar que el nombre de tamaño indefinido no interfiera con
+//  malloc(sizeof(osFile))
 osFile* osFile_new(char* name) {
     // Reservo memoria
     osFile* instance_pointer = malloc(sizeof(osFile));

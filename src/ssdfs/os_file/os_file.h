@@ -27,6 +27,8 @@ struct os_file;
 typedef struct os_file osFile;
 
 struct os_file {
+    // REVIEW: Revisar que el nombre de tamaño indefinido no interfiera con
+    //  malloc(sizeof(osFile))
     char* name;  // Nombre del archivo
     char mode[2]; // r -> ReadOnly || {w,rw,wr,r+} -> ReadWrite
     int start_pos;  // Donde comienza el archivo
