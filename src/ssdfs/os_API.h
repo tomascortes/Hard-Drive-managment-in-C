@@ -5,7 +5,12 @@ int global_P_E;
 
 // Representación de archivos abiertos mediate struct
 typedef struct osFile {
-
+    int pid; // NOTE: No sé si se va a usar. Lo puse por si a caso.
+    char* name;  // Nombre del archivo
+    char mode[2]; // r -> ReadOnly || {w,rw,wr,r+} -> ReadWrite
+    unsigned int start_pos;  // Donde comienza el archivo
+    unsigned int length;  // Largo del archivo
+    unsigned int end_pos; // Donde termina
 } osFile;
 
 // Funciones generales
