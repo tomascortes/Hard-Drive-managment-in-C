@@ -35,8 +35,9 @@ struct os_file {
 };
 
 osFile* osFile_new(char* name);
-osFile* set_mode(char mode[2]);
-osFile* set_location(int start_pos,
+osFile* set_mode(osFile* file, char mode[2]);
+osFile* set_location(osFile* file,
+                     int start_pos,
                      int length,
                      int end_pos);
-void osFile_destroy(osFile* targeted_entity);
+void osFile_destroy(osFile* file);

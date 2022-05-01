@@ -21,10 +21,13 @@
 // ----- Structs -----
 /* Representa un archivo abierto con todos sus atributos */
 osFile* osFile_new(char* name) {
+    // Reservo memoria
     osFile* instance_pointer = malloc(sizeof(osFile));
 
+    // Pongo nombre
     instance_pointer->name = name;
 
+    // Inicializo con valores por defecto. Inválidos para propósitos del FS
     instance_pointer->start_pos = -1;
     instance_pointer->length = -1;
     instance_pointer->end_pos = -1;
@@ -34,5 +37,24 @@ osFile* osFile_new(char* name) {
             "NN",  // Nuevo contenido
             sizeof(instance_pointer->mode));  // Máximo espacio (Para evitar stack overflow)
 
+    // Retorno el puntero a la representación del archivo
     return instance_pointer;
 }
+
+osFile* set_mode(osFile* file, char* mode) {
+    osFile* instance_pointer =
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
