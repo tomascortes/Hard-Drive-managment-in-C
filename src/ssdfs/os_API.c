@@ -115,6 +115,8 @@ int os_write(osFile* file_desc, void* buffer, int nbytes) {  // TODO: Pendiente
     return 0;
 }
 
+/* Esta función permite cerrar un archivo. Cierra el archivo indicado por file desc. Debe garantizar
+ * que cuando esta función retorna, el archivo se encuentra actualizado en disco. */
 int os_close(osFile* file_desc) {  // TODO: Pendiente
     return 0;
 }
