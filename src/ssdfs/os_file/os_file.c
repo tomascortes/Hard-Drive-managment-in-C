@@ -19,8 +19,12 @@
 #include "os_file.h"
 
 // ----- Structs -----
-// XXX: Lo siento, no pude restringirme a las funciones que nos dijeron sin hacer un desastre.
-//  Puse estas para manejar el struct
-/* Representa un archivo abierto con todos sus atributos
- */
+/* Representa un archivo abierto con todos sus atributos */
+osFile* osFile_new(char* name) {
+    osFile* instance_pointer = malloc(sizeof(osFile));
 
+    instance_pointer->name = name;
+
+    instance_pointer->start_pos = -1;
+    instance_pointer->length = -1;
+    instance_pointer->end_pos = -1;
