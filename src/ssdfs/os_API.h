@@ -18,7 +18,7 @@ void os_mount(char* diskname, unsigned life);
 void os_bitmap(unsigned num);
 void os_lifemap(int lower, int upper);  // TODO: Pendiente
 int os_trim(unsigned limit);  // TODO: Pendiente
-void os_tree();  // TODO: Pendiente
+void os_tree();
 
 // Funciones de manejo de archivos
 int os_exists(char* filename);  // TODO: Pendiente
