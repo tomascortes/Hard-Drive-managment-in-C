@@ -135,6 +135,8 @@ int os_mkdir(char* path) {  // TODO: Pendiente
     return 0;
 }
 
+/* Esta función elimina un directorio vacı́o con el nombre indicado. Esto incrementa en 1 el contador
+ * P/E de las páginas que sea necesario actualizar para borrar las referencias a este directorio. */
 int os_rmdir(char* path) {  // TODO: Pendiente
     return 0;
 }
