@@ -31,11 +31,8 @@ osFile* osFile_new(char* name) {
     instance_pointer->name = name;
 
     // Inicializo con valores por defecto. Inválidos para propósitos del FS
-    instance_pointer->start_pos = -1;
-    instance_pointer->length = -1;
-    instance_pointer->end_pos = -1;
-
-    instance_pointer = set_mode(instance_pointer, "NN");
+    instance_pointer = set_location(instance_pointer, -1, -1, -1);
+    instance_pointer = set_mode(instance_pointer, "N");
 
     // Retorno el puntero a la representación del archivo
     return instance_pointer;
@@ -60,17 +57,23 @@ osFile* set_location(osFile* self, int start_pos, int length, int end_pos) {
     return self;
 }
 
-
+// TODO: Sacar si no la uso.
+//  La deje de usar por ahora, pero no la quiero borrar por si la vuelvo a necesitar
 int interpret_mode(char* mode) {
-    if (strcmp(mode, "r") != 0) {
+    if (strcmp(mode, "r") != 0 ||
+            strcmp(mode, "R") != 0) {
         return 0;  // ReadOnly
 
-    } else if (strcmp(mode, "w") != 0) {
+    } else if (strcmp(mode, "w") != 0 ||
+            strcmp(mode, "W") != 0) {
         return 1;  // WriteOnly
 
     } else if (strcmp(mode, "wr") != 0 ||
+            strcmp(mode, "WR") != 0 ||
             strcmp(mode, "rw") != 0 ||
-            strcmp(mode, "r+") != 0) {
+            strcmp(mode, "RW") != 0 ||
+            strcmp(mode, "r+") != 0 ||
+            strcmp(mode, "R+") != 0) {
         return 2; //Read-Write
 
     } else {
