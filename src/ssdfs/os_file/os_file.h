@@ -15,31 +15,32 @@
  * +------------------+----------------+-------------------+-------------+ */
 
 #pragma once
-#include <stdlib.h>
 
-#include "./os_file/os_file.h"  // NOTE: Trabajando en esto
+// XXX: Lo siento, no pude restringirme a las funciones que nos dijeron sin hacer un desastre.
+//  Puse estas para manejar el struct
 
-char global_diskname[1023];
-int global_P_E;
+// Representación de archivos abiertos mediate struct
+typedef struct osFile {
+    // REVIEW: Revisar que el nombre de tamaño indefinido no interfiera con
+    //  malloc(sizeof(osFile))
+    char* name;  // Nombre del archivo
 
-// Funciones generales
-void os_mount(char* diskname, unsigned life);
-void os_bitmap(unsigned num);
-void os_lifemap(int lower, int upper);  // TODO: Pendiente
-int os_trim(unsigned limit);  // TODO: Pendiente
-void os_tree();
+    // Puse 2 caracteres para que sea un poco más a prueba de errores
+    char mode[2]; // r -> ReadOnly || w-> WriteOnly || {rw,wr,r+} -> ReadWrite || N -> Null
 
-// Funciones de manejo de archivos
-int os_exists(char* filename);  // TODO: Pendiente
-osFile* os_open(char* filename, char mode);  // TODO: Pendiente
-int os_read(osFile* file_desc, void* buffer, int nbytes);  // NOTE: Trabajando en esto
-int os_write(osFile* file_desc, void* buffer, int nbytes);  // TODO: Pendiente
-int os_close(osFile* file_desc);  // TODO: Pendiente
-int os_rm(char* filename);  // TODO: Pendiente
-int os_mkdir(char* path);  // TODO: Pendiente
-int os_rmdir(char* path);  // TODO: Pendiente
-int os_rmrfdir(char* path);  // TODO: Pendiente
-int os_unload(char* orig, char* dest);  // TODO: Pendiente
-int os_load(char* orig);  // TODO: Pendiente
+    int start_pos;  // Donde comienza el archivo
+    int length;  // Largo del archivo
+    int end_pos; // Donde termina
 
-void print_names();
+    unsigned int block;
+    unsigned int page;
+} osFile;
+
+osFile* osFile_new(char* name);
+osFile* set_mode(osFile* self, char mode[2]);
+osFile* set_location(osFile* self,
+                     int start_pos,
+                     int length,
+                     int end_pos);
+void osFile_destroy(osFile* self);
+
