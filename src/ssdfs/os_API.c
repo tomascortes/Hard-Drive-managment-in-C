@@ -149,7 +149,8 @@ int os_exists(char* filename) {  // TODO: Pendiente
  * y se retorna el osFile* que lo representa. Si mode='w', se verifica que el
  * archivo no exista, y se retirna un nuevo osFile* que lo representa. */
 osFile* os_open(char* filename, char mode) {  // TODO: Pendiente
-    return 0;
+    osFile* file = malloc(sizeof(osFile));
+    return file;
 }
 
 /* Imprime el estado P/E de las páginas desde lower y upper-1.
