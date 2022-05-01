@@ -20,10 +20,6 @@
 #include "./os_API.h"
 
 // ===== API de ssdfs =====
-// ----- Structs -----
-// NOTE: Trabajando en esto
-/* Representa un archivo abierto con todos sus atributos
- */
 
 
 // ----- Funciones generales -----
@@ -37,6 +33,8 @@ void os_mount(char* diskname, unsigned life) {
     /* Crea una variable global con el nombre del archivo y otra con el
      * valor de life */
     strcpy(global_diskname, diskname);
+    // FIXME: "Narrowing conversion from 'unsigned int' to signed type 'int' is implementation-defined"
+    //  Tal vez algún check o casteo lo arregla?
     global_P_E = life;
 }
 
@@ -165,7 +163,8 @@ int os_exists(char* filename) {  // TODO: Pendiente
  * y se retorna el osFile* que lo representa. Si mode='w', se verifica que el
  * archivo no exista, y se retirna un nuevo osFile* que lo representa. */
 osFile* os_open(char* filename, char mode) {  // TODO: Pendiente
-    return 0;
+    osFile* file = malloc(sizeof(osFile));
+    return file;
 }
 
 /* Imprime el estado P/E de las páginas desde lower y upper-1.
@@ -236,27 +235,34 @@ int os_load(char* orig) {  // TODO: Pendiente
 
 // Temporal ----- Esta función es para testear
 // Tira los nombres de todo lo que hay en el disco
-void print_names(){
+void print_names() {
     // Abro el archivo
     FILE *f = fopen(global_diskname, "rb");
 
     // Me muevo 3 MiB, para llegar al bloque N°3, del directorio base.
-    fseek(f, 3145728, SEEK_SET);
+    int offset = 3 * 1024 * 1024; // 3MiB
+    fseek(f, offset, SEEK_SET);
 
     // root está en el bloque 3 por convención, por lo que si
     // hubiese que moverlo para que no se pudra, se perdería para siempre
 
     // (La entrada 1672 tiene un archivo)
     // Son 32768 entradas en el bloque de directorio
-    for(int i = 0; i < 32768; i++){
-        unsigned char buffer[32]; // Buffer para guardar los bytes de una entrada
+    int max_buffer_size = 32;
+    int entries = max_buffer_size * 1024;
+
+    for (int i = 0; i < entries; i++) {
+        unsigned char buffer[max_buffer_size]; // Buffer para guardar los bytes de una entrada
         fread(buffer, sizeof(buffer), 1, f); // Leo una entrada
-        if(buffer[0]){ // Si hay archivo o directorio:
+
+        if (buffer[0]) { // Si hay archivo o directorio:
             printf("Primer byte entrada %i: %i\n", i, buffer[0]);
+
             // Printear nombre del archivo
             for(int j = 5; j < 32; j++){
                 printf("%c", buffer[j]);
             }
+
             printf("\n");
         }
     }
