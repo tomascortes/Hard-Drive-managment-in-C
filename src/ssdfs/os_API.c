@@ -105,6 +105,12 @@ int os_read(osFile* file_desc, void* buffer, int nbytes) {  // TODO: Pendiente
     return 0;
 }
 
+/* Esta función sirve para leer archivos.
+ * Lee los siguientes nbytes desde el archivo descrito por file_desc y los guarda en la dirección
+ * apuntada por buffer. Debe retornar la cantidad de Bytes efectivamente leı́dos desde el archivo.
+ * Esto es importante si nbytes es mayor a la cantidad de Bytes restantes en el archivo o en el
+ * caso que el archivo contenga páginas rotten. La lectura de read se efectúa desde la posición
+ * del archivo inmediatamente posterior a la última posición leı́da por un llamado a read */
 int os_write(osFile* file_desc, void* buffer, int nbytes) {  // TODO: Pendiente
     return 0;
 }
