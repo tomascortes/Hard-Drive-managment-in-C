@@ -35,4 +35,4 @@ osFile* osFile_new(char* name) {
             sizeof(instance_pointer->mode));  // Máximo espacio (Para evitar stack overflow)
 
     return instance_pointer;
-}D
+}
