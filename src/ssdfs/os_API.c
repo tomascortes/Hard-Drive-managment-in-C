@@ -1,27 +1,34 @@
 #include <stdio.h>
+#include <string.h>
 #include "./os_API.h"
 
+void os_mount(char* diskname, unsigned life){
+    strcpy(global_diskname, diskname);
+    global_P_E = life;
+}
+
 void os_bitmap(unsigned num){
-  unsigned char buffer[256];
+  printf("BITMAP P1!\n");
   FILE *f = fopen(global_diskname, "rb");
 
+  unsigned char buffer[256];
   fread(buffer, sizeof(buffer),1,f);
   if(num == 0){
-    int oc=0;
-    int lb=0;
+    int fill=0;
+    int free=0;
     for(int i = 0; i<256; i++){
       for (int j = 7; j >= 0; j--){
         int bit = (buffer[i] & (1 << j)) >> j;
         printf("%d", bit );
         if(bit){
-          oc++;
+          fill++;
         } else {
-          lb++;
+          free++;
         }
       }
     }
     printf("\n");
-    printf("Ocupado: %d\nLibres: %d\n", oc, lb);
+    printf("Bloques Ocupados: %d\nBloques Libres: %d\n", fill, free);
   } else if(num>=0 && num<=2048) {
     printf("%d\n", num/8);
     printf("%d\n", num%8);
@@ -29,12 +36,6 @@ void os_bitmap(unsigned num){
   } else{
     printf("%s\n", "SEGFAULT");
   }
+  
   fclose(f);
-
-}
-
-
-void os_mount(char* diskname, unsigned life){
-    strcpy(global_diskname, diskname);
-    global_P_E = life;
 }
