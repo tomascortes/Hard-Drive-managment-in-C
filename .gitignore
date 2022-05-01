@@ -1,5 +1,57 @@
+!.gitignore
+
+# Archivos random
+*.tmp
+*.temp
+*.old
+*.sav
+*.bak
+*.bk
+.directory
+.hidden
+
+# Pruebas
+**/tests/
+**/tests/*
+tests/
+tests/*
+TESTS/
+TESTS/*
+
+# IDE/Editores
+.idea/
+.idea/*
+.code/
+.code/*
+.vscode/
+.vscode/*
+*.vscode
+*.kate-swp
+*.save
+*.swp
+cmake-build-debug/
+cmake-build-debug/*
+
+## Otros
+*.zip
+*.tar.gz
+*.rar
+*.paq
+*.7z
+/CMakeLists.txt
+
+## Discos...
 simdiskfilled.bin
 simdiskempty.bin
+
+## Cosa compilador
 obj/
+obj/*
+core/
+core/*
+core
+vgcore.*
+
+## Binarios
 ssdfs
 !ssdfs/
