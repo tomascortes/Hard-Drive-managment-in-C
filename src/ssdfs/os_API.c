@@ -12,6 +12,8 @@ void os_mount(char* diskname, unsigned life) {
     global_P_E = life;
 }
 
+/* - imprime el valor del bitmap para el bloque num.
+ * Si num=0 se debe imprimir t */
 void os_bitmap(unsigned num) {
     printf("BITMAP P1!\n");
     FILE *f = fopen(global_diskname, "rb");
