@@ -40,6 +40,7 @@ cmake-build-debug/*
 *.paq
 *.7z
 /CMakeLists.txt
+venv/
 
 ## Discos...
 simdiskfilled.bin
@@ -54,5 +55,13 @@ core
 vgcore.*
 
 ## Binarios
+# NOTE: Antes de comentar la siguiente línea, para qué se excluye la carpeta 'ssdfs'??
 ssdfs
-!ssdfs/
+!/src/ssdfs/
+!/src/ssdfs/*
+
+# Symlinks que uso en mi pc - Luis
+# No son lo mismo que los archivos de /scr/ssdfd/*
+/main.c
+/os_API.c
+/os_API.h
