@@ -17,7 +17,7 @@
 #pragma once
 
 // Representación de archivos abiertos mediate struct
-struct os_file {  // NOTE: Trabajando en esto - Luis
+struct os_file {
     char* name;  // Nombre del archivo
     char mode[2]; // r -> ReadOnly || {w,rw,wr,r+} -> ReadWrite
     unsigned int start_pos;  // Donde comienza el archivo

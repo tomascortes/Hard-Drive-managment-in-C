@@ -16,6 +16,8 @@
 
 #pragma once
 
+#include "./os_file/os_file.h"  // NOTE: Trabajando en esto - Luis
+
 char global_diskname[1023];
 int global_P_E;
 
