@@ -14,21 +14,33 @@
  * | Luis González    | ljgonzalez1    | ljgonzalez@uc.cl  | 16625439    |
  * +------------------+----------------+-------------------+-------------+ */
 
-#include <stdio.h>
-#include "os_API.h"
+#pragma once
 
-// FIXME: "Second parameter of 'main' (argument array) must be of type 'char **'"
-//  Ni idea cómo se supone que uno corrija esto
-int main(int argc, char** const argv[]) {
-    // Montar el disco pasado por consola con life = 5000
-    os_mount(argv[1], 5000);
+// XXX: Lo siento, no pude restringirme a las funciones que nos dijeron sin hacer un desastre.
+//  Puse estas para manejar el struct
 
-    os_bitmap(0); // Bitmap completo
-    os_bitmap(2); // Bitmap bloque N°2 (Tercer bloque)
-    os_bitmap(395); // Bitmap bloque N°395
-    os_bitmap(404404); // Bitmap bloque inexistente
+// Representación de archivos abiertos mediate struct
+typedef struct osFile {
+    // REVIEW: Revisar que el nombre de tamaño indefinido no interfiera con
+    //  malloc(sizeof(osFile))
+    char* name;  // Nombre del archivo
 
-    os_tree();
+    // Puse 2 caracteres para que sea un poco más a prueba de errores
+    char mode[2]; // r -> ReadOnly || w-> WriteOnly || {rw,wr,r+} -> ReadWrite || N -> Null
 
-    return 0;
-}
+    int start_pos;  // Donde comienza el archivo
+    int length;  // Largo del archivo
+    int end_pos; // Donde termina
+
+    unsigned int block;
+    unsigned int page;
+} osFile;
+
+osFile* osFile_new(char* name);
+osFile* set_mode(osFile* self, char mode[2]);
+osFile* set_location(osFile* self,
+                     int start_pos,
+                     int length,
+                     int end_pos);
+void osFile_destroy(osFile* self);
+
