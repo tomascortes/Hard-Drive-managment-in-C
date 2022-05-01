@@ -16,7 +16,7 @@
 
 #pragma once
 
-#include "./os_file/os_file.h"  // NOTE: Trabajando en esto - Luis
+#include "./os_file/os_file.h"  // NOTE: Trabajando en esto
 
 char global_diskname[1023];
 int global_P_E;
@@ -31,7 +31,7 @@ void os_tree();
 // Funciones de manejo de archivos
 int os_exists(char* filename);  // TODO: Pendiente
 osFile* os_open(char* filename, char mode);  // TODO: Pendiente
-int os_read(osFile* file_desc, void* buffer, int nbytes);  // NOTE: Trabajando en esto - Luis
+int os_read(osFile* file_desc, void* buffer, int nbytes);  // NOTE: Trabajando en esto
 int os_write(osFile* file_desc, void* buffer, int nbytes);  // TODO: Pendiente
 int os_close(osFile* file_desc);  // TODO: Pendiente
 int os_rm(char* filename);  // TODO: Pendiente
