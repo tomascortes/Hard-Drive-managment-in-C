@@ -1,3 +1,5 @@
 simdiskfilled.bin
 simdiskempty.bin
 obj/
+ssdfs
+!ssdfs/

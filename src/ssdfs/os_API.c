@@ -1,8 +1,9 @@
 #include <stdio.h>
 #include "./os_API.h"
 
-void os_bitmap(unsigned num, FILE* f){
+void os_bitmap(unsigned num){
   unsigned char buffer[256];
+  FILE *f = fopen(global_diskname, "rb");
 
   fread(buffer, sizeof(buffer),1,f);
   if(num == 0){
@@ -28,4 +29,12 @@ void os_bitmap(unsigned num, FILE* f){
   } else{
     printf("%s\n", "SEGFAULT");
   }
+  fclose(f);
+
+}
+
+
+void os_mount(char* diskname, unsigned life){
+    strcpy(global_diskname, diskname);
+    global_P_E = life;
 }
