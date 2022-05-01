@@ -78,6 +78,7 @@ int os_trim(unsigned limit) {  // TODO: Pendiente
     return 0;
 }
 
+/* Función para imprimir el árbol de directorios y archivos del sistema, a partir del directorio base. */
 void os_tree() {  // TODO: Pendiente
     return;
 }
