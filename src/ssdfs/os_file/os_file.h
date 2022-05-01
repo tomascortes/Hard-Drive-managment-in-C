@@ -20,13 +20,7 @@
 //  Puse estas para manejar el struct
 
 // Representación de archivos abiertos mediate struct
-// REVIEW: Alguien por favor revise si esto se puede combinar dentro de os_file
-//  con 'typedef struct osFile {...} osFile;' a pesar de referenciarlo dentro
-//  de sí mismo para reservar memoria en una función
-struct os_file;
-typedef struct os_file osFile;
-
-struct os_file {
+typedef struct osFile {
     // REVIEW: Revisar que el nombre de tamaño indefinido no interfiera con
     //  malloc(sizeof(osFile))
     char* name;  // Nombre del archivo
@@ -34,7 +28,7 @@ struct os_file {
     int start_pos;  // Donde comienza el archivo
     int length;  // Largo del archivo
     int end_pos; // Donde termina
-};
+} osFile;
 
 osFile* osFile_new(char* name);
 osFile* set_mode(osFile* self, char mode[2]);
