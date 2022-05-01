@@ -32,7 +32,7 @@ void os_bitmap(unsigned num){
     }
     printf("\n");
     printf("Bloques Ocupados: %d\nBloques Libres: %d\n\n", fill, free);
-  } else if(num > 0 && num <= 2048){
+  } else if(num > 0 && num < 2048){
     printf("Bitmap Bloque N°%d\n", num);
     // num/8 es el byte donde se encuentra el bit deseado
     // num%8 es el offset del bit dentro de ese byte
