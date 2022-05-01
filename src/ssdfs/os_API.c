@@ -121,6 +121,10 @@ int os_close(osFile* file_desc) {  // TODO: Pendiente
     return 0;
 }
 
+/* Esta función elimina el archivo indicado por filename. El bloque de ı́ndice del archivo debe ser
+ * borrado (todos sus bits puestos en 0), lo que aumenta en 1 el contador P/E asociado a dichas páginas.
+ * También se deber actualizar la página del bloque de directorio que contenı́a el puntero a dicho
+ * ı́ndice, lo que también incrementa su contador P/E en 1. */
 int os_rm(char* filename) {  // TODO: Pendiente
     return 0;
 }
