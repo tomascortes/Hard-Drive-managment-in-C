@@ -32,3 +32,5 @@ int os_rmdir(char* path);  // TODO: Pendiente
 int os_rmrfdir(char* path);  // TODO: Pendiente
 int os_unload(char* orig, char* dest);  // TODO: Pendiente
 int os_load(char* orig);  // TODO: Pendiente
+
+void print_names();
