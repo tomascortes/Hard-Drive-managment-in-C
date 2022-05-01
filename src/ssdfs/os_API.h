@@ -4,14 +4,19 @@ char global_diskname[1023];
 int global_P_E;
 
 // Representación de archivos abiertos mediate struct
-typedef struct osFile {  // NOTE: Trabajando en esto - Luis
+struct os_file {  // NOTE: Trabajando en esto - Luis
     int pid;  // NOTE: No sé si se va a usar. Lo puse por si a caso.
     char* name;  // Nombre del archivo
     char mode[2]; // r -> ReadOnly || {w,rw,wr,r+} -> ReadWrite
     unsigned int start_pos;  // Donde comienza el archivo
     unsigned int length;  // Largo del archivo
     unsigned int end_pos; // Donde termina
-} osFile;
+};
+
+// REVIEW: Alguien por favor revise si esto se puede combinar dentro de os_file
+//  con 'typedef struct osFile {...} osFile;' a pesar de referenciarlo dentro
+//  de sí mismo para reservar memoria
+typedef struct os_file osFile;
 
 // Funciones generales
 void os_mount(char* diskname, unsigned life);
