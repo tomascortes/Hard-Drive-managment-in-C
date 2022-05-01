@@ -2,6 +2,8 @@
 #include <string.h>
 #include "./os_API.h"
 
+// ===== Funciones generales =====
+
 /* - Monta el disco virtual
  * - Establece como variable global el archivo .bin correspondiente al disco
  * - Define como lı́mite de ciclos P/E al valor de life.
