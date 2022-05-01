@@ -154,6 +154,11 @@ int os_unload(char* orig, char* dest) {  // TODO: Pendiente
     return 0;
 }
 
+/* Esta función que se encarga de copiar un archivo o los contenidos de una carpeta, referenciado
+ * por orig al disco. En caso de que un archivo sea demasiado pesado para el disco, se debe escribir
+ * tanto como sea posible hasta acabar el espacio disponible. En caso de que el sea una carpeta,
+ * se deben copiar los archivos que estén dentro de esta carpeta, ignorando cualquier carpeta
+ * adicional que tenga. Esta función debe actualizar el lifemap según corresponda. */
 int os_load(char* orig) {  // TODO: Pendiente
     return 0;
 }
