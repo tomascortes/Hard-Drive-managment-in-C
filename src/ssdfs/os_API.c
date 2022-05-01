@@ -97,6 +97,10 @@ osFile* os_open(char* filename, char mode) {  // TODO: Pendiente
     return 0;
 }
 
+/* Imprime el estado P/E de las páginas desde lower y upper-1.
+ * Si ambos valores son -1, se debe imprimir el lifemap completo.
+ * Además se debe imprimir en una segunda lı́nea la cantidad de bloques rotten y la
+ * cantidad de bloques saludables. */
 int os_read(osFile* file_desc, void* buffer, int nbytes) {  // TODO: Pendiente
     return 0;
 }
