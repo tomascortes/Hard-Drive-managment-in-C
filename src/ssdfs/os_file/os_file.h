@@ -29,9 +29,9 @@ typedef struct os_file osFile;
 struct os_file {
     char* name;  // Nombre del archivo
     char mode[2]; // r -> ReadOnly || {w,rw,wr,r+} -> ReadWrite
-    unsigned int start_pos;  // Donde comienza el archivo
-    unsigned int length;  // Largo del archivo
-    unsigned int end_pos; // Donde termina
+    int start_pos;  // Donde comienza el archivo
+    int length;  // Largo del archivo
+    int end_pos; // Donde termina
 };
 
 // REVIEW: Alguien por favor revise si esto se puede combinar dentro de os_file
