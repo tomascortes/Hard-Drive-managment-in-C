@@ -14,6 +14,10 @@
  * | Luis González    | ljgonzalez1    | ljgonzalez@uc.cl  | 16625439    |
  * +------------------+----------------+-------------------+-------------+ */
 
+#include <stdlib.h>
+#include <string.h>
+#include "os_file.h"
+
 // ----- Structs -----
 // XXX: Lo siento, no pude restringirme a las funciones que nos dijeron sin hacer un desastre.
 //  Puse estas para manejar el struct
