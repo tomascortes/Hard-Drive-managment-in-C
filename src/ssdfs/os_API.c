@@ -90,6 +90,9 @@ int os_exists(char* filename) {  // TODO: Pendiente
     return 0;
 }
 
+/* Esta función abre un archivo. Si mode='r', se busca el archivo filename
+ * y se retorna el osFile* que lo representa. Si mode='w', se verifica que el
+ * archivo no exista, y se retirna un nuevo osFile* que lo representa. */
 osFile* os_open(char* filename, char mode) {  // TODO: Pendiente
     return 0;
 }
