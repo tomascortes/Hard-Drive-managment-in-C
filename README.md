@@ -10,7 +10,7 @@
 |      Nombre      |  Usr. GitHub   |      Correo       | Nro. Alumno |
 |------------------|----------------|-------------------|-------------|
 | Matías López     | MatLop1        | milopez8@uc.cl    | 17210674    |
-| Tomás Cortés     | ticortes       | ticortez@uc.cl    | ########    |
+| Tomás Cortés     | ticortes       | ticortez@uc.cl    | 17640849    |
 | Felipe Villagrán | BibarelUsedFly | fivillagran@uc.cl | 16638689    |
 | Marcelo Bernal   | msbernal       | msbernal@uc.cl    | 1763671J    |
 | Luis González    | ljgonzalez1    | ljgonzalez@uc.cl  | 16625439    |
