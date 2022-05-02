@@ -71,7 +71,9 @@ int main (int argc, char* const argv[]) {
 
     printf("\n");
 
-    os_lifemap(-1, -1);
+    dprint_txt_char_x("Printea el lifemap de páginas 1270 a la 1300");
+    os_lifemap(1270, 1300);
+    dprint_txt_char_x("Fin de la función de lifemap");
 
     dprint_txt_char_x("\nCosas comentadas...");
     // os_lifemap(524288/4 - 5000, 524288/4-2000);
