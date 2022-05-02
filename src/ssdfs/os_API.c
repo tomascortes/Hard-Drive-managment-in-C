@@ -36,6 +36,7 @@ void os_mount(char* diskname, unsigned life) {
     // FIXME: "Narrowing conversion from 'unsigned int' to signed type 'int' is implementation-defined"
     //  Tal vez algún check o casteo lo arregla?
     global_P_E = life;
+    unactualized_change = 0;
 }
 
 /* - imprime el valor del bitmap para el bloque num.
@@ -264,13 +265,28 @@ int os_read(osFile* file_desc, void* buffer, int nbytes) {  // NOTE: Trabajando 
  * Esto es importante si nbytes es mayor a la cantidad de Bytes restantes en el archivo o en el
  * caso que el archivo contenga páginas rotten. La lectura de read se efectúa desde la posición
  * del archivo inmediatamente posterior a la última posición leı́da por un llamado a read */
-int os_write(osFile* file_desc, void* buffer, int nbytes) {  // TODO: Pendiente
+int os_write(osFile* file_desc, void* buffer, int nbytes) {  // TODO: WIP
+    if (strcmp(file_desc->mode, "w") != 0) {
+        printf("Error: El archivo debe estar en modo write.\n");
+        exit(-1);
+    }
+    long int max_size = 2*2048*256; // Numero de bytes en un bloque, no se puede escribir entre bloques
+    if (nbytes > max_size) {
+        printf("Error: no se puede escribir un archivo tan grande.\n");
+        exit(-1);
+    }
     return 0;
 }
 
 /* Esta función permite cerrar un archivo. Cierra el archivo indicado por file desc. Debe garantizar
  * que cuando esta función retorna, el archivo se encuentra actualizado en disco. */
 int os_close(osFile* file_desc) {  // TODO: Pendiente
+    if (unactualized_change == 1){
+        printf("El disco no está actualizado con los respectivos cambios");
+    }
+    else{
+        free(file_desc);
+    }
     return 0;
 }
 
