@@ -65,13 +65,7 @@ osFile* osFile_set_location(osFile* self,
 }
 
 osFile* osFile_offset_pointer(osFile* self, int offset) {
-    // Si el largo de archivo supera al máximo, entoces se terminó el archivo
-    // y no se puede seguir leyendo
-    if (self->current_pos == self->length) {
-        // TODO: revisar límites
-
-    }
-
+    // TODO: revisar límites
     self->current_pos = self->current_pos + offset;
 }
 
@@ -94,7 +88,6 @@ void osFile_release_page(osFile* self, char* block, int page) {
     return;
 }
 
-// Retorna la posición de inicio del bloque del archivo
 int osFile_get_blk_start_pos(osFile* self) {
     // Defino variables
     int current_offset = 0;
