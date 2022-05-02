@@ -233,6 +233,8 @@ osFile* os_open(char* filename, char mode) {  // TODO: Pendiente
 // NOTE: Asumo que los inputs cumplen las siguientes características
 //  - file_desc: Tiene un archivo existente asociado en modo lectura que no ha sido leído por completo aún
 //  - nbytes: entero positivo que no hace overflow del archivo
+// TODO: Hacer que acepte números mayores a el espacio restante.
+// TODO: Procesar págs. rotten.
 int os_read(osFile* file_desc, void* buffer, int nbytes) {  // NOTE: Trabajando en esto
     // file_desc -->  Archivo
     // nbytes    -->  Cantidad de bytes que voy a leer
@@ -241,8 +243,12 @@ int os_read(osFile* file_desc, void* buffer, int nbytes) {  // NOTE: Trabajando 
 
     for (int iter = 0; iter <= nbytes; iter++) {
         file_desc = osFile_offset_pointer(file_desc, 1);
-
     }
+
+    // Retorna la cantidad de bytes efectivamente leída del disco
+    int end_pos = file_desc->current_pos;
+
+
 
     return 0;
 }
