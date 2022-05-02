@@ -119,7 +119,8 @@ void os_tree(){
 
     // Defino la verión recursiva de la función acá adentro
     // para cumplir con las reglas de no ofrecer más funciones en la API
-    void directree(int directory_block, int depth){
+    // FIXME: Function definition is not allowed here
+    void directree(int directory_block, int depth) {
         FILE* f2 = fopen(global_diskname, "rb");
         fseek(f2, directory_block*1048576, SEEK_SET); 
         // Cada bloque tiene 1048576 bytes
