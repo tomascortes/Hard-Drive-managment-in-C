@@ -233,18 +233,40 @@ osFile* os_open(char* filename, char mode) {  // TODO: Pendiente
 // NOTE: Asumo que los inputs cumplen las siguientes características
 //  - file_desc: Tiene un archivo existente asociado en modo lectura que no ha sido leído por completo aún
 //  - nbytes: entero positivo que no hace overflow del archivo
+// TODO: Hacer que acepte números mayores a el espacio restante.
+// TODO: Procesar págs. rotten.
 int os_read(osFile* file_desc, void* buffer, int nbytes) {  // NOTE: Trabajando en esto
+    int iter;
+    int starting_pos;
+    int end_pos;
+    int bytes_read;
+
     // file_desc -->  Archivo
     // nbytes    -->  Cantidad de bytes que voy a leer
     // buffer    -->  Lugar donde guardo la info
-    int starting_pos = file_desc->current_pos;
+    starting_pos = file_desc->current_pos;
 
-    for (int iter = 0; iter <= nbytes; iter++) {
+
+
+    for (iter = 0; iter <= nbytes; iter++) {
         file_desc = osFile_offset_pointer(file_desc, 1);
+
+        // --> Celda: 2B
+        // --> Página: 2048 celdas --> 4KiB
+        // --> Bloque[*long int]: 256 páginas --> 524288 celdas --> 1MiB
+        // Lectura y escritura usando little endian
+        // Lectura de páginas completas
+
+
 
     }
 
-    return 0;
+    end_pos = file_desc->current_pos;
+
+    // Retorna la cantidad de bytes efectivamente leída del disco
+    bytes_read = end_pos - starting_pos;
+
+    return bytes_read;
 }
 
 /* Esta función permite escribir un archivo. Escribe en el archivo descrito por file desc

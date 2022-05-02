@@ -31,7 +31,9 @@ typedef struct osFile {
     int length_blocks;  // Largo del archivo
     int end_block; // Donde termina
 
-    int current_pos; // Posición actual
+    int current_block; // Bloque actual
+    int current_page; // Página actual del bloque actual
+    int current_pos; // Posición actual de la página actual
 
     void* file;  // Apunta al archivo. TODO
     unsigned int block;
