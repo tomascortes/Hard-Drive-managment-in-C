@@ -217,19 +217,25 @@ osFile* os_open(char* filename, char mode) {  // TODO: Pendiente
     return file;
 }
 
-/* Imprime el estado P/E de las páginas desde lower y upper-1. Si ambos valores son -1, se
- * debe imprimir el lifemap completo. Además se debe imprimir en una segunda lı́nea la
- * cantidad de bloques rotten y la cantidad de bloques saludables. */
-int os_read(osFile* file_desc, void* buffer, int nbytes) {  // NOTE: Trabajando en esto
-    return 0;
-}
-
 /* Esta función sirve para leer archivos. Lee los siguientes nbytes desde el archivo
- * descrito por file_desc y los guarda en la dirección apuntada por buffer. Debe retornar
+ * descrito por file desc y los guarda en la dirección apuntada por buffer. Debe retornar
  * la cantidad de Bytes efectivamente leı́dos desde el archivo. Esto es importante si
  * nbytes es mayor a la cantidad de Bytes restantes en el archivo o en el caso que el
  * archivo contenga páginas rotten. La lectura de read se efectúa desde la posición del
- * archivo inmediatamente posterior a la última posición leı́da por un llamado a read */
+ * archivo inmediatamente posterior a la última posición leı́da por un llamado a read. */
+int os_read(osFile* file_desc, void* buffer, int nbytes) {  // NOTE: Trabajando en esto
+
+
+    return 0
+}
+
+/* Esta función permite escribir un archivo. Escribe en el archivo descrito por file desc
+ * los nbytes que se encuentren en la dirección indicada por buffer. Retorna la cantidad
+ * de Bytes escritos en el archivo. Si se produjo un error porque no pudo seguir
+ * escribiendo, ya sea porque el disco se llenó, ya sea porque existen demasiadas páginas
+ * rotten o porque el archivo no puede crecer más, este número puede ser menor a nbytes
+ * (incluso 0). Esta función aumenta en 1 el contador P/E en el lifemap asociado a cada
+ * página que se escriba. */
 int os_write(osFile* file_desc, void* buffer, int nbytes) {  // TODO: Pendiente
     return 0;
 }
