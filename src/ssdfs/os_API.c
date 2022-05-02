@@ -246,8 +246,19 @@ int os_read(osFile* file_desc, void* buffer, int nbytes) {  // NOTE: Trabajando 
     // buffer    -->  Lugar donde guardo la info
     starting_pos = file_desc->current_pos;
 
+
+
     for (iter = 0; iter <= nbytes; iter++) {
         file_desc = osFile_offset_pointer(file_desc, 1);
+
+        // --> Celda: 2B
+        // --> Página: 2048 celdas --> 4KiB
+        // --> Bloque[*long int]: 256 páginas --> 524288 celdas --> 1MiB
+        // Lectura y escritura usando little endian
+        // Lectura de páginas completaas
+
+
+
     }
 
     end_pos = file_desc->current_pos;

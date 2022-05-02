@@ -30,7 +30,6 @@ osFile* osFile_new(char* name) {
 
     // Inicializo con valores por defecto. Inválidos para propósitos del FS
     instance_pointer = osFile_set_mode(instance_pointer, "N");
-    instance_pointer->current_pos = 0;
 
     // Retorno el puntero a la representación del archivo
     return instance_pointer;
@@ -51,6 +50,10 @@ osFile* osFile_set_location(osFile* self, int start_pos, int length, int end_pos
     self->start_block = start_pos;
     self->length_blocks = length;
     self->end_block = end_pos;
+
+    self->current_block = start_pos;
+    self->current_page = 0;
+    self->current_pos = 0;
 
     return self;
 }
