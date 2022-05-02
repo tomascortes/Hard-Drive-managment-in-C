@@ -255,11 +255,13 @@ int os_exists(char* filename) {  // TODO: Pendiente
  * osFile* que lo representa. Si mode='w', se verifica que el archivo no exista, y se
  * retorna un nuevo osFile* que lo representa. */
 osFile* os_open(char* filename, char mode) {  // TODO: Pendiente
+    // if (os_exist(...) || ! mode == "w") { ...
     osFile* file_desc = osFile_new(filename);
     // TODO: ...
     //file_desc = osFile_set_mode(file_desc, &mode);
     //file_desc = osFile_set_location(...);
     // TODO: ...
+    // }
     return file_desc;
 }
 
