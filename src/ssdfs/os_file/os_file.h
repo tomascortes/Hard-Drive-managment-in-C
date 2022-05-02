@@ -16,7 +16,11 @@
 
 #pragma once
 
-#define BUFFER_SIZE 4096
+#define PLANES_PER_DISK 2
+#define BLOCKS_PER_PLANE 1024
+#define PAGES_PER_BLOCK 256
+#define CELLS_PER_PAGE 2048
+#define BYTES_PER_CELL 2
 
 // Representación de archivos abiertos mediate struct
 typedef struct osFile {
