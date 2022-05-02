@@ -218,7 +218,6 @@ osFile* os_open(char* filename, char mode) {  // TODO: Pendiente
     osFile* file_desc = osFile_new(filename);
     // TODO: ...
     //osFile_set_mode(file_desc, &mode);
-    //osFile_assign_file(...);
     //osFile_set_location(...);
     // TODO: ...
     return file_desc;
@@ -256,6 +255,8 @@ int os_read(osFile* file_desc, void* buffer, int nbytes) {  // NOTE: Trabajando 
         // --> Bloque[*long int]: 256 páginas --> 524288 celdas --> 1MiB
         // Lectura y escritura usando little endian
         // Lectura de páginas completas
+
+
 
 
 
