@@ -16,6 +16,7 @@
 
 #include <stdio.h>
 #include "os_API.h"
+#include "./debug/debug.h"
 
 // Busca en el bitmap el bit correspondiente al bloque
 // hy lo marca como usado (lo pone en 1)

@@ -18,6 +18,7 @@
 #include <string.h>
 #include <stdbool.h>
 #include "./os_API.h"
+#include "./debug/debug.h"
 
 // ===== API de ssdfs =====
 
