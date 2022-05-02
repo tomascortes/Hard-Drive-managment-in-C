@@ -240,9 +240,15 @@ int os_rm(char* filename) {  // TODO: Pendiente
     return 0;
 }
 
-/* Esta función crea un directorio con el nombre indicado. Esto incrementa en 1 el contador P/E de
- * las páginas que sea necesario actualizar para crear las referencias a este directorio. */
+/* Esta función crea un directorio con el nombre indicado. Esto incrementa en 1
+   el contador P/E de las páginas que sea necesario actualizar 
+   para crear las referencias a este directorio. */
 int os_mkdir(char* path) {  // TODO: Pendiente
+    // Función auxiliar que busca el primer bloque vacío
+    int blocksearch(){
+        // Pending
+        return 0;
+    }
     return 0;
 }
 
