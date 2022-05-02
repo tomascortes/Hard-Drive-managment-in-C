@@ -255,7 +255,7 @@ int os_read(osFile* file_desc, void* buffer, int nbytes) {  // NOTE: Trabajando 
         // --> Página: 2048 celdas --> 4KiB
         // --> Bloque[*long int]: 256 páginas --> 524288 celdas --> 1MiB
         // Lectura y escritura usando little endian
-        // Lectura de páginas completaas
+        // Lectura de páginas completas
 
 
 
