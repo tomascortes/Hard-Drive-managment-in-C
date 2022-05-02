@@ -56,37 +56,37 @@ void mark_as_used(int bloque) {
 }
 
 int main (int argc, char* const argv[]) {
-    dprint_txt_char_x("Iniciando el programa...");
+    print_debug("Iniciando el programa...");
 
-    dprint_txt_char_x("Montando el disco con life = 5000");
+    print_debug("Montando el disco con life = 5000");
     // Montar el disco pasado por consola con life = 5000
     os_mount(argv[1], 5000);
 
-    dprint_txt_char_x("\nCosas comentadas...");
+    print_debug("\nCosas comentadas...");
     // os_bitmap(0); // Bitmap completo
     // os_bitmap(8); // Bitmap bloque N°8 (Se espera 1)
     // os_bitmap(2047); // Bitmap bloque N°395 (Se espera 0)
     // os_bitmap(2048); // Bitmap bloque inexistente (Se espera SEGFAULT)
-    dprint_txt_char_x("...Fin cosas comentadas\n");
+    print_debug("...Fin cosas comentadas\n");
 
     printf("\n");
 
-    dprint_txt_char_x("Printea el lifemap de páginas 1270 a la 1300");
+    print_debug("Printea el lifemap de páginas 1270 a la 1300");
     os_lifemap(1270, 1300);
-    dprint_txt_char_x("Fin de la función de lifemap");
+    print_debug("Fin de la función de lifemap");
 
-    dprint_txt_char_x("\nCosas comentadas...");
+    print_debug("\nCosas comentadas...");
     // os_lifemap(524288/4 - 5000, 524288/4-2000);
-    dprint_txt_char_x("...Fin cosas comentadas\n");
+    print_debug("...Fin cosas comentadas\n");
 
-    dprint_txt_char_x("Corre os_tree");
+    print_debug("Corre os_tree");
     os_tree();
-    dprint_txt_char_x("Termina de correr os_tree");
+    print_debug("Termina de correr os_tree");
 
-    dprint_txt_char_x("\nCosas comentadas...");
+    print_debug("\nCosas comentadas...");
     //mark_as_used(3);
     //os_bitmap(0);
-    dprint_txt_char_x("...Fin cosas comentadas\n");
+    print_debug("...Fin cosas comentadas\n");
 
-  return 0;
+    return 0;
 }

@@ -157,3 +157,8 @@ void dprint_txt_float(float input) {
     dprint_float(input);
     dprint_line();
 }
+
+
+void print_debug(char *input) {
+    dprint_txt_char_x(input);
+}
