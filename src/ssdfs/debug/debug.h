@@ -6,7 +6,7 @@
 #include <stdbool.h>
 
 // Constante
-#define DEBUG_MODE 1
+#define DEBUG_MODE 0
 #define SIMULATE_WAIT 1
 #define WAITING_TIME3 10  // ms
 #define WAITING_TIME 50  // ms
