@@ -77,10 +77,13 @@ char* osFile_get_page(osFile* self, char* block, int page) {
     return;
 }
 
+// Reserva espacio para un array de bytes
 void osFile_load_page(osFile* self, char* block, int page) {
+    // Una p
     return;
 }
 
+// Libero la memoria de la página
 void osFile_release_page(osFile* self, char* block, int page) {
     return;
 }

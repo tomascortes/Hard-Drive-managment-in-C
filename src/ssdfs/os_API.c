@@ -36,6 +36,7 @@ void os_mount(char* diskname, unsigned life) {
     //  is implementation-defined"
     //  Tal vez algún check o casteo lo arregla?
     global_P_E = life;
+    unactualized_change = 0;
 }
 
 /* Imprime el valor del bitmap para el bloque num.
@@ -67,14 +68,14 @@ void os_bitmap(unsigned num) {
 
     } else if (num > 0 && num < 2048) {
         printf("\nBitmap Bloque N°%d\n", num);
-        // num/8 es el byte donde se encuentra el bit deseado
-        // num%8 es el offset del bit dentro de ese byte
+        // num / 8 es el byte donde se encuentra el bit deseado
+        // num % 8 es el offset del bit dentro de ese byte
         printf("%d\n", (buffer[num/8] & 1 << (7-num%8)) >> (7-num%8));
 
         // En el momento 15:35 de la cápsula P1 dice que esto hay que entregarlo
         // aunque el argumento no sea 0
-        int fill=0;
-        int free=0;
+        int fill = 0;
+        int free = 0;
 
         for (int i = 0; i < 256; i++) {
             for (int j = 7; j >= 0; j--) {
@@ -102,38 +103,38 @@ void os_lifemap(int lower, int upper) {
     // Me muevo 1 MiB, para llegar al bloque N°1, de directorio.
     fseek(f, 1048576, SEEK_SET);
 
-    if (upper > 524288 || lower < -1 || lower > 524288 || upper < -2 ){
-      printf("Error de input para os_lifemap\n");
-      return;
+    if (upper > 524288 || lower < -1 || lower > 524288 || upper < -2 ) {
+        printf("Error de input para os_lifemap\n");
+        return;
     }
-    if (lower  == -1 && upper == -1){
-      upper = 524288;
-      lower = 0;
+    if (lower  == -1 && upper == -1) {
+        upper = 524288;
+        lower = 0;
     }
 
     int rotten_blocks = 0;
     int total_blocks = 0;
     int rotten_found = 0;
     int block_visited = 0;
-    // Son 524288  paginas entre los 2 planos, por lo que recorremos 524288 numeros
+    // Son 524288 paginas entre los 2 planos, por lo que recorremos 524288 numeros
     // Son 4096 bloques en el disco
     for (int i = 0; i < 524288; i++) {
         int buffer; // see leen ints de 4 bytes
         fread(&buffer, sizeof(int), 1, f); // Leo una entrada de un int
 
         if ( lower < i && i < upper){
-          printf(" %d",buffer);
-          block_visited = 1;
+            printf(" %d",buffer);
+            block_visited = 1;
         }
         if (i%256 == 0 && block_visited == 1){
-          // Se suman las condiciones de bloque visitado
-          rotten_blocks += rotten_found;
-          total_blocks ++;
-          rotten_found = 0;
-          block_visited = 0;
+            // Se suman las condiciones de bloque visitado
+            rotten_blocks += rotten_found;
+            total_blocks ++;
+            rotten_found = 0;
+            block_visited = 0;
         }
         if (buffer == -1){
-          rotten_found = 1;
+            rotten_found = 1;
         }
     }
     printf("\nCantidad de bloques rotten: %d", rotten_blocks);
@@ -158,23 +159,67 @@ int os_trim(unsigned limit) {  // TODO: Pendiente
 /* Función para imprimir el árbol de directorios y archivos del sistema, a partir del
  * directorio base. */
 void os_tree(){
+    // Defino la verión recursiva de la función acá adentro
+    // para cumplir con las reglas de no ofrecer más funciones en la API
+    // FIXME: "Function definition is not allowed here"
+    //  No se puede definir una función dentro de otra
+    void directree(int directory_block, int depth) {
+        FILE* f2 = fopen(global_diskname, "rb");
+        fseek(f2, directory_block * 1048576, SEEK_SET);
+        // Cada bloque tiene 1048576 bytes
+
+        // Son 32768 entradas en un bloque de directorio
+        for (int i = 0; i < 32768; i++) {
+            unsigned char buffer[32]; // Buffer para guardar los bytes de una entrada
+            fread(buffer, sizeof(buffer), 1, f2); // Leo una entrada
+            if(buffer[0] == 3){ // archivo:
+                for (int k = 0; k < depth; k++){
+                    printf("| ");
+                }
+                for (int j = 5; j < 32; j++) {
+                    printf("%c", buffer[j]);
+                }
+                printf("\n");
+            }
+
+            else if(buffer[0] == 1){ // Directorio
+                for (int k = 0; k < depth; k++){
+                    printf("| ");
+                }
+                for (int j = 5; j < 32; j++) {
+                    printf("%c", buffer[j]);
+                }
+                printf("\n");
+                depth++; // Subo la profundidad en 1
+                int puntero = buffer[1];
+                directree(puntero, depth); // Llamada recursiva
+                depth--; // Vuelvo a la profundidad anterior
+            }
+        }
+        fclose(f2); // Evitamos leaks
+    }
+
+
     // Abro el archivo
     FILE *f = fopen(global_diskname, "rb");
 
     // Me muevo 3 MiB, para llegar al bloque N°3, de directorio.
     fseek(f, 3145728, SEEK_SET);
 
-    // La entrada 1672 tiene un archivo
-    // Son 32768 entradas en el bloque de directorio
+    printf("~\n"); // root
+    int depth = 1; // Para cachar que tan profundo estoy
+
+    // Son 32768 entradas en un bloque de directorio
     for (int i = 0; i < 32768; i++) {
-        unsigned char buffer[32]; // Buffer para guardar los bytes de una entrada
+        unsigned char buffer[32];
+        // Buffer para guardar los bytes de una entrada
         fread(buffer, sizeof(buffer), 1, f); // Leo una entrada
 
         if(buffer[0] == 1){ // directorio:
-            printf("Primer byte entrada %i: %i\n", i, buffer[0]);
-            // Printear nombre del archivo
-
-            for (int j = 5; j < 32; j++) {
+            for (int k = 0; k < depth; k++) { // Desplazar depth a la derecha
+                printf("| ");
+            }
+            for (int j = 5; j < 32; j++) { // Printear nombre del directorio
                 printf("%c", buffer[j]);
             }
 
@@ -186,10 +231,12 @@ void os_tree(){
 
         } else if(buffer[0] == 3){ // archivo:
             printf("Primer byte entrada %i: %i\n", i, buffer[0]);
+
             // Printear nombre del archivo
             for (int j = 5; j < 32; j++) {
                 printf("%c", buffer[j]);
             }
+
             printf("\n");
         }
     }
@@ -270,14 +317,29 @@ int os_read(osFile* file_desc, void* buffer, int nbytes) {  // NOTE: Trabajando 
  * rotten o porque el archivo no puede crecer más, este número puede ser menor a nbytes
  * (incluso 0). Esta función aumenta en 1 el contador P/E en el lifemap asociado a cada
  * página que se escriba. */
-int os_write(osFile* file_desc, void* buffer, int nbytes) {  // TODO: Pendiente
+int os_write(osFile* file_desc, void* buffer, int nbytes) {  // TODO: WIP
+    if (strcmp(file_desc->mode, "w") != 0) {
+        printf("Error: El archivo debe estar en modo write.\n");
+        exit(-1);
+    }
+    long int max_size = 2*2048*256; // Numero de bytes en un bloque, no se puede escribir entre bloques
+    if (nbytes > max_size) {
+        printf("Error: no se puede escribir un archivo tan grande.\n");
+        exit(-1);
+    }
     return 0;
 }
 
 /* Esta función permite cerrar un archivo. Cierra el archivo indicado por file desc. Debe
  * garantizar que cuando esta función retorna, el archivo se encuentra actualizado en
- * disco. */
+ * disco.*/
 int os_close(osFile* file_desc) {  // TODO: Pendiente
+    if (unactualized_change == 1){
+        printf("El disco no está actualizado con los respectivos cambios");
+    }
+    else{
+        free(file_desc);
+    }
     return 0;
 }
 
@@ -294,6 +356,11 @@ int os_rm(char* filename) {  // TODO: Pendiente
  * contador P/E de las páginas que sea necesario actualizar para crear las referencias
  * a este directorio. */
 int os_mkdir(char* path) {  // TODO: Pendiente
+    // Función auxiliar que busca el primer bloque vacío
+    int blocksearch(){
+        // Pending
+        return 0;
+    }
     return 0;
 }
 
@@ -362,3 +429,9 @@ void print_names() {
     }
     fclose(f); // Evitamos leaks
 }
+
+// Prints bits of int
+/*for (int j = 31; j >= 0; j--){
+    int bit = (puntero & (1 << j)) >> j; // Shift left para sacar el bit
+    printf("%d", bit );
+}*/
