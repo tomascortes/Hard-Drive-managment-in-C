@@ -19,24 +19,38 @@
 
 // Busca en el bitmap el bit correspondiente al bloque
 // hy lo marca como usado (lo pone en 1)
-void mark_as_used(int bloque){ // Creo que me falta debuggear esto, no usar por ahora uwu
+// Creo que me falta debuggear esto, no usar por ahora uwu
+void mark_as_used(int bloque) {
     // El bit que corresponda al bloque va a estar en el byte:
-    int byte = bloque/8;
-    int offset = 7 - bloque%8;
+    int byte = bloque / 8;
+    int offset = 7 - bloque % 8;
+
     // Abro el archivo
     FILE* f = fopen(global_diskname, "rb");
+
     unsigned char buffer[256]; // Buffer con los bytes del bitmap
     fread(buffer, sizeof(buffer), 1, f);
+
+    // FIXME: "Narrowing conversion from 'unsigned char' to signed type 'char'
+    //  is implementation-defined"
     char data = buffer[byte]; // Saco el byte que me sirve
+
     fclose(f);
     printf("Data before: %i", data);
+
+    // FIXME: "Narrowing conversion from 'int' to signed type 'char' is
+    //  implementation-defined"
     // Convierto el bit que me interesa en 1
     data = (data | (1 << offset)) >> offset;
     printf("Data after: %i", data);
-    char* point_data = &data; // Puntero al byte de datos a escribir
+
+    // Puntero al byte de datos a escribir
+    char* point_data = &data;
     f = fopen(global_diskname, "wb");
+
     fseek(f, byte, SEEK_SET);
     fwrite(point_data, 1, 1, f);
+
     fclose(f);
 }
 
@@ -50,7 +64,7 @@ int main (int argc, char* const argv[]) {
     os_bitmap(2048); // Bitmap bloque inexistente (Se espera SEGFAULT)
     printf("\n");
 
-os_tr   ee();
+    os_tree();
 
     //mark_as_used(3);
     //os_bitmap(0);
