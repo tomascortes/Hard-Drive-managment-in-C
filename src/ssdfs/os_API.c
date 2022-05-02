@@ -215,9 +215,9 @@ int os_exists(char* filename) {  // TODO: Pendiente
  * osFile* que lo representa. Si mode='w', se verifica que el archivo no exista, y se
  * retorna un nuevo osFile* que lo representa. */
 osFile* os_open(char* filename, char mode) {  // TODO: Pendiente
-    osFile* file = malloc(sizeof(osFile));
+    osFile* file_desc = malloc(sizeof(osFile));
     // TODO: ...
-    return file;
+    return file_desc;
 }
 
 /* Esta función sirve para leer archivos. Lee los siguientes nbytes desde el archivo
@@ -229,13 +229,14 @@ osFile* os_open(char* filename, char mode) {  // TODO: Pendiente
 int os_read(osFile* file_desc, void* buffer, int nbytes) {  // NOTE: Trabajando en esto
     // Donde estoy parado:
 
-
     // file_desc -->  Archivo
     // nbytes    -->  Cantidad de bytes que voy a leer
     // buffer    -->  Lugar donde guardo la info
 
     for (int iteracion = 0; iteracion <= nbytes; iteracion++) {
         leer_byte(file_desc->current_pos);
+
+
         file_desc->current_pos++;
     }
 

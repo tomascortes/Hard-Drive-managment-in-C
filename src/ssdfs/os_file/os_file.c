@@ -21,12 +21,13 @@
 
 // ----- Structs -----
 /* Representa un archivo abierto con todos sus atributos */
-osFile* osFile_new(char* name) {
+osFile* osFile_new(char* name, char* disk_pointer) {
     // Reservo memoria
     osFile* instance_pointer = malloc(sizeof(osFile));
 
     // Pongo nombre
     instance_pointer->name = name;
+    instance_pointer->disk = disk_pointer;
 
     // Inicializo con valores por defecto. Inválidos para propósitos del FS
     // TODO: Sacar línea innecesaria
