@@ -21,9 +21,12 @@
 
 // ----- Structs -----
 /* Representa un archivo abierto con todos sus atributos */
-osFile* osFile_new(char* name) {
+osFile* osFile_new(char* name, char* disk_pointer) {
     // Reservo memoria
     osFile* instance_pointer = malloc(sizeof(osFile));
+
+    // Guardo el "disco" (como puntero)
+    instance_pointer->disk = disk_pointer;
 
     // Pongo nombre
     instance_pointer->name = name;
@@ -46,21 +49,18 @@ osFile* osFile_set_mode(osFile* self, char* mode) {
     return self;
 }
 
-osFile* osFile_set_location(osFile* self, int start_block,
-                            int end_block, int length_bytes) {
-    self->start_block = start_block;
-    self->length_bytes = length_bytes;
-    self->end_block = end_block;
+osFile* osFile_set_location(osFile* self,
+                            unsigned int plane,
+                            unsigned int block,
+                            int length_bytes) {
+    self->current_plane = plane;
+    self->current_block = block;
 
-    self->current_block = start_block;
+    self->length = length_bytes;
+
     self->current_page = 0;
     self->current_pos = 0;
 
-    return self;
-}
-
-osFile* osFile_assign_file(osFile* self, void* file) {
-    // TODO
     return self;
 }
 
@@ -79,7 +79,7 @@ char* osFile_get_page(osFile* self, char* block, int page) {
 
 // Reserva espacio para un array de bytes
 void osFile_load_page(osFile* self, char* block, int page) {
-    // Una p
+
     return;
 }
 
@@ -91,7 +91,7 @@ void osFile_release_page(osFile* self, char* block, int page) {
 void osFile_destroy(osFile* self) {
     // Libero memoria puntero nombre
     free(self->name);
-
+    free(self->disk); // REVIEW: Hay que dejarlo???
     free(self);
 }
 

@@ -255,11 +255,13 @@ int os_exists(char* filename) {  // TODO: Pendiente
  * osFile* que lo representa. Si mode='w', se verifica que el archivo no exista, y se
  * retorna un nuevo osFile* que lo representa. */
 osFile* os_open(char* filename, char mode) {  // TODO: Pendiente
-    osFile* file_desc = osFile_new(filename);
+    // if (os_exist(...) || ! mode == "w") { ...
+    osFile* file_desc = osFile_new(filename, global_diskname);
     // TODO: ...
-    //osFile_set_mode(file_desc, &mode);
-    //osFile_set_location(...);
+    //file_desc = osFile_set_mode(file_desc, &mode);
+    //file_desc = osFile_set_location(...);
     // TODO: ...
+    // }
     return file_desc;
 }
 
@@ -338,7 +340,8 @@ int os_close(osFile* file_desc) {  // TODO: Pendiente
         printf("El disco no está actualizado con los respectivos cambios");
     }
     else{
-        free(file_desc);
+        free(file_desc);  // XXX: Por qué se libera memoria aquí??
+        osFile_destroy(file_desc);
     }
     return 0;
 }
