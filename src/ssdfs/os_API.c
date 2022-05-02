@@ -275,16 +275,6 @@ int os_write(osFile* file_desc, void* buffer, int nbytes) {  // TODO: WIP
         printf("Error: no se puede escribir un archivo tan grande.\n");
         exit(-1);
     }
-    // Inicializar arrays de punteros
-    for (int i = 0; i < 2044; i++) {
-        file_desc->ptrs_datos[i] = 0;
-    }
-    for (int i = 0; i < 2048; i++) {
-        file_desc->ptrs_datos_indirect[i] = 0;
-    }
-    unsigned char* aux_array = malloc(nbytes * sizeof(unsigned char));
-    unsigned int indice_array = 0;
-    return 0;
     return 0;
 }
 
