@@ -27,9 +27,11 @@ typedef struct osFile {
     // Puse 2 caracteres para que sea un poco más a prueba de errores
     char mode[2]; // r -> ReadOnly || w-> WriteOnly || {rw,wr,r+} -> ReadWrite || N -> Null
 
-    int start_block;  // Donde comienza el archivo
-    int length_bytes;  // Largo del archivo
-    int end_block; // Donde termina
+    int starting_pos; // Posición donde inicia el bloque en el que parte el archivo.
+
+    int start_block;  // Bloque donde comienza el archivo
+    int length_bytes;  // Largo del archivo en bytes
+    int end_block; // Último bloque que alcanza a ocupar
 
     int current_block; // Bloque actual
     int current_page; // Página actual del bloque actual
