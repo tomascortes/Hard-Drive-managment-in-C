@@ -111,46 +111,93 @@ int os_trim(unsigned limit) {  // TODO: Pendiente
     return 0;
 }
 
-/* Función para imprimir el árbol de directorios y archivos del sistema, a partir del directorio base. */
+/* Función para imprimir el árbol de directorios y archivos del sistema, 
+   a partir del directorio base. */
 void os_tree(){
+
+    // Defino la verión recursiva de la función acá adentro
+    // para cumplir con las reglas de no ofrecer más funciones en la API
+    void directree(int directory_block, int depth){
+        FILE* f2 = fopen(global_diskname, "rb");
+        fseek(f2, directory_block*1048576, SEEK_SET); 
+        // Cada bloque tiene 1048576 bytes
+        
+        // Son 32768 entradas en un bloque de directorio
+        for (int i = 0; i < 32768; i++) {
+            unsigned char buffer[32]; // Buffer para guardar los bytes de una entrada
+            fread(buffer, sizeof(buffer), 1, f2); // Leo una entrada
+            if(buffer[0] == 3){ // archivo:
+                for (int k = 0; k < depth; k++){
+                    printf("| ");
+                }
+                for (int j = 5; j < 32; j++) {
+                    printf("%c", buffer[j]);
+                }
+                printf("\n");
+            } 
+            
+            else if(buffer[0] == 1){ // Directorio
+                for (int k = 0; k < depth; k++){
+                    printf("| ");
+                }
+                for (int j = 5; j < 32; j++) {
+                    printf("%c", buffer[j]);
+                }
+                printf("\n");
+                depth++; // Subo la profundidad en 1
+                int puntero = buffer[1];
+                directree(puntero, depth); // Llamada recursiva
+                depth--; // Vuelvo a la profundidad anterior
+            }
+        }
+        fclose(f2); // Evitamos leaks
+    }
+
+
     // Abro el archivo
     FILE *f = fopen(global_diskname, "rb");
 
     // Me muevo 3 MiB, para llegar al bloque N°3, de directorio.
     fseek(f, 3145728, SEEK_SET);
 
-    // La entrada 1672 tiene un archivo
-    // Son 32768 entradas en el bloque de directorio
+    printf("~\n"); // root
+    int depth = 1; // Para cachar que tan profundo estoy
+
+    // Son 32768 entradas en un bloque de directorio
     for (int i = 0; i < 32768; i++) {
-        unsigned char buffer[32]; // Buffer para guardar los bytes de una entrada
+        unsigned char buffer[32]; 
+        // Buffer para guardar los bytes de una entrada
         fread(buffer, sizeof(buffer), 1, f); // Leo una entrada
 
         if(buffer[0] == 1){ // directorio:
-            printf("Primer byte entrada %i: %i\n", i, buffer[0]);
-            // Printear nombre del archivo
-
-            for (int j = 5; j < 32; j++) {
+            for (int k = 0; k < depth; k++){ // Desplazar depth a la derecha
+                printf("| ");
+            }
+            for (int j = 5; j < 32; j++) { // Printear nombre del directorio
                 printf("%c", buffer[j]);
             }
-
             printf("\n");
             int puntero = buffer[1]; // Pesco los bytes 1-4
-            printf("Puntero: %i\n", puntero);
-            // Pendiente
-            //fseek(f, puntero*4096, SEEK_SET); // Cada pág tiene 4096 bytes
-
-        } else if(buffer[0] == 3){ // archivo:
-            printf("Primer byte entrada %i: %i\n", i, buffer[0]);
-            // Printear nombre del archivo
-            for (int j = 5; j < 32; j++) {
+            depth++; // Subo la profundidad en 1
+            directree(puntero, depth); // Función recursiva para leer
+                                          // dentro del directorio
+            depth--; // Vuelvo a la profundidad anterior
+        } 
+        
+        else if(buffer[0] == 3){ // archivo:
+            for (int k = 0; k < depth; k++){
+                printf("| ");
+            }
+            for (int j = 5; j < 32; j++) { // Printear nombre del archivo
                 printf("%c", buffer[j]);
             }
             printf("\n");
         }
     }
-
     fclose(f); // Evitamos leaks
 }
+
+
 
 
 // ----- Funciones de manejo de archivos -----
@@ -268,3 +315,9 @@ void print_names() {
     }
     fclose(f); // Evitamos leaks
 }
+
+// Prints bits of int
+/*for (int j = 31; j >= 0; j--){
+    int bit = (puntero & (1 << j)) >> j; // Shift left para sacar el bit
+    printf("%d", bit );
+}*/
