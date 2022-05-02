@@ -236,21 +236,26 @@ osFile* os_open(char* filename, char mode) {  // TODO: Pendiente
 // TODO: Hacer que acepte números mayores a el espacio restante.
 // TODO: Procesar págs. rotten.
 int os_read(osFile* file_desc, void* buffer, int nbytes) {  // NOTE: Trabajando en esto
+    int iter;
+    int starting_pos;
+    int end_pos;
+    int bytes_read;
+
     // file_desc -->  Archivo
     // nbytes    -->  Cantidad de bytes que voy a leer
     // buffer    -->  Lugar donde guardo la info
-    int starting_pos = file_desc->current_pos;
+    starting_pos = file_desc->current_pos;
 
-    for (int iter = 0; iter <= nbytes; iter++) {
+    for (iter = 0; iter <= nbytes; iter++) {
         file_desc = osFile_offset_pointer(file_desc, 1);
     }
 
+    end_pos = file_desc->current_pos;
+
     // Retorna la cantidad de bytes efectivamente leída del disco
-    int end_pos = file_desc->current_pos;
+    bytes_read = end_pos - starting_pos;
 
-
-
-    return 0;
+    return bytes_read;
 }
 
 /* Esta función permite escribir un archivo. Escribe en el archivo descrito por file desc
