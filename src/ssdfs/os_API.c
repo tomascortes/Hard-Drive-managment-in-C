@@ -215,8 +215,13 @@ int os_exists(char* filename) {  // TODO: Pendiente
  * osFile* que lo representa. Si mode='w', se verifica que el archivo no exista, y se
  * retorna un nuevo osFile* que lo representa. */
 osFile* os_open(char* filename, char mode) {  // TODO: Pendiente
-    osFile* file = malloc(sizeof(osFile));
-    return file;
+    osFile* file_desc = osFile_new(filename);
+    // TODO: ...
+    //osFile_set_mode(file_desc, &mode);
+    //osFile_assign_file(...);
+    //osFile_set_location(...);
+    // TODO: ...
+    return file_desc;
 }
 
 /* Esta función sirve para leer archivos. Lee los siguientes nbytes desde el archivo
@@ -225,8 +230,19 @@ osFile* os_open(char* filename, char mode) {  // TODO: Pendiente
  * nbytes es mayor a la cantidad de Bytes restantes en el archivo o en el caso que el
  * archivo contenga páginas rotten. La lectura de read se efectúa desde la posición del
  * archivo inmediatamente posterior a la última posición leı́da por un llamado a read. */
+// NOTE: Asumo que los inputs cumplen las siguientes características
+//  - file_desc: Tiene un archivo existente asociado en modo lectura que no ha sido leído por completo aún
+//  - nbytes: entero positivo que no hace overflow del archivo
 int os_read(osFile* file_desc, void* buffer, int nbytes) {  // NOTE: Trabajando en esto
+    // file_desc -->  Archivo
+    // nbytes    -->  Cantidad de bytes que voy a leer
+    // buffer    -->  Lugar donde guardo la info
+    int starting_pos = file_desc->current_pos;
 
+    for (int iter = 0; iter <= nbytes; iter++) {
+        file_desc = osFile_offset_pointer(file_desc, 1);
+
+    }
 
     return 0;
 }
