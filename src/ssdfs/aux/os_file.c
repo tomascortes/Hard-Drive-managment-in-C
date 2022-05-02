@@ -104,7 +104,7 @@ int osFile_get_blk_start_pos(osFile* self) {
     current_offset += self->current_plane * plane_offset;
     current_offset += self->current_block * block_offset;
 
-    return current_offset
+    return current_offset;
 }
 
 void osFile_destroy(osFile* self) {
