@@ -119,7 +119,8 @@ void os_tree(){
 
     // Defino la verión recursiva de la función acá adentro
     // para cumplir con las reglas de no ofrecer más funciones en la API
-    void directree(int directory_block, int depth){
+    // FIXME: No se puede definir una función aquí
+    void directree(int directory_block, int depth) {
         FILE* f2 = fopen(global_diskname, "rb");
         fseek(f2, directory_block*1048576, SEEK_SET); 
         // Cada bloque tiene 1048576 bytes
@@ -181,6 +182,7 @@ void os_tree(){
             printf("\n");
             int puntero = buffer[1]; // Pesco los bytes 1-4
             depth++; // Subo la profundidad en 1
+            // FIXME: Función no definida
             directree(puntero, depth); // Función recursiva para leer
                                           // dentro del directorio
             depth--; // Vuelvo a la profundidad anterior
@@ -226,7 +228,7 @@ osFile* os_open(char* filename, char mode) {  // TODO: Pendiente
 int os_read(osFile* file_desc, void* buffer, int nbytes) {  // NOTE: Trabajando en esto
 
 
-    return 0
+    return 0;
 }
 
 /* Esta función permite escribir un archivo. Escribe en el archivo descrito por file desc
@@ -261,14 +263,15 @@ int os_rm(char* filename) {  // TODO: Pendiente
  * a este directorio. */
 int os_mkdir(char* path) {  // TODO: Pendiente
     // Función auxiliar que busca el primer bloque vacío
-    int blocksearch(){
+    // FIXME: No se puede definir una función aquí
+    int blocksearch() {
         // Pending
         return 0;
     }
     return 0;
 }
 
-/* Esta función elimina un directorio vacı́o con el nombre indicado. Esto incrementa en 1
+/* Esta función elimina un directorio v<acı́o con el nombre indicado. Esto incrementa en 1
  * el contador P/E de las páginas que sea necesario actualizar para borrar las referencias
  * a este directorio. */
 int os_rmdir(char* path) {  // TODO: Pendiente
