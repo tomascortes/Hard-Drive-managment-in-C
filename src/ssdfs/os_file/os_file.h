@@ -32,16 +32,18 @@ typedef struct osFile {
     int end_pos; // Donde termina
     int current_pos; // Posición actual
 
-    char* disk;  // Apunta al disco
+    void* file;  // Apunta al archivo. TODO
     unsigned int block;
     unsigned int page;
 } osFile;
 
-osFile* osFile_new(char* name, char* disk_pointer);
-osFile* set_mode(osFile* self, char mode[2]);
-osFile* set_location(osFile* self,
+osFile* osFile_new(char* name);
+osFile* osFile_set_mode(osFile* self, char mode[2]);
+osFile* osFile_set_location(osFile* self,
                      int start_pos,
                      int length,
                      int end_pos);
+osFile* osFile_assign_file(osFile* self, void* file);
+osFile* osFile_offset_pointer(osFile* self, int offset);
 void osFile_destroy(osFile* self);
 

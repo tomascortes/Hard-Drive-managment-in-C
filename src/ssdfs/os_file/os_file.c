@@ -21,25 +21,23 @@
 
 // ----- Structs -----
 /* Representa un archivo abierto con todos sus atributos */
-osFile* osFile_new(char* name, char* disk_pointer) {
+osFile* osFile_new(char* name) {
     // Reservo memoria
     osFile* instance_pointer = malloc(sizeof(osFile));
 
     // Pongo nombre
     instance_pointer->name = name;
-    instance_pointer->disk = disk_pointer;
 
     // Inicializo con valores por defecto. Inválidos para propósitos del FS
-    // TODO: Sacar línea innecesaria
-    // instance_pointer = set_location(instance_pointer, -1, -1, -1);
-    instance_pointer = set_mode(instance_pointer, "N");
+    instance_pointer = osFile_set_mode(instance_pointer, "N");
+    instance_pointer->current_pos = 0;
 
     // Retorno el puntero a la representación del archivo
     return instance_pointer;
 }
 
 // Settea el modo de operación (read/write)
-osFile* set_mode(osFile* self, char* mode) {
+osFile* osFile_set_mode(osFile* self, char* mode) {
     // Revisar validez
     // https://stackoverflow.com/questions/19365901/how-do-i-modify-the-character-array-in-this-struct-c
     strncpy(self->mode,  // Atributo a modificar
@@ -49,7 +47,7 @@ osFile* set_mode(osFile* self, char* mode) {
     return self;
 }
 
-osFile* set_location(osFile* self, int start_pos, int length, int end_pos) {
+osFile* osFile_set_location(osFile* self, int start_pos, int length, int end_pos) {
     self->start_pos = start_pos;
     self->length = length;
     self->end_pos = end_pos;
@@ -57,6 +55,15 @@ osFile* set_location(osFile* self, int start_pos, int length, int end_pos) {
     return self;
 }
 
+osFile* osFile_assign_file(osFile* self, void* file) {
+    // TODO
+    return self;
+}
+
+osFile* osFile_offset_pointer(osFile* self, int offset) {
+    // TODO: revisar límites
+    self->current_pos = self->current_pos + offset;
+}
 
 void osFile_destroy(osFile* self) {
     // Libero memoria puntero nombre
