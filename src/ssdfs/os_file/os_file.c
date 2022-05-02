@@ -58,8 +58,9 @@ osFile* set_location(osFile* self, int start_pos, int length, int end_pos) {
 
 
 void osFile_destroy(osFile* self) {
-    // REVIEW: no debería tener que asegurarme de nada, porque no reservé más memoria
-    //  dentro de sí, pero si alguien la quiere revisar, se agradece
+    // Libero memoria puntero nombre
+    free(self->name);
+
     free(self);
 }
 
