@@ -97,6 +97,7 @@ void os_bitmap(unsigned num) {
  * Si ambos valores son -1, se debe imprimir el lifemap completo.
  * Además se debe imprimir en una segunda lı́nea la cantidad de bloques rotten y la cantidad de bloques saludables. */
 void os_lifemap(int lower, int upper) {  // TODO: Pendiente
+    return;
 }
 
 /* Esta función debe recorrer el disco completo.
