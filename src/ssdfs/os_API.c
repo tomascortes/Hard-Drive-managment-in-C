@@ -340,8 +340,10 @@ int os_close(osFile* file_desc) {  // TODO: Pendiente
         printf("El disco no está actualizado con los respectivos cambios");
     }
     else{
-        free(file_desc);
+        free(file_desc);  // XXX: Por qué se libera memoria aquí??
     }
+
+    osFile_destroy(file_desc);
     return 0;
 }
 
