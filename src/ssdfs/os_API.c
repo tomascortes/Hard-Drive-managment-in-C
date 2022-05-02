@@ -261,7 +261,8 @@ int os_rm(char* filename) {  // TODO: Pendiente
  * a este directorio. */
 int os_mkdir(char* path) {  // TODO: Pendiente
     // Función auxiliar que busca el primer bloque vacío
-    int blocksearch(){
+    // FIXME: Function definition is not allowed here
+    int blocksearch() {
         // Pending
         return 0;
     }
