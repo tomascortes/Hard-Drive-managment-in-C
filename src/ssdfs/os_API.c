@@ -341,9 +341,8 @@ int os_close(osFile* file_desc) {  // TODO: Pendiente
     }
     else{
         free(file_desc);  // XXX: Por qué se libera memoria aquí??
+        osFile_destroy(file_desc);
     }
-
-    osFile_destroy(file_desc);
     return 0;
 }
 
