@@ -89,7 +89,49 @@ void os_bitmap(unsigned num){
 /* Imprime el estado P/E de las páginas desde lower y upper-1.
  * Si ambos valores son -1, se debe imprimir el lifemap completo.
  * Además se debe imprimir en una segunda lı́nea la cantidad de bloques rotten y la cantidad de bloques saludables. */
-void os_lifemap(int lower, int upper) {  // TODO: Pendiente
+void os_lifemap(int lower, int upper) { 
+    // Abro el archivo
+    FILE *f = fopen(global_diskname, "rb");
+    // Me muevo 1 MiB, para llegar al bloque N°1, de directorio.
+    fseek(f, 1048576, SEEK_SET);
+
+    if (upper > 524288 || lower < -1 || lower > 524288 || upper < -2 ){
+      printf("Error de input para os_lifemap\n");
+      return;
+    }
+    if (lower  == -1 && upper == -1){
+      upper = 524288;
+      lower = 0;
+    }
+
+    int rotten_blocks = 0;
+    int total_blocks = 0;
+    int rotten_found = 0;
+    int block_visited = 0;
+    // Son 524288  paginas entre los 2 planos, por lo que recorremos 524288 numeros
+    // Son 4096 bloques en el disco
+    for (int i = 0; i < 524288; i++) {
+        int buffer; // see leen ints de 4 bytes
+        fread(&buffer, sizeof(int), 1, f); // Leo una entrada de un int
+
+        if ( lower < i && i < upper){
+          printf(" %d",buffer);
+          block_visited = 1;
+        }
+        if (i%256 == 0 && block_visited == 1){
+          // Se suman las condiciones de bloque visitado
+          rotten_blocks += rotten_found;
+          total_blocks ++;
+          rotten_found = 0;
+          block_visited = 0;
+        }
+        if (buffer == -1){
+          rotten_found = 1;
+        }
+    }
+    printf("\nCantidad de bloques rotten: %d", rotten_blocks);
+    printf("\nCantidad de bloques sanos: %d\n", total_blocks - rotten_blocks);
+    fclose(f); // Evitamos leaks
     return;
 }
 
