@@ -106,8 +106,9 @@ void os_lifemap(int lower, int upper) {
     }
 
     int rotten_blocks = 0;
-    int total = 0;
+    int total_blocks = 0;
     int rotten_found = 0;
+    int block_visited = 0;
     // Son 524288  paginas entre los 2 planos, por lo que recorremos 524288 numeros
     // Son 4096 bloques en el disco
     for (int i = 0; i < 524288; i++) {
@@ -116,17 +117,20 @@ void os_lifemap(int lower, int upper) {
 
         if ( lower < i && i < upper){
           printf(" %d",buffer);
+          block_visited = 1;
         }
-        if (i%256 == 0){
+        if (i%256 == 0 && block_visited == 1){
           rotten_blocks += rotten_found;
+          total_blocks ++;
           rotten_found = 0;
+          block_visited = 0;
         }
         if (buffer == -1){
           rotten_found = 1;
         }
     }
     printf("\nCantidad de bloques rotten: %d", rotten_blocks);
-    printf("\nCantidad de bloques sanos: %d", 4096 - rotten_blocks);
+    printf("\nCantidad de bloques sanos: %d", total_blocks - rotten_blocks);
 
     fclose(f); // Evitamos leaks
     return;
