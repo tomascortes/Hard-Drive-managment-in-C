@@ -38,3 +38,5 @@ void dprint_txt_int(int input);
 
 void dprint_float(float input);
 void dprint_txt_float(float input);
+
+void print_debug(char *input);
