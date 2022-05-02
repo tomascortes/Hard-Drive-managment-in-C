@@ -215,7 +215,7 @@ int os_exists(char* filename) {  // TODO: Pendiente
  * osFile* que lo representa. Si mode='w', se verifica que el archivo no exista, y se
  * retorna un nuevo osFile* que lo representa. */
 osFile* os_open(char* filename, char mode) {  // TODO: Pendiente
-    osFile* file_desc = malloc(sizeof(osFile));
+    osFile* file_desc = osFile_new(filename, global_diskname);
     // TODO: ...
     return file_desc;
 }
