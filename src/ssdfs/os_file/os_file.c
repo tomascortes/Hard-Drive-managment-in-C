@@ -46,12 +46,13 @@ osFile* osFile_set_mode(osFile* self, char* mode) {
     return self;
 }
 
-osFile* osFile_set_location(osFile* self, int start_pos, int length, int end_pos) {
-    self->start_block = start_pos;
-    self->length_blocks = length;
-    self->end_block = end_pos;
+osFile* osFile_set_location(osFile* self, int start_block,
+                            int end_block, int length_bytes) {
+    self->start_block = start_block;
+    self->length_bytes = length_bytes;
+    self->end_block = end_block;
 
-    self->current_block = start_pos;
+    self->current_block = start_block;
     self->current_page = 0;
     self->current_pos = 0;
 
@@ -66,6 +67,22 @@ osFile* osFile_assign_file(osFile* self, void* file) {
 osFile* osFile_offset_pointer(osFile* self, int offset) {
     // TODO: revisar límites
     self->current_pos = self->current_pos + offset;
+}
+
+char* osFile_get_block(osFile* self) {
+    return;
+}
+
+char* osFile_get_page(osFile* self, char* block, int page) {
+    return;
+}
+
+void osFile_load_page(osFile* self, char* block, int page) {
+    return;
+}
+
+void osFile_release_page(osFile* self, char* block, int page) {
+    return;
 }
 
 void osFile_destroy(osFile* self) {

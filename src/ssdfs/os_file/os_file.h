@@ -28,7 +28,7 @@ typedef struct osFile {
     char mode[2]; // r -> ReadOnly || w-> WriteOnly || {rw,wr,r+} -> ReadWrite || N -> Null
 
     int start_block;  // Donde comienza el archivo
-    int length_blocks;  // Largo del archivo
+    int length_bytes;  // Largo del archivo
     int end_block; // Donde termina
 
     int current_block; // Bloque actual
@@ -43,10 +43,9 @@ typedef struct osFile {
 osFile* osFile_new(char* name);
 osFile* osFile_set_mode(osFile* self, char mode[2]);
 osFile* osFile_set_location(osFile* self,
-                     int start_pos,
-                     int length,
-                     int end_pos);
-osFile* osFile_assign_file(osFile* self, void* file);
+                            int start_block,
+                            int end_block,
+                            int length_bytes);
 osFile* osFile_offset_pointer(osFile* self, int offset);
 void osFile_destroy(osFile* self);
 
