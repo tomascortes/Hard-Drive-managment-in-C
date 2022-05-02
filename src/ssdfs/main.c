@@ -16,6 +16,7 @@
 
 #include <stdio.h>
 #include "os_API.h"
+#include "./debug/debug.h"
 
 // Busca en el bitmap el bit correspondiente al bloque
 // hy lo marca como usado (lo pone en 1)
@@ -55,24 +56,37 @@ void mark_as_used(int bloque) {
 }
 
 int main (int argc, char* const argv[]) {
+    dprint_txt_char_x("Iniciando el programa...");
+
+    dprint_txt_char_x("Montando el disco con life = 5000");
     // Montar el disco pasado por consola con life = 5000
     os_mount(argv[1], 5000);
 
+    dprint_txt_char_x("\nCosas comentadas...");
     // os_bitmap(0); // Bitmap completo
     // os_bitmap(8); // Bitmap bloque N°8 (Se espera 1)
     // os_bitmap(2047); // Bitmap bloque N°395 (Se espera 0)
     // os_bitmap(2048); // Bitmap bloque inexistente (Se espera SEGFAULT)
+    dprint_txt_char_x("...Fin cosas comentadas\n");
 
     printf("\n");
 
-    os_lifemap(-1, -1);
+    dprint_txt_char_x("Printea el lifemap de páginas 1270 a la 1300");
+    os_lifemap(1270, 1300);
+    dprint_txt_char_x("Fin de la función de lifemap");
 
+    dprint_txt_char_x("\nCosas comentadas...");
     // os_lifemap(524288/4 - 5000, 524288/4-2000);
+    dprint_txt_char_x("...Fin cosas comentadas\n");
 
+    dprint_txt_char_x("Corre os_tree");
     os_tree();
+    dprint_txt_char_x("Termina de correr os_tree");
 
+    dprint_txt_char_x("\nCosas comentadas...");
     //mark_as_used(3);
     //os_bitmap(0);
+    dprint_txt_char_x("...Fin cosas comentadas\n");
 
   return 0;
 }
