@@ -21,24 +21,25 @@
 
 // ----- Structs -----
 /* Representa un archivo abierto con todos sus atributos */
-osFile* osFile_new(char* name) {
+osFile* osFile_new(char* name, char* disk_pointer) {
     // Reservo memoria
     osFile* instance_pointer = malloc(sizeof(osFile));
+
+    // Guardo el "disco" (como puntero)
+    instance_pointer->disk = disk_pointer;
 
     // Pongo nombre
     instance_pointer->name = name;
 
     // Inicializo con valores por defecto. Inválidos para propósitos del FS
-    // TODO: Sacar línea innecesaria
-    // instance_pointer = set_location(instance_pointer, -1, -1, -1);
-    instance_pointer = set_mode(instance_pointer, "N");
+    instance_pointer = osFile_set_mode(instance_pointer, "N");
 
     // Retorno el puntero a la representación del archivo
     return instance_pointer;
 }
 
 // Settea el modo de operación (read/write)
-osFile* set_mode(osFile* self, char* mode) {
+osFile* osFile_set_mode(osFile* self, char* mode) {
     // Revisar validez
     // https://stackoverflow.com/questions/19365901/how-do-i-modify-the-character-array-in-this-struct-c
     strncpy(self->mode,  // Atributo a modificar
@@ -48,18 +49,68 @@ osFile* set_mode(osFile* self, char* mode) {
     return self;
 }
 
-osFile* set_location(osFile* self, int start_pos, int length, int end_pos) {
-    self->start_pos = start_pos;
-    self->length = length;
-    self->end_pos = end_pos;
+osFile* osFile_set_location(osFile* self,
+                            int plane,
+                            int block,
+                            int length_bytes) {
+    self->current_plane = plane;
+    self->current_block = block;
+
+    self->length = length_bytes;
+
+    self->current_page = 0;
+    self->current_pos = 0;
 
     return self;
 }
 
+osFile* osFile_offset_pointer(osFile* self, int offset) {
+    // TODO: revisar límites
+    self->current_pos = self->current_pos + offset;
+}
+
+char* osFile_get_block(osFile* self) {
+    return;
+}
+
+char* osFile_get_page(osFile* self, char* block, int page) {
+    return;
+}
+
+// Reserva espacio para un array de bytes
+void osFile_load_page(osFile* self, char* block, int page) {
+
+    return;
+}
+
+// Libero la memoria de la página
+void osFile_release_page(osFile* self, char* block, int page) {
+    return;
+}
+
+int osFile_get_blk_start_pos(osFile* self) {
+    // Defino variables
+    int current_offset = 0;
+    int plane_offset;
+    int block_offset;
+
+    // Calculo offsets
+    block_offset = PAGES_PER_BLOCK * CELLS_PER_PAGE * BYTES_PER_CELL;
+    plane_offset = BLOCKS_PER_PLANE * block_offset;
+
+    // Desplazo el inicio al del archivo
+    // NOTE: El plano 0 es el primer plano
+    // NOTE: El bloque 0 es el primer plano
+    current_offset += self->current_plane * plane_offset;
+    current_offset += self->current_block * block_offset;
+
+    return current_offset;
+}
 
 void osFile_destroy(osFile* self) {
-    // REVIEW: no debería tener que asegurarme de nada, porque no reservé más memoria
-    //  dentro de sí, pero si alguien la quiere revisar, se agradece
+    // Libero memoria puntero nombre
+    free(self->name);
+    free(self->disk); // REVIEW: Hay que dejarlo???
     free(self);
 }
 

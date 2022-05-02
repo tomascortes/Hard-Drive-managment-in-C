@@ -16,47 +16,77 @@
 
 #include <stdio.h>
 #include "os_API.h"
+#include "./debug/debug.h"
 
 // Busca en el bitmap el bit correspondiente al bloque
 // hy lo marca como usado (lo pone en 1)
-void mark_as_used(int bloque){ // Creo que me falta debuggear esto, no usar por ahora uwu
-  // El bit que corresponda al bloque va a estar en el byte:
-  int byte = bloque/8;
-  int offset = 7 - bloque%8;
-  // Abro el archivo
-  FILE* f = fopen(global_diskname, "rb");
-  unsigned char buffer[256]; // Buffer con los bytes del bitmap
-  fread(buffer, sizeof(buffer), 1, f);
-  char data = buffer[byte]; // Saco el byte que me sirve
-  fclose(f);
-  printf("Data before: %i", data);
-  // Convierto el bit que me interesa en 1
-  data = (data | (1 << offset)) >> offset;
-  printf("Data after: %i", data);
-  char* point_data = &data; // Puntero al byte de datos a escribir
-  f = fopen(global_diskname, "wb");
-  fseek(f, byte, SEEK_SET);
-  fwrite(point_data, 1, 1, f);
-  fclose(f);
+// Creo que me falta debuggear esto, no usar por ahora uwu
+void mark_as_used(int bloque) {
+    // El bit que corresponda al bloque va a estar en el byte:
+    int byte = bloque / 8;
+    int offset = 7 - bloque % 8;
+
+    // Abro el archivo
+    FILE* f = fopen(global_diskname, "rb");
+
+    unsigned char buffer[256]; // Buffer con los bytes del bitmap
+    fread(buffer, sizeof(buffer), 1, f);
+
+    // FIXME: "Narrowing conversion from 'unsigned char' to signed type 'char'
+    //  is implementation-defined"
+    char data = buffer[byte]; // Saco el byte que me sirve
+
+    fclose(f);
+    printf("Data before: %i", data);
+
+    // FIXME: "Narrowing conversion from 'int' to signed type 'char' is
+    //  implementation-defined"
+    // Convierto el bit que me interesa en 1
+    data = (data | (1 << offset)) >> offset;
+    printf("Data after: %i", data);
+
+    // Puntero al byte de datos a escribir
+    char* point_data = &data;
+    f = fopen(global_diskname, "wb");
+
+    fseek(f, byte, SEEK_SET);
+    fwrite(point_data, 1, 1, f);
+
+    fclose(f);
 }
 
 int main (int argc, char* const argv[]) {
-  // Montar el disco pasado por consola con life = 5000
-  os_mount(argv[1], 5000);
+    dprint_txt_char_x("Iniciando el programa...");
 
-  // os_bitmap(0); // Bitmap completo
-  // os_bitmap(8); // Bitmap bloque N°8 (Se espera 1)
-  // os_bitmap(2047); // Bitmap bloque N°395 (Se espera 0)
-  // os_bitmap(2048); // Bitmap bloque inexistente (Se espera SEGFAULT)
-  printf("\n");
-  os_lifemap(-1, -1);
-  // os_lifemap(524288/4 - 5000, 524288/4-2000);
-  // os_tree();
+    dprint_txt_char_x("Montando el disco con life = 5000");
+    // Montar el disco pasado por consola con life = 5000
+    os_mount(argv[1], 5000);
 
-  os_tree();
+    dprint_txt_char_x("\nCosas comentadas...");
+    // os_bitmap(0); // Bitmap completo
+    // os_bitmap(8); // Bitmap bloque N°8 (Se espera 1)
+    // os_bitmap(2047); // Bitmap bloque N°395 (Se espera 0)
+    // os_bitmap(2048); // Bitmap bloque inexistente (Se espera SEGFAULT)
+    dprint_txt_char_x("...Fin cosas comentadas\n");
 
-  //mark_as_used(3);
-  //os_bitmap(0);
+    printf("\n");
+
+    dprint_txt_char_x("Printea el lifemap de páginas 1270 a la 1300");
+    os_lifemap(1270, 1300);
+    dprint_txt_char_x("Fin de la función de lifemap");
+
+    dprint_txt_char_x("\nCosas comentadas...");
+    // os_lifemap(524288/4 - 5000, 524288/4-2000);
+    dprint_txt_char_x("...Fin cosas comentadas\n");
+
+    dprint_txt_char_x("Corre os_tree");
+    os_tree();
+    dprint_txt_char_x("Termina de correr os_tree");
+
+    dprint_txt_char_x("\nCosas comentadas...");
+    //mark_as_used(3);
+    //os_bitmap(0);
+    dprint_txt_char_x("...Fin cosas comentadas\n");
 
   return 0;
 }
