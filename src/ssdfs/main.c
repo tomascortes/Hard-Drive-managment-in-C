@@ -68,7 +68,9 @@ int main (int argc, char* const argv[]) {
     os_lifemap(-1, -1);
 
     // os_lifemap(524288/4 - 5000, 524288/4-2000);
-    // os_tree();
+
+    os_tree();
+
     //mark_as_used(3);
     //os_bitmap(0);
 
