@@ -218,7 +218,8 @@ osFile* os_open(char* filename, char mode) {  // TODO: Pendiente
     osFile* file_desc = osFile_new(filename);
     // TODO: ...
     //osFile_set_mode(file_desc, &mode);
-    //osFile_assign_file();
+    //osFile_assign_file(...);
+    //osFile_set_location(...);
     // TODO: ...
     return file_desc;
 }
@@ -236,13 +237,12 @@ int os_read(osFile* file_desc, void* buffer, int nbytes) {  // NOTE: Trabajando 
     // file_desc -->  Archivo
     // nbytes    -->  Cantidad de bytes que voy a leer
     // buffer    -->  Lugar donde guardo la info
-    for (int iteracion = 0; iteracion <= nbytes; iteracion++) {
+    int starting_pos = file_desc->current_pos;
 
-        tirar_a_buffer(leer_byte( + iteracion));
-
+    for (int iter = 0; iter <= nbytes; iter++) {
+        file_desc = osFile_offset_pointer(file_desc, 1);
 
     }
-
 
     return 0;
 }

@@ -48,9 +48,9 @@ osFile* osFile_set_mode(osFile* self, char* mode) {
 }
 
 osFile* osFile_set_location(osFile* self, int start_pos, int length, int end_pos) {
-    self->start_pos = start_pos;
-    self->length = length;
-    self->end_pos = end_pos;
+    self->start_block = start_pos;
+    self->length_blocks = length;
+    self->end_block = end_pos;
 
     return self;
 }

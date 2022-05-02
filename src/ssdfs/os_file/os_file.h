@@ -26,10 +26,11 @@ typedef struct osFile {
     char* name;  // Nombre del archivo
     // Puse 2 caracteres para que sea un poco más a prueba de errores
     char mode[2]; // r -> ReadOnly || w-> WriteOnly || {rw,wr,r+} -> ReadWrite || N -> Null
-    int start_pos;  // Donde comienza el archivo
 
-    int length;  // Largo del archivo
-    int end_pos; // Donde termina
+    int start_block;  // Donde comienza el archivo
+    int length_blocks;  // Largo del archivo
+    int end_block; // Donde termina
+
     int current_pos; // Posición actual
 
     void* file;  // Apunta al archivo. TODO
