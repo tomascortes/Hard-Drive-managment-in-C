@@ -50,8 +50,8 @@ osFile* osFile_set_mode(osFile* self, char* mode) {
 }
 
 osFile* osFile_set_location(osFile* self,
-                            unsigned int plane,
-                            unsigned int block,
+                            int plane,
+                            int block,
                             int length_bytes) {
     self->current_plane = plane;
     self->current_block = block;
@@ -88,13 +88,23 @@ void osFile_release_page(osFile* self, char* block, int page) {
     return;
 }
 
-int osFile_get_start_pos(osFile* self) {
-    int starting_pos;
+int osFile_get_blk_start_pos(osFile* self) {
+    // Defino variables
+    int current_offset = 0;
+    int plane_offset;
+    int block_offset;
 
-    int block_offset = 1024 * 1024;
-    int plane_offset =
+    // Calculo offsets
+    block_offset = PAGES_PER_BLOCK * CELLS_PER_PAGE * BYTES_PER_CELL;
+    plane_offset = BLOCKS_PER_PLANE * block_offset;
 
-    starting_pos =
+    // Desplazo el inicio al del archivo
+    // NOTE: El plano 0 es el primer plano
+    // NOTE: El bloque 0 es el primer plano
+    current_offset += self->current_plane * plane_offset;
+    current_offset += self->current_block * block_offset;
+
+    return current_offset
 }
 
 void osFile_destroy(osFile* self) {
