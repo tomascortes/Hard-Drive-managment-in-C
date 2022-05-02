@@ -216,6 +216,7 @@ int os_exists(char* filename) {  // TODO: Pendiente
  * retorna un nuevo osFile* que lo representa. */
 osFile* os_open(char* filename, char mode) {  // TODO: Pendiente
     osFile* file = malloc(sizeof(osFile));
+    // TODO: ...
     return file;
 }
 
@@ -226,6 +227,17 @@ osFile* os_open(char* filename, char mode) {  // TODO: Pendiente
  * archivo contenga páginas rotten. La lectura de read se efectúa desde la posición del
  * archivo inmediatamente posterior a la última posición leı́da por un llamado a read. */
 int os_read(osFile* file_desc, void* buffer, int nbytes) {  // NOTE: Trabajando en esto
+    // Donde estoy parado:
+
+
+    // file_desc -->  Archivo
+    // nbytes    -->  Cantidad de bytes que voy a leer
+    // buffer    -->  Lugar donde guardo la info
+
+    for (int iteracion = 0; iteracion <= nbytes; iteracion++) {
+        leer_byte(file_desc->current_pos);
+        file_desc->current_pos++;
+    }
 
 
     return 0;
