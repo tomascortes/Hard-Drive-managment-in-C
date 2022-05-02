@@ -256,7 +256,7 @@ int os_exists(char* filename) {  // TODO: Pendiente
  * retorna un nuevo osFile* que lo representa. */
 osFile* os_open(char* filename, char mode) {  // TODO: Pendiente
     // if (os_exist(...) || ! mode == "w") { ...
-    osFile* file_desc = osFile_new(filename);
+    osFile* file_desc = osFile_new(filename, global_diskname);
     // TODO: ...
     //file_desc = osFile_set_mode(file_desc, &mode);
     //file_desc = osFile_set_location(...);
