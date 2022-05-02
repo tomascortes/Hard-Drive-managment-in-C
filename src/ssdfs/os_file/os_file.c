@@ -88,6 +88,15 @@ void osFile_release_page(osFile* self, char* block, int page) {
     return;
 }
 
+int osFile_get_start_pos(osFile* self) {
+    int starting_pos;
+
+    int block_offset = 1024 * 1024;
+    int plane_offset =
+
+    starting_pos =
+}
+
 void osFile_destroy(osFile* self) {
     // Libero memoria puntero nombre
     free(self->name);
