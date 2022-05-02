@@ -24,23 +24,29 @@ typedef struct osFile {
     // REVIEW: Revisar que el nombre de tamaño indefinido no interfiera con
     //  malloc(sizeof(osFile))
     char* name;  // Nombre del archivo
-
     // Puse 2 caracteres para que sea un poco más a prueba de errores
     char mode[2]; // r -> ReadOnly || w-> WriteOnly || {rw,wr,r+} -> ReadWrite || N -> Null
 
-    int start_pos;  // Donde comienza el archivo
-    int length;  // Largo del archivo
-    int end_pos; // Donde termina
+    int start_block;  // Donde comienza el archivo
+    int length_blocks;  // Largo del archivo
+    int end_block; // Donde termina
 
+    int current_block; // Bloque actual
+    int current_page; // Página actual del bloque actual
+    int current_pos; // Posición actual de la página actual
+
+    void* file;  // Apunta al archivo. TODO
     unsigned int block;
     unsigned int page;
 } osFile;
 
 osFile* osFile_new(char* name);
-osFile* set_mode(osFile* self, char mode[2]);
-osFile* set_location(osFile* self,
+osFile* osFile_set_mode(osFile* self, char mode[2]);
+osFile* osFile_set_location(osFile* self,
                      int start_pos,
                      int length,
                      int end_pos);
+osFile* osFile_assign_file(osFile* self, void* file);
+osFile* osFile_offset_pointer(osFile* self, int offset);
 void osFile_destroy(osFile* self);
 

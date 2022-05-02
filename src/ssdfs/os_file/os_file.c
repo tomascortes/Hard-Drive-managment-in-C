@@ -29,16 +29,14 @@ osFile* osFile_new(char* name) {
     instance_pointer->name = name;
 
     // Inicializo con valores por defecto. Inválidos para propósitos del FS
-    // TODO: Sacar línea innecesaria
-    // instance_pointer = set_location(instance_pointer, -1, -1, -1);
-    instance_pointer = set_mode(instance_pointer, "N");
+    instance_pointer = osFile_set_mode(instance_pointer, "N");
 
     // Retorno el puntero a la representación del archivo
     return instance_pointer;
 }
 
 // Settea el modo de operación (read/write)
-osFile* set_mode(osFile* self, char* mode) {
+osFile* osFile_set_mode(osFile* self, char* mode) {
     // Revisar validez
     // https://stackoverflow.com/questions/19365901/how-do-i-modify-the-character-array-in-this-struct-c
     strncpy(self->mode,  // Atributo a modificar
@@ -48,18 +46,32 @@ osFile* set_mode(osFile* self, char* mode) {
     return self;
 }
 
-osFile* set_location(osFile* self, int start_pos, int length, int end_pos) {
-    self->start_pos = start_pos;
-    self->length = length;
-    self->end_pos = end_pos;
+osFile* osFile_set_location(osFile* self, int start_pos, int length, int end_pos) {
+    self->start_block = start_pos;
+    self->length_blocks = length;
+    self->end_block = end_pos;
+
+    self->current_block = start_pos;
+    self->current_page = 0;
+    self->current_pos = 0;
 
     return self;
 }
 
+osFile* osFile_assign_file(osFile* self, void* file) {
+    // TODO
+    return self;
+}
+
+osFile* osFile_offset_pointer(osFile* self, int offset) {
+    // TODO: revisar límites
+    self->current_pos = self->current_pos + offset;
+}
 
 void osFile_destroy(osFile* self) {
-    // REVIEW: no debería tener que asegurarme de nada, porque no reservé más memoria
-    //  dentro de sí, pero si alguien la quiere revisar, se agradece
+    // Libero memoria puntero nombre
+    free(self->name);
+
     free(self);
 }
 
