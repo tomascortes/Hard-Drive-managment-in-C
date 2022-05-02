@@ -32,6 +32,8 @@ typedef struct osFile {
     int length;  // Largo del archivo
     int end_pos; // Donde termina
 
+    int current_pos; // Posición actual
+
     unsigned int block;
     unsigned int page;
 } osFile;
