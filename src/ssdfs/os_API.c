@@ -92,7 +92,6 @@ void os_bitmap(unsigned num){
 void os_lifemap(int lower, int upper) { 
     // Abro el archivo
     FILE *f = fopen(global_diskname, "rb");
-
     // Me muevo 1 MiB, para llegar al bloque N°1, de directorio.
     fseek(f, 1048576, SEEK_SET);
 
@@ -120,6 +119,7 @@ void os_lifemap(int lower, int upper) {
           block_visited = 1;
         }
         if (i%256 == 0 && block_visited == 1){
+          // Se suman las condiciones de bloque visitado
           rotten_blocks += rotten_found;
           total_blocks ++;
           rotten_found = 0;
@@ -131,7 +131,6 @@ void os_lifemap(int lower, int upper) {
     }
     printf("\nCantidad de bloques rotten: %d", rotten_blocks);
     printf("\nCantidad de bloques sanos: %d\n", total_blocks - rotten_blocks);
-
     fclose(f); // Evitamos leaks
     return;
 }
