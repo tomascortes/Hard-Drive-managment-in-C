@@ -16,8 +16,7 @@
 
 #pragma once
 
-// XXX: Lo siento, no pude restringirme a las funciones que nos dijeron sin hacer un desastre.
-//  Puse estas para manejar el struct
+#define BUFFER_SIZE 4096
 
 // Representación de archivos abiertos mediate struct
 typedef struct osFile {

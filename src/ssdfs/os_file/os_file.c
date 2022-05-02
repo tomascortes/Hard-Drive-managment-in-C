@@ -79,7 +79,7 @@ char* osFile_get_page(osFile* self, char* block, int page) {
 
 // Reserva espacio para un array de bytes
 void osFile_load_page(osFile* self, char* block, int page) {
-    // Una p
+
     return;
 }
 
@@ -91,7 +91,6 @@ void osFile_release_page(osFile* self, char* block, int page) {
 void osFile_destroy(osFile* self) {
     // Libero memoria puntero nombre
     free(self->name);
-
     free(self);
 }
 

@@ -257,8 +257,8 @@ int os_exists(char* filename) {  // TODO: Pendiente
 osFile* os_open(char* filename, char mode) {  // TODO: Pendiente
     osFile* file_desc = osFile_new(filename);
     // TODO: ...
-    //osFile_set_mode(file_desc, &mode);
-    //osFile_set_location(...);
+    //file_desc = osFile_set_mode(file_desc, &mode);
+    //file_desc = osFile_set_location(...);
     // TODO: ...
     return file_desc;
 }
