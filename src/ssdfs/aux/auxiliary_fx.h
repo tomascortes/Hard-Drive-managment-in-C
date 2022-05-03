@@ -24,6 +24,8 @@
 #define CELLS_PER_PAGE 2048
 #define BYTES_PER_CELL 2
 
+#define DIR_ENTRY_SIZE 32
+
 // Dependen de las de antes
 #define CELL_SIZE BYTES_PER_CELL  // 2 B
 #define PAGE_SIZE (CELL_SIZE * CELLS_PER_PAGE)  // 4096 B = 4kiB
@@ -32,6 +34,7 @@
 #define DISK_SIZE (PLANE_SIZE * PLANES_PER_DISK)  // 2147483648 B = 2GiB
 
 #define PAGES_PER_DISK (PLANES_PER_DISK * BLOCKS_PER_PLANE * PAGES_PER_BLOCK)  // 524288 pgs
+#define DIR_ENTRIES_PER_BLOCK 32768  // No puse la división por miedo a que cambie el tipo de variable
 
 long int calc_offset(int plane, // Número de planos
                      int block, // Número de bloques
