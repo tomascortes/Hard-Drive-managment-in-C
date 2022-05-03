@@ -70,7 +70,6 @@ void osFile_load_page(osFile* self, int n_page) {
     // TODO: Revisar que página que mando no esté rotten.
     //  idealmente ANTES de pedir la lectura en esta función.
     long int page_offset;
-    FILE* file;  // Puntero a archivo
 
     // ---- Checks ----
     // Saco páginas cargada si es que hay
@@ -85,10 +84,17 @@ void osFile_load_page(osFile* self, int n_page) {
 
     // ------ MEM -----
     // Reservo memoria para la página
-    self->loaded_page = malloc(CELLS_PER_PAGE * BYTES_PER_CELL);
+    self->loaded_page = malloc(PAGE_SIZE);
     self->has_page_loaded = true;
 
     // ------ I/O -----
+    osFile_copy_page_data(self, page_offset);
+}
+
+// Carga los datos de la página en la memoria
+void osFile_copy_page_data(osFile* self, long int page_offset) {
+    FILE* file;  // Puntero a archivo
+
     /// https://www.tutorialspoint.com/c_standard_library/c_function_fopen.htm
     /// Mode: "r" --> Opens a file for reading. The file must exist.
     /// https://stackoverflow.com/questions/2174889/whats-the-differences-between-r-and-rb-in-fopen
@@ -100,8 +106,16 @@ void osFile_load_page(osFile* self, int n_page) {
     // Desplazo el puntero al inicio de la pág.
     fseek(file, page_offset, SEEK_SET);
 
-    // cargo el contenido de la página en el heap
+    /// https://www.tutorialspoint.com/c_standard_library/c_function_fread.htm
+    /// size_t fread(void *ptr, size_t size, size_t nmemb, FILE *stream)
+    ///     ptr − This is the pointer to a block of memory with a minimum size of size*nmemb bytes.
+    ///     size − This is the size in bytes of each element to be read.
+    ///     nmemb − This is the number of elements, each one with a size of size bytes.
+    ///     stream − This is the pointer to a FILE object that specifies an input stream.
+    // Cargo el contenido de la página en el heap
+    fread(self->loaded_page, PAGE_SIZE, 1, file);
 
+    fclose(file);
 }
 
 // Si hay una página cargada, la libera
@@ -120,6 +134,7 @@ void osFile_release_page(osFile* self) {
 void osFile_destroy(osFile* self) {
     // Libero memoria puntero nombre
     free(self->name);
+    osFile_release_page_if_loaded(self);
     free(self->disk); // REVIEW: Hay que dejarlo???
     free(self);
 }
