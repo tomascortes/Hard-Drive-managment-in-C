@@ -1,7 +1,7 @@
 //Importar archivo
 #include "./debug.h"
 
-// https://qnaplus.com/c-program-to-sleep-in-milliseconds/
+/// https://qnaplus.com/c-program-to-sleep-in-milliseconds/
 void wait_debug(int time_ms) {
     if (DEBUG_MODE && SIMULATE_WAIT) {
         usleep(time_ms * 1000);

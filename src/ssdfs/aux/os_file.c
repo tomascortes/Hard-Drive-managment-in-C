@@ -29,17 +29,17 @@ osFile* osFile_new(char* name, char* disk_pointer) {
     instance_pointer->name = name;
 
     // Inicializo con valores por defecto. Inválidos para propósitos del FS
-    instance_pointer = osFile_set_mode(instance_pointer, "N");
-    instance_pointer->page_loaded = false;
+    osFile_set_mode(instance_pointer, "N");
+    instance_pointer->has_page_loaded = false;
 
     // Retorno el puntero a la representación del archivo
     return instance_pointer;
 }
 
 // Settea el modo de operación (read/write)
-osFile* osFile_set_mode(osFile* self, char* mode) {
+void osFile_set_mode(osFile* self, char* mode) {
     // Revisar validez
-    // https://stackoverflow.com/questions/19365901/how-do-i-modify-the-character-array-in-this-struct-c
+    /// https://stackoverflow.com/questions/19365901/how-do-i-modify-the-character-array-in-this-struct-c
     strncpy(self->mode,  // Atributo a modificar
             mode,  // Nuevo contenido
             sizeof(self->mode));  // Máximo espacio (Para evitar stack overflow)
@@ -47,7 +47,7 @@ osFile* osFile_set_mode(osFile* self, char* mode) {
     return self;
 }
 
-osFile* osFile_set_location(osFile* self,
+void osFile_set_location(osFile* self,
                             int plane,
                             int block,
                             int length_bytes) {
@@ -58,19 +58,23 @@ osFile* osFile_set_location(osFile* self,
 
     self->current_page = 0;
     self->current_pos = 0;
-
-    return self;
 }
 
-osFile* osFile_offset_pointer(osFile* self, int offset) {
+void osFile_offset_pointer(osFile* self, int offset) {
     // TODO: revisar límites
     self->current_pos = self->current_pos + offset;
 }
 
 // Cargo la página "n_page" del bloque en el heap
 void osFile_load_page(osFile* self, int n_page) {
+    // TODO: Revisar que página que mando no esté rotten.
+    //  idealmente ANTES de pedir la lectura en esta función.
     long int page_offset;
     FILE* file;  // Puntero a archivo
+
+    // ---- Checks ----
+    // Saco páginas cargada si es que hay
+    osFile_release_page_if_loaded(self);
 
     // ---- OFFSET ----
     // Pido el offset del bloque archivo y la página del input
@@ -82,48 +86,36 @@ void osFile_load_page(osFile* self, int n_page) {
     // ------ MEM -----
     // Reservo memoria para la página
     self->loaded_page = malloc(CELLS_PER_PAGE * BYTES_PER_CELL);
-    self->page_loaded = true;
+    self->has_page_loaded = true;
 
     // ------ I/O -----
-    // https://www.tutorialspoint.com/c_standard_library/c_function_fopen.htm
-    // Mode: "r" --> Opens a file for reading. The file must exist.
-    // https://stackoverflow.com/questions/2174889/whats-the-differences-between-r-and-rb-in-fopen
-    // 'You should use "rb" if you're opening non-text files, because in this case,
-    // the translations are not appropriate.'
-
+    /// https://www.tutorialspoint.com/c_standard_library/c_function_fopen.htm
+    /// Mode: "r" --> Opens a file for reading. The file must exist.
+    /// https://stackoverflow.com/questions/2174889/whats-the-differences-between-r-and-rb-in-fopen
+    /// 'You should use "rb" if you're opening non-text files, because in this case,
+    /// the translations are not appropriate.'
     // Abro un stream para el disco
     file = fopen(self->disk, "rb");
 
     // Desplazo el puntero al inicio de la pág.
-    fseek(file, page_offset, SEEK_SET)
+    fseek(file, page_offset, SEEK_SET);
 
-    //
+    // cargo el contenido de la página en el heap
 
 }
 
-char* osFile_get_block(osFile* self) {
-    return;
+// Si hay una página cargada, la libera
+void osFile_release_page_if_loaded(osFile* self) {
+    if (self->has_page_loaded) {
+        osFile_release_page(self);
+    }
 }
-
-char* osFile_get_page(osFile* self, char* block, int page) {
-
-    return;
-}
-
-
 
 // Libero la memoria de la página
-void osFile_release_page(osFile* self, char* block, int page) {
-
-    return;
+void osFile_release_page(osFile* self) {
+    free(self->loaded_page);
+    self->has_page_loaded = false;
 }
-
-
-
-
-
-
-
 
 void osFile_destroy(osFile* self) {
     // Libero memoria puntero nombre

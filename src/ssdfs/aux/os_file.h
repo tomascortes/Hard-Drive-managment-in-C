@@ -46,18 +46,21 @@ typedef struct osFile {
     // pos --> {0..4096}
 
     unsigned char* loaded_page; //página cargada en memoria
-    bool page_loaded; // Si una página está cargada o no en heap
+    bool has_page_loaded; // Si una página está cargada o no en heap
 
 } osFile;
 
 osFile* osFile_new(char* name, char* disk_pointer);
 
-osFile* osFile_set_mode(osFile* self, char mode[2]);
-osFile* osFile_set_location(osFile* self,
+void osFile_set_mode(osFile* self, char mode[2]);
+void osFile_set_location(osFile* self,
                             int plane,
                             int block,
                             // Bloque de índice dice el tamaño del archivo
                             int length_bytes);
-osFile* osFile_offset_pointer(osFile* self, int offset);
+void osFile_offset_pointer(osFile* self, int offset);
+void osFile_load_page(osFile* self, int n_page);
+void osFile_release_page_if_loaded(osFile* self);
+void osFile_release_page(osFile* self);
 void osFile_destroy(osFile* self);
 
