@@ -8,14 +8,15 @@
 // Constante
 #define DEBUG_MODE 0
 #define SIMULATE_WAIT 1
-#define WAITING_TIME3 10  // ms
-#define WAITING_TIME 50  // ms
-#define WAITING_TIME2 350  // ms
+#define WAITING_TIME 250  // ms
+#define WAITING_TIME2 1000  // ms
+#define WAITING_TIME3 2000  // ms
 
 // Funciones
-void wait_just_a_bit();
-void just_wait();
-void just_wait_longer();
+void wait_debug(int time_ms);
+void just_wait_debug();
+void wait_longer_debug();
+void wait_a_bit_debug();
 
 void dprint_line();
 void dprint_txt();
