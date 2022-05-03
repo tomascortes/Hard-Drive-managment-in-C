@@ -118,6 +118,10 @@ void osFile_copy_page_data(osFile* self, long int offset) {
     fclose(file);
 }
 
+void osFile_get_data(osFile* self) {
+
+}
+
 /// Si hay una página cargada, la libera
 void osFile_release_page_if_loaded(osFile* self) {
     if (self->has_page_loaded) {
