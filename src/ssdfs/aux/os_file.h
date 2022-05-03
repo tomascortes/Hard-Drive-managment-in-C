@@ -18,7 +18,10 @@
 
 #include <stdbool.h>
 #include <stdlib.h>
+#include <stdio.h>
 #include <string.h>
+
+#include "./auxiliary_fx.h"
 
 // Representación de archivos abiertos mediate struct
 typedef struct osFile {
@@ -42,7 +45,7 @@ typedef struct osFile {
     int current_pos; // Posición actual dentro de la página actual
     // pos --> {0..4096}
 
-    void* loaded_page; //página cargada en memoria
+    unsigned char* loaded_page; //página cargada en memoria
     bool page_loaded; // Si una página está cargada o no en heap
 
 } osFile;
@@ -56,6 +59,5 @@ osFile* osFile_set_location(osFile* self,
                             // Bloque de índice dice el tamaño del archivo
                             int length_bytes);
 osFile* osFile_offset_pointer(osFile* self, int offset);
-int osFile_get_blk_start_pos(osFile* self);
 void osFile_destroy(osFile* self);
 

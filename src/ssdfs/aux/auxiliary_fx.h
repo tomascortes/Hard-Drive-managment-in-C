@@ -8,8 +8,8 @@
 #define CELLS_PER_PAGE 2048
 #define BYTES_PER_CELL 2
 
-int calc_offset(int plane, // Número de planos
-                int block, // Número de bloques
-                int page, // Número de páginas
-                int cell, // Número de celdas
-                int bytes); // Número de bytes
+long int calc_offset(int plane, // Número de planos
+                     int block, // Número de bloques
+                     int page, // Número de páginas
+                     int cell, // Número de celdas
+                     int bytes); // Número de bytes

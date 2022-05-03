@@ -30,6 +30,7 @@ osFile* osFile_new(char* name, char* disk_pointer) {
 
     // Inicializo con valores por defecto. Inválidos para propósitos del FS
     instance_pointer = osFile_set_mode(instance_pointer, "N");
+    instance_pointer->page_loaded = false;
 
     // Retorno el puntero a la representación del archivo
     return instance_pointer;
@@ -66,34 +67,37 @@ osFile* osFile_offset_pointer(osFile* self, int offset) {
     self->current_pos = self->current_pos + offset;
 }
 
-int osFile_get_blk_start_pos(osFile* self) {
-    // Defino variables
-    int current_offset = 0;
-    int plane_offset;
-    int block_offset;
-
-    // Calculo offsets
-    block_offset = PAGES_PER_BLOCK * CELLS_PER_PAGE * BYTES_PER_CELL;
-    plane_offset = BLOCKS_PER_PLANE * block_offset;
-
-    // Desplazo el inicio al del archivo
-    // NOTE: El plano 0 es el primer plano
-    // NOTE: El bloque 0 es el primer plano
-    current_offset += self->current_plane * plane_offset;
-    current_offset += self->current_block * block_offset;
-
-    return current_offset;
-}
-
-int osFile_get_blk_start_pos
-
 // Cargo la página "n_page" del bloque en el heap
 void osFile_load_page(osFile* self, int n_page) {
-    int base_offset;
+    long int page_offset;
+    FILE* file;  // Puntero a archivo
 
-    // Pido por el offset del bloque archivo
-    base_offset = osFile_get_blk_start_pos(self);
-    // Agrego el offset de la página
+    // ---- OFFSET ----
+    // Pido el offset del bloque archivo y la página del input
+    page_offset = calc_offset(self->current_plane,
+                              self->current_block,
+                              n_page,
+                              0, 0);
+
+    // ------ MEM -----
+    // Reservo memoria para la página
+    self->loaded_page = malloc(CELLS_PER_PAGE * BYTES_PER_CELL);
+    self->page_loaded = true;
+
+    // ------ I/O -----
+    // https://www.tutorialspoint.com/c_standard_library/c_function_fopen.htm
+    // Mode: "r" --> Opens a file for reading. The file must exist.
+    // https://stackoverflow.com/questions/2174889/whats-the-differences-between-r-and-rb-in-fopen
+    // 'You should use "rb" if you're opening non-text files, because in this case,
+    // the translations are not appropriate.'
+
+    // Abro un stream para el disco
+    file = fopen(self->disk, "rb");
+
+    // Desplazo el puntero al inicio de la pág.
+    fseek(file, page_offset, SEEK_SET)
+
+    //
 
 }
 
