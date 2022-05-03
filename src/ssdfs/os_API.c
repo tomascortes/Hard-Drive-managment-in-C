@@ -71,7 +71,7 @@ void os_bitmap(unsigned num) {
         printf("\nBitmap Bloque N°%d\n", num);
         // num / 8 es el byte donde se encuentra el bit deseado
         // num % 8 es el offset del bit dentro de ese byte
-        printf("%d\n", (buffer[num/8] & 1 << (7-num%8)) >> (7-num%8));
+        printf("%d\n", (buffer[num / 8] & 1 << (7 - num % 8)) >> (7 - num % 8));
 
         // En el momento 15:35 de la cápsula P1 dice que esto hay que entregarlo
         // aunque el argumento no sea 0
@@ -101,8 +101,9 @@ void os_bitmap(unsigned num) {
 void os_lifemap(int lower, int upper) {
     // Abro el archivo
     FILE *f = fopen(global_diskname, "rb");
+
     // Me muevo 1 MiB, para llegar al bloque N°1, de directorio.
-    fseek(f, 1048576, SEEK_SET);
+    fseek(f, 1 * BLOCK_SIZE, SEEK_SET);
 
     if (upper > 524288 || lower < -1 || lower > 524288 || upper < -2 ) {
         printf("Error de input para os_lifemap\n");
