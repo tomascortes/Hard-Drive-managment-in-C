@@ -258,7 +258,6 @@ void os_tree(){
 // ----- Funciones de manejo de archivos -----
 /* Permite revisar si un archivo existe o no. Retorna 1 en caso de que exista, 0 de caso
  * contrario. */
-
 int os_exists(char* filename) {  // TODO: Pendiente
     // Defino la verión recursiva de la función acá adentro
     // para cumplir con las reglas de no ofrecer más funciones en la API
@@ -317,7 +316,7 @@ int os_exists(char* filename) {  // TODO: Pendiente
     FILE *f = fopen(global_diskname, "rb");
 
     // Me muevo 3 MiB, para llegar al bloque N°3, de directorio.
-    fseek(f, 3145728, SEEK_SET);
+    fseek(f, BLOCK_SIZE * 3, SEEK_SET);
 
     // Son 32768 entradas en un bloque de directorio
     for (int i = 0; i < 32768; i++) {
@@ -431,7 +430,8 @@ int os_write(osFile* file_desc, void* buffer, int nbytes) {  // TODO: WIP
         exit(-1);
     }
 
-    long int max_size = 2 * 2048 * 256; // Numero de bytes en un bloque, no se puede escribir entre bloques
+    // Numero de bytes en un bloque, no se puede escribir entre bloques
+    long int max_size = BLOCK_SIZE;
     if (nbytes > max_size) {
         printf("Error: no se puede escribir un archivo tan grande.\n");
         exit(-1);
@@ -469,7 +469,6 @@ int os_rm(char* filename) {  // TODO: Pendiente
  * contador P/E de las páginas que sea necesario actualizar para crear las referencias
  * a este directorio. */
 int os_mkdir(char* path) {  // TODO: Pendiente
-    // Función auxiliar que busca el primer bloque vacío
     return 0;
 }
 
@@ -540,7 +539,7 @@ void print_names() {
 }
 
 // Prints bits of int
-/*for (int j = 31; j >= 0; j--){
+/*for (int j = 31; j >= 0; j--) {
     int bit = (puntero & (1 << j)) >> j; // Shift left para sacar el bit
-    printf("%d", bit );
+    printf("%d", bit);
 }*/
