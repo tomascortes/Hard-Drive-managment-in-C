@@ -16,15 +16,13 @@
 
 #pragma once
 
-#define PLANES_PER_DISK 2
-#define BLOCKS_PER_PLANE 1024
-#define PAGES_PER_BLOCK 256
-#define CELLS_PER_PAGE 2048
-#define BYTES_PER_CELL 2
+#include <stdbool.h>
+#include <stdlib.h>
+#include <string.h>
 
 // Representación de archivos abiertos mediate struct
 typedef struct osFile {
-    char *name;  // Nombre del archivo
+    char* name;  // Nombre del archivo
     // Puse 2 caracteres para que sea un poco más a prueba de errores
     char mode[2]; // r -> ReadOnly || w-> WriteOnly || {rw,wr,r+} -> ReadWrite || N -> Null
 
@@ -44,6 +42,9 @@ typedef struct osFile {
     int current_pos; // Posición actual dentro de la página actual
     // pos --> {0..4096}
 
+    void* loaded_page; //página cargada en memoria
+    bool page_loaded; // Si una página está cargada o no en heap
+
 } osFile;
 
 osFile* osFile_new(char* name, char* disk_pointer);
@@ -55,5 +56,6 @@ osFile* osFile_set_location(osFile* self,
                             // Bloque de índice dice el tamaño del archivo
                             int length_bytes);
 osFile* osFile_offset_pointer(osFile* self, int offset);
+int osFile_get_blk_start_pos(osFile* self);
 void osFile_destroy(osFile* self);
 

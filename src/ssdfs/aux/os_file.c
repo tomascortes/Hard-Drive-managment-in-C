@@ -14,9 +14,6 @@
  * | Luis González    | ljgonzalez1    | ljgonzalez@uc.cl  | 16625439    |
  * +------------------+----------------+-------------------+-------------+ */
 
-#include <stdbool.h>
-#include <stdlib.h>
-#include <string.h>
 #include "os_file.h"
 
 // ----- Structs -----
@@ -69,25 +66,6 @@ osFile* osFile_offset_pointer(osFile* self, int offset) {
     self->current_pos = self->current_pos + offset;
 }
 
-char* osFile_get_block(osFile* self) {
-    return;
-}
-
-char* osFile_get_page(osFile* self, char* block, int page) {
-    return;
-}
-
-// Reserva espacio para un array de bytes
-void osFile_load_page(osFile* self, char* block, int page) {
-
-    return;
-}
-
-// Libero la memoria de la página
-void osFile_release_page(osFile* self, char* block, int page) {
-    return;
-}
-
 int osFile_get_blk_start_pos(osFile* self) {
     // Defino variables
     int current_offset = 0;
@@ -106,6 +84,42 @@ int osFile_get_blk_start_pos(osFile* self) {
 
     return current_offset;
 }
+
+int osFile_get_blk_start_pos
+
+// Cargo la página "n_page" del bloque en el heap
+void osFile_load_page(osFile* self, int n_page) {
+    int base_offset;
+
+    // Pido por el offset del bloque archivo
+    base_offset = osFile_get_blk_start_pos(self);
+    // Agrego el offset de la página
+
+}
+
+char* osFile_get_block(osFile* self) {
+    return;
+}
+
+char* osFile_get_page(osFile* self, char* block, int page) {
+
+    return;
+}
+
+
+
+// Libero la memoria de la página
+void osFile_release_page(osFile* self, char* block, int page) {
+
+    return;
+}
+
+
+
+
+
+
+
 
 void osFile_destroy(osFile* self) {
     // Libero memoria puntero nombre
