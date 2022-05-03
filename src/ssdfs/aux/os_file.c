@@ -40,7 +40,7 @@ osFile* osFile_new(char* name, char* disk_pointer) {
 /// Settea el modo de operación (read/write)
 void osFile_set_mode(osFile* self, char* mode) {
     // Revisar validez
-    /// https://stackoverflow.com/questions/19365901/how-do-i-modify-the-character-array-in-this-struct-c
+    // https://stackoverflow.com/questions/19365901/how-do-i-modify-the-character-array-in-this-struct-c
     strncpy(self->mode,  // Atributo a modificar
             mode,  // Nuevo contenido
             sizeof(self->mode));  // Máximo espacio (Para evitar stack overflow)
