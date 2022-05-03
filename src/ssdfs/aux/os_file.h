@@ -87,7 +87,6 @@ void osFile_release_page_if_loaded(osFile* self);
 void osFile_release_page(osFile* self);
 
 // ----- Data -----
-
 /// Carga datos desde la página cargada en memoria a un array.
 void osFile_load_data(osFile* self, int start, int end);
 

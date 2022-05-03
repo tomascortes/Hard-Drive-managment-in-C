@@ -119,8 +119,9 @@ void osFile_copy_page_data(osFile* self, long int offset) {
     fclose(file);
 }
 
-/// Entrega un puntero con un array del byte n al m de la página cargada
+/// Carga datos desde la página cargada en memoria a un array.
 void osFile_load_data(osFile* self, int start, int end) {
+    // REVIEW: Favor revisar que haga bien la copia
 
 }
 
