@@ -60,7 +60,7 @@ void osFile_set_location(osFile* self,
                             int length_bytes);
 void osFile_offset_pointer(osFile* self, int offset);
 void osFile_load_page(osFile* self, int n_page);
-void osFile_copy_page_data(osFile* self, long int page_offset);
+void osFile_copy_page_data(osFile* self, long int offset);
 void osFile_release_page_if_loaded(osFile* self);
 void osFile_release_page(osFile* self);
 void osFile_destroy(osFile* self);

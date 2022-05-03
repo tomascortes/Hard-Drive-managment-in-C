@@ -17,7 +17,8 @@
 #include "os_file.h"
 
 // ----- Structs -----
-/* Representa un archivo abierto con todos sus atributos */
+/// Crea una nueva instancia de la representación de un archivo
+/// y retorna su ubicación en memoria
 osFile* osFile_new(char* name, char* disk_pointer) {
     // Reservo memoria
     osFile* instance_pointer = malloc(sizeof(osFile));
@@ -36,17 +37,16 @@ osFile* osFile_new(char* name, char* disk_pointer) {
     return instance_pointer;
 }
 
-// Settea el modo de operación (read/write)
+/// Settea el modo de operación (read/write)
 void osFile_set_mode(osFile* self, char* mode) {
     // Revisar validez
     /// https://stackoverflow.com/questions/19365901/how-do-i-modify-the-character-array-in-this-struct-c
     strncpy(self->mode,  // Atributo a modificar
             mode,  // Nuevo contenido
             sizeof(self->mode));  // Máximo espacio (Para evitar stack overflow)
-
-    return self;
 }
 
+/// Settea la ubicación del puntero y largo del archivo
 void osFile_set_location(osFile* self,
                             int plane,
                             int block,
@@ -65,7 +65,7 @@ void osFile_offset_pointer(osFile* self, int offset) {
     self->current_pos = self->current_pos + offset;
 }
 
-// Cargo la página "n_page" del bloque en el heap
+/// Cargo la página "n_page" del bloque en la dirección de memoria self->loaded_page
 void osFile_load_page(osFile* self, int n_page) {
     // TODO: Revisar que página que mando no esté rotten.
     //  idealmente ANTES de pedir la lectura en esta función.
@@ -91,46 +91,47 @@ void osFile_load_page(osFile* self, int n_page) {
     osFile_copy_page_data(self, page_offset);
 }
 
-// Carga los datos de la página en la memoria
-void osFile_copy_page_data(osFile* self, long int page_offset) {
+/// Carga los datos del disco en memoria dado un offset
+void osFile_copy_page_data(osFile* self, long int offset) {
     FILE* file;  // Puntero a archivo
 
-    /// https://www.tutorialspoint.com/c_standard_library/c_function_fopen.htm
-    /// Mode: "r" --> Opens a file for reading. The file must exist.
-    /// https://stackoverflow.com/questions/2174889/whats-the-differences-between-r-and-rb-in-fopen
-    /// 'You should use "rb" if you're opening non-text files, because in this case,
-    /// the translations are not appropriate.'
+    //  https://www.tutorialspoint.com/c_standard_library/c_function_fopen.htm
+    //  Mode: "r" --> Opens a file for reading. The file must exist.
+    //  https://stackoverflow.com/questions/2174889/whats-the-differences-between-r-and-rb-in-fopen
+    //  'You should use "rb" if you're opening non-text files, because in this case,
+    //  the translations are not appropriate.'
     // Abro un stream para el disco
     file = fopen(self->disk, "rb");
 
     // Desplazo el puntero al inicio de la pág.
-    fseek(file, page_offset, SEEK_SET);
+    fseek(file, offset, SEEK_SET);
 
-    /// https://www.tutorialspoint.com/c_standard_library/c_function_fread.htm
-    /// size_t fread(void *ptr, size_t size, size_t nmemb, FILE *stream)
-    ///     ptr − This is the pointer to a block of memory with a minimum size of size*nmemb bytes.
-    ///     size − This is the size in bytes of each element to be read.
-    ///     nmemb − This is the number of elements, each one with a size of size bytes.
-    ///     stream − This is the pointer to a FILE object that specifies an input stream.
+    //  https://www.tutorialspoint.com/c_standard_library/c_function_fread.htm
+    //  size_t fread(void *ptr, size_t size, size_t nmemb, FILE *stream)
+    //      ptr − This is the pointer to a block of memory with a minimum size of size*nmemb bytes.
+    //      size − This is the size in bytes of each element to be read.
+    //      nmemb − This is the number of elements, each one with a size of size bytes.
+    //      stream − This is the pointer to a FILE object that specifies an input stream.
     // Cargo el contenido de la página en el heap
     fread(self->loaded_page, PAGE_SIZE, 1, file);
 
     fclose(file);
 }
 
-// Si hay una página cargada, la libera
+/// Si hay una página cargada, la libera
 void osFile_release_page_if_loaded(osFile* self) {
     if (self->has_page_loaded) {
         osFile_release_page(self);
     }
 }
 
-// Libero la memoria de la página
+/// Libero la memoria de la página
 void osFile_release_page(osFile* self) {
     free(self->loaded_page);
     self->has_page_loaded = false;
 }
 
+/// Libera la memoria de todo lo asociado al struct. Luego libera la memoria del struct mismo.
 void osFile_destroy(osFile* self) {
     // Libero memoria puntero nombre
     free(self->name);
