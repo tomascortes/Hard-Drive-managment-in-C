@@ -34,6 +34,8 @@ void mark_as_used(int bloque) {
 
     // FIXME: "Narrowing conversion from 'unsigned char' to signed type 'char'
     //  is implementation-defined"
+    //  --------------------------------------------------------
+    //  Cambiarlo a 'unsigned char' resuelve el problema aquí pero genera otro con point_data
     char data = buffer[byte]; // Saco el byte que me sirve
 
     fclose(f);
@@ -41,11 +43,20 @@ void mark_as_used(int bloque) {
 
     // FIXME: "Narrowing conversion from 'int' to signed type 'char' is
     //  implementation-defined"
+    //  --------------------------------------------------------
+    //  El uso de 'unsigned char' en data lo resolvería.
     // Convierto el bit que me interesa en 1
     data = (data | (1 << offset)) >> offset;
     printf("Data after: %i", data);
 
     // Puntero al byte de datos a escribir
+    // WARN: Si se cambia data a 'unsigned char' se produce el siguiente problema:
+    //  "Initializing 'char *' with an expression of type 'unsigned char *' converts
+    //  between pointers to integer types where one is of the unique plain 'char'
+    //  type and the other is not"
+    //  --------------------------------------------------------
+    //  Para solucionarlo habría que cambiar point_data a 'unsigned char*', pero no sé
+    //  Si ocurra algún tipo de comportamiento inesperado, así que lo dejo así por ahora.
     char* point_data = &data;
     f = fopen(global_diskname, "wb");
 
