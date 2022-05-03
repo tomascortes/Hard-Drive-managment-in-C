@@ -33,9 +33,10 @@ void os_mount(char* diskname, unsigned life) {
     /* Crea una variable global con el nombre del archivo y otra con el
      * valor de life */
     strcpy(global_diskname, diskname);
-    // FIXME: "Narrowing conversion from 'unsigned int' to signed type 'int'
-    //  is implementation-defined"
-    //  Tal vez algún check o casteo lo arregla?
+    //// FIXME: "Narrowing conversion from 'unsigned int' to signed type 'int'
+    ////  is implementation-defined"
+    ////  --------------------------------------------------------
+    ////  Tal vez algún check o casteo lo arregla?
     global_P_E = life;
     unactualized_change = 0;
 }
@@ -54,8 +55,8 @@ void os_bitmap(unsigned num) {
     if (num == 0) {
         printf("\nBitmap del Disco\n");
 
-        int fill=0;
-        int free=0;
+        int fill = 0;
+        int free = 0;
 
         for (int i = 0; i < 256; i++) {
             for (int j = 7; j >= 0; j--) {
@@ -71,7 +72,7 @@ void os_bitmap(unsigned num) {
         printf("\nBitmap Bloque N°%d\n", num);
         // num / 8 es el byte donde se encuentra el bit deseado
         // num % 8 es el offset del bit dentro de ese byte
-        printf("%d\n", (buffer[num/8] & 1 << (7-num%8)) >> (7-num%8));
+        printf("%d\n", (buffer[num / 8] & 1 << (7 - num % 8)) >> (7 - num % 8));
 
         // En el momento 15:35 de la cápsula P1 dice que esto hay que entregarlo
         // aunque el argumento no sea 0
@@ -101,16 +102,17 @@ void os_bitmap(unsigned num) {
 void os_lifemap(int lower, int upper) {
     // Abro el archivo
     FILE *f = fopen(global_diskname, "rb");
-    // Me muevo 1 MiB, para llegar al bloque N°1, de directorio.
-    fseek(f, 1048576, SEEK_SET);
 
-    if (upper > 524288 || lower < -1 || lower > 524288 || upper < -2 ) {
+    // Me muevo 1 MiB, para llegar al bloque N°1, de directorio.
+    fseek(f, 1 * BLOCK_SIZE, SEEK_SET);
+
+    if (upper > PAGES_PER_DISK || lower < -1 || lower > PAGES_PER_DISK || upper < -2 ) {
         printf("Error de input para os_lifemap\n");
         return;
     }
 
     if (lower  == -1 && upper == -1) {
-        upper = 524288;
+        upper = PAGES_PER_DISK;
         lower = 0;
     }
 
@@ -120,7 +122,7 @@ void os_lifemap(int lower, int upper) {
     int block_visited = 0;
     // Son 524288 paginas entre los 2 planos, por lo que recorremos 524288 numeros
     // Son 4096 bloques en el disco
-    for (int i = 0; i < 524288; i++) {
+    for (int i = 0; i < PAGES_PER_DISK; i++) {
         int buffer; // see leen ints de 4 bytes
         fread(&buffer, sizeof(int), 1, f); // Leo una entrada de un int
 
@@ -129,10 +131,10 @@ void os_lifemap(int lower, int upper) {
             block_visited = 1;
         }
 
-        if (i%256 == 0 && block_visited == 1){
+        if (i % 256 == 0 && block_visited == 1){
           // Se suman las condiciones de bloque visitado
             rotten_blocks += rotten_found;
-            total_blocks ++;
+            total_blocks++;
             rotten_found = 0;
             block_visited = 0;
         }
@@ -143,7 +145,6 @@ void os_lifemap(int lower, int upper) {
     printf("\nCantidad de bloques rotten: %d", rotten_blocks);
     printf("\nCantidad de bloques sanos: %d\n", total_blocks - rotten_blocks);
     fclose(f); // Evitamos leaks
-    return;
 }
 
 /* Esta función debe recorrer el disco completo. Para cada bloque que contenga páginas
@@ -164,16 +165,20 @@ int os_trim(unsigned limit) {  // TODO: Pendiente
 void os_tree(){
     // Defino la verión recursiva de la función acá adentro
     // para cumplir con las reglas de no ofrecer más funciones en la API
-    // FIXME: "Function definition is not allowed here"
-    //  No se puede definir una función dentro de otra
+    //// FIXME: Me tira error.
+    ////  "Function definition is not allowed here"
+    ////  No se debería definir una función dentro de otra.
+    ////  --------------------------------------------------------
+    ////  Tal vez sirva definirla en otro lado. Está el paquete, librería o como se llame
+    ////  en C, ./aux/auxiliary_fx. Tal vez poner esto ahí sea conveniente.
     void directree(int directory_block, int depth) {
         FILE* f2 = fopen(global_diskname, "rb");
-        fseek(f2, directory_block * 1048576, SEEK_SET);
+        fseek(f2, directory_block * BLOCK_SIZE, SEEK_SET);
         // Cada bloque tiene 1048576 bytes
         
         // Son 32768 entradas en un bloque de directorio
-        for (int i = 0; i < 32768; i++) {
-            unsigned char buffer[32]; // Buffer para guardar los bytes de una entrada
+        for (int i = 0; i < DIR_ENTRIES_PER_BLOCK; i++) {
+            unsigned char buffer[DIR_ENTRY_SIZE]; // Buffer para guardar los bytes de una entrada
             fread(buffer, sizeof(buffer), 1, f2); // Leo una entrada
 
             if(buffer[0] == 3) { // archivo:
@@ -181,7 +186,7 @@ void os_tree(){
                     printf("| ");
                 }
 
-                for (int j = 5; j < 32; j++) {
+                for (int j = 5; j < DIR_ENTRY_SIZE; j++) {
                     printf("%c", buffer[j]);
                 }
 
@@ -193,13 +198,18 @@ void os_tree(){
                     printf("| ");
                 }
 
-                for (int j = 5; j < 32; j++) {
+                for (int j = 5; j < DIR_ENTRY_SIZE; j++) {
                     printf("%c", buffer[j]);
                 }
 
                 printf("\n");
                 depth++; // Subo la profundidad en 1
                 int puntero = buffer[1];
+                //// FIXME: Me tira error.
+                ////  Hace referencia a una función que marca como indefinida.
+                ////  --------------------------------------------------------
+                ////  Supongo que no definir una función dentro de otra solucionaría el
+                ////  problema
                 directree(puntero, depth); // Llamada recursiva
                 depth--; // Vuelvo a la profundidad anterior
             }
@@ -212,28 +222,33 @@ void os_tree(){
     FILE *f = fopen(global_diskname, "rb");
 
     // Me muevo 3 MiB, para llegar al bloque N°3, de directorio.
-    fseek(f, 3145728, SEEK_SET);
+    fseek(f, 3 * BLOCK_SIZE, SEEK_SET);
 
     printf("~\n"); // root
     int depth = 1; // Para cachar que tan profundo estoy
 
     // Son 32768 entradas en un bloque de directorio
-    for (int i = 0; i < 32768; i++) {
-        unsigned char buffer[32];
+    for (int i = 0; i < DIR_ENTRIES_PER_BLOCK; i++) {
+        unsigned char buffer[DIR_ENTRY_SIZE];
         // Buffer para guardar los bytes de una entrada
         fread(buffer, sizeof(buffer), 1, f); // Leo una entrada
 
-        if(buffer[0] == 1){ // directorio:
+        if (buffer[0] == 1) { // directorio:
             for (int k = 0; k < depth; k++) { // Desplazar depth a la derecha
                 printf("| ");
             }
-            for (int j = 5; j < 32; j++) { // Printear nombre del directorio
+            for (int j = 5; j < DIR_ENTRY_SIZE; j++) { // Printear nombre del directorio
                 printf("%c", buffer[j]);
             }
 
             printf("\n");
             int puntero = buffer[1]; // Pesco los bytes 1-4
             depth++; // Subo la profundidad en 1
+            //// FIXME: Me tira error.
+            ////  Hace referencia a una función que marca como indefinida.
+            ////  --------------------------------------------------------
+            ////  Supongo que no definir una función dentro de otra solucionaría el
+            ////  problema
             directree(puntero, depth); // Función recursiva para leer
                                           // dentro del directorio
             depth--; // Vuelvo a la profundidad anterior
@@ -243,7 +258,7 @@ void os_tree(){
             for (int k = 0; k < depth; k++) {
                 printf("| ");
             }
-            for (int j = 5; j < 32; j++) { // Printear nombre del archivo
+            for (int j = 5; j < DIR_ENTRY_SIZE; j++) { // Printear nombre del archivo
                 printf("%c", buffer[j]);
             }
 
@@ -257,28 +272,37 @@ void os_tree(){
 // ----- Funciones de manejo de archivos -----
 /* Permite revisar si un archivo existe o no. Retorna 1 en caso de que exista, 0 de caso
  * contrario. */
-
 int os_exists(char* filename) {  // TODO: Pendiente
     // Defino la verión recursiva de la función acá adentro
     // para cumplir con las reglas de no ofrecer más funciones en la API
-    // FIXME: "Function definition is not allowed here"
-    //  No se puede definir una función dentro de otra
+    //// FIXME: Me tira error.
+    ////  "Function definition is not allowed here"
+    ////  No se debería definir una función dentro de otra.
+    ////  --------------------------------------------------------
+    ////  Tal vez sirva definirla en otro lado. Está el paquete, librería o como se llame
+    ////  en C, ./aux/auxiliary_fx. Tal vez poner esto ahí sea conveniente.
+    ////  --------------------------------------------------------
+    ////  Además es casi lo mismo que lo que está arriba.
+    ////  Estoy seguro que se puede hacer de tal forma que resulte los siguiente
+    ////  os_tree   -> directree_general -> directree_solo_diferencias
+    ////  os_exists -> directree_general -> directreen_solon_diferenciasn
+    ////  Además califica al tiro como "code smell" por el código repetido.
     int directreen(int directory_block, char* filename, char* path) {
         FILE* f2 = fopen(global_diskname, "rb");
-        fseek(f2, directory_block * 1048576, SEEK_SET);
+        fseek(f2, directory_block * BLOCK_SIZE, SEEK_SET);
         // Cada bloque tiene 1048576 bytes
-        
+
         // Son 32768 entradas en un bloque de directorio
-        for (int i = 0; i < 32768; i++) {
-            unsigned char buffer[32]; // Buffer para guardar los bytes de una entrada
+        for (int i = 0; i < DIR_ENTRIES_PER_BLOCK; i++) {
+            unsigned char buffer[DIR_ENTRY_SIZE]; // Buffer para guardar los bytes de una entrada
             fread(buffer, sizeof(buffer), 1, f2); // Leo una entrada
 
             if(buffer[0] == 3) { // archivo:
                 char path2[100]; // path actual
                 char aux[2]; // variable para concatenar char
                 strcpy(path2, path); // Copiar strings
-                for (int j = 5; j < 32; j++) { // Printear nombre del archivo
-                    aux[1] = '\0'; 
+                for (int j = 5; j < DIR_ENTRY_SIZE; j++) { // Printear nombre del archivo
+                    aux[1] = '\0';
                     aux[0] = buffer[j];
                     strcat(path2, aux); // Concatenar char
                 }
@@ -292,17 +316,22 @@ int os_exists(char* filename) {  // TODO: Pendiente
                 char path2[100]; // path actual
                 char aux[2]; // variable para concatenar char
                 strcpy(path2, path); // Copiar strings
-                for (int j = 5; j < 32; j++) { // Printear nombre del directorio
+                for (int j = 5; j < DIR_ENTRY_SIZE; j++) { // Printear nombre del directorio
                     aux[1] = '\0';
                     aux[0] = buffer[j];
                     strcat(path2, aux); // Concatenar char
                 }
                 strcat(path, "/"); // Concatenar nuevo directorio
                 int puntero = buffer[1]; // Pesco los bytes 1-4
+                //// FIXME: Me tira error.
+                ////  Hace referencia a una función que marca como indefinida.
+                ////  --------------------------------------------------------
+                ////  Supongo que no definir una función dentro de otra solucionaría el
+                ////  problema
                 if (directreen(puntero, filename, path2)){// Función recursiva para leer
                     fclose(f2); // Evitamos leaks
                     return 1;
-                }; 
+                };
             }
         }
 
@@ -316,17 +345,17 @@ int os_exists(char* filename) {  // TODO: Pendiente
     FILE *f = fopen(global_diskname, "rb");
 
     // Me muevo 3 MiB, para llegar al bloque N°3, de directorio.
-    fseek(f, 3145728, SEEK_SET);
+    fseek(f, BLOCK_SIZE * 3, SEEK_SET);
 
     // Son 32768 entradas en un bloque de directorio
-    for (int i = 0; i < 32768; i++) {
-        unsigned char buffer[32];
+    for (int i = 0; i < DIR_ENTRIES_PER_BLOCK; i++) {
+        unsigned char buffer[DIR_ENTRY_SIZE];
         // Buffer para guardar los bytes de una entrada
         fread(buffer, sizeof(buffer), 1, f); // Leo una entrada
         if(buffer[0] == 3){ // archivo:
             char path[100] = "/"; // path inicial
             char aux[2]; // variable para concatenar char
-            for (int j = 5; j < 32; j++) { // Printear nombre del archivo
+            for (int j = 5; j < DIR_ENTRY_SIZE; j++) { // Printear nombre del archivo
                 aux[1] = '\0';
                 aux[0] = buffer[j];
                 strcat(path, aux); // Concatenar char
@@ -337,22 +366,27 @@ int os_exists(char* filename) {  // TODO: Pendiente
                 printf("¡Esta!\n");
                 return 1;
             }
-        } 
+        }
         else if (buffer[0] == 1) { // directorio:
             char path[100] = "/"; // path inicial
             char aux[2]; // variable para concatenar char
-            for (int j = 5; j < 32; j++) { // Printear nombre del directorio
+            for (int j = 5; j < DIR_ENTRY_SIZE; j++) { // Printear nombre del directorio
                 aux[1] = '\0';
                 aux[0] = buffer[j];
                 strcat(path, aux); // Concatenar char
             }
             strcat(path, "/");
             int puntero = buffer[1]; // Pesco los bytes 1-4
+            //// FIXME: Me tira error.
+            ////  Hace referencia a una función que marca como indefinida.
+            ////  --------------------------------------------------------
+            ////  Supongo que no definir una función dentro de otra solucionaría el
+            ////  problema
             if (directreen(puntero, filename, path)){// Función recursiva para leer
                 fclose(f); // Evitamos leaks
                 printf("¡Esta!\n");
                 return 1;
-            }; 
+            };
         }
     }
 
@@ -368,8 +402,8 @@ osFile* os_open(char* filename, char mode) {  // TODO: Pendiente
     // if (os_exist(...) || ! mode == "w") { ...
     osFile* file_desc = osFile_new(filename, global_diskname);
     // TODO: ...
-    //file_desc = osFile_set_mode(file_desc, &mode);
-    //file_desc = osFile_set_location(...);
+    //osFile_set_mode(file_desc, &mode);
+    //osFile_set_location(...);
     // TODO: ...
     // }
     return file_desc;
@@ -382,8 +416,6 @@ osFile* os_open(char* filename, char mode) {  // TODO: Pendiente
  * archivo contenga páginas rotten. La lectura de read se efectúa desde la posición del
  * archivo inmediatamente posterior a la última posición leı́da por un llamado a read. */
 // NOTE: Asumo que los inputs cumplen las siguientes características
-//  - file_desc: Tiene un archivo existente asociado en modo lectura que no ha sido leído por completo aún
-//  - nbytes: entero positivo que no hace overflow del archivo
 // TODO: Hacer que acepte números mayores a el espacio restante.
 // TODO: Procesar págs. rotten.
 int os_read(osFile* file_desc, void* buffer, int nbytes) {  // NOTE: Trabajando en esto
@@ -398,11 +430,7 @@ int os_read(osFile* file_desc, void* buffer, int nbytes) {  // NOTE: Trabajando 
     starting_pos = file_desc->current_pos;
 
     for (iter = 0; iter <= nbytes; iter++) {
-        file_desc = osFile_offset_pointer(file_desc, 1);
-
-        // --> Celda: 2B
-        // --> Página: 2048 celdas --> 4KiB
-        // --> Bloque[*long int]: 256 páginas --> 524288 celdas --> 1MiB
+        osFile_offset_pointer(file_desc, 1);
         // Lectura y escritura usando little endian
         // Lectura de páginas completas
 
@@ -430,7 +458,8 @@ int os_write(osFile* file_desc, void* buffer, int nbytes) {  // TODO: WIP
         exit(-1);
     }
 
-    long int max_size = 2 * 2048 * 256; // Numero de bytes en un bloque, no se puede escribir entre bloques
+    // Numero de bytes en un bloque, no se puede escribir entre bloques
+    long int max_size = BLOCK_SIZE;
     if (nbytes > max_size) {
         printf("Error: no se puede escribir un archivo tan grande.\n");
         exit(-1);
@@ -448,7 +477,7 @@ int os_close(osFile* file_desc) {  // TODO: Pendiente
     }
 
     else {
-        free(file_desc);  // XXX: Por qué se libera memoria aquí??
+        free(file_desc);  //// XXX: Por qué se libera memoria aquí??
         osFile_destroy(file_desc);
     }
 
@@ -468,7 +497,6 @@ int os_rm(char* filename) {  // TODO: Pendiente
  * contador P/E de las páginas que sea necesario actualizar para crear las referencias
  * a este directorio. */
 int os_mkdir(char* path) {  // TODO: Pendiente
-    // Función auxiliar que busca el primer bloque vacío
     return 0;
 }
 
@@ -509,7 +537,7 @@ void print_names() {
     FILE *f = fopen(global_diskname, "rb");
 
     // Me muevo 3 MiB, para llegar al bloque N°3, del directorio base.
-    int offset = 3 * 1024 * 1024; // 3MiB
+    int offset = 3 * BLOCK_SIZE; // 3MiB
     fseek(f, offset, SEEK_SET);
 
     // root está en el bloque 3 por convención, por lo que si
@@ -539,7 +567,7 @@ void print_names() {
 }
 
 // Prints bits of int
-/*for (int j = 31; j >= 0; j--){
+/*for (int j = 31; j >= 0; j--) {
     int bit = (puntero & (1 << j)) >> j; // Shift left para sacar el bit
-    printf("%d", bit );
+    printf("%d", bit);
 }*/

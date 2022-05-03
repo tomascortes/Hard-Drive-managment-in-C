@@ -14,46 +14,30 @@
  * | Luis González    | ljgonzalez1    | ljgonzalez@uc.cl  | 16625439    |
  * +------------------+----------------+-------------------+-------------+ */
 
-// Compilar sólo una vez
+/* Para funciónes auxiliares */
+
 #pragma once
 
-#include <unistd.h>
-#include <stdio.h>
-#include <stdbool.h>
+#define PLANES_PER_DISK 2
+#define BLOCKS_PER_PLANE 1024
+#define PAGES_PER_BLOCK 256
+#define CELLS_PER_PAGE 2048
+#define BYTES_PER_CELL 2
 
-// Constante
-#define DEBUG_MODE 1
-#define SIMULATE_WAIT 1
-#define WAITING_TIME 250  // ms
-#define WAITING_TIME2 1000  // ms
-#define WAITING_TIME3 2000  // ms
+#define DIR_ENTRY_SIZE 32
 
-// Funciones
-void wait_debug(int time_ms);
-void just_wait_debug();
-void wait_longer_debug();
-void wait_a_bit_debug();
+// Dependen de las de antes
+#define CELL_SIZE BYTES_PER_CELL  // 2 B
+#define PAGE_SIZE (CELL_SIZE * CELLS_PER_PAGE)  // 4096 B = 4kiB
+#define BLOCK_SIZE (PAGE_SIZE * PAGES_PER_BLOCK)  // 1048576 B = 1MiB
+#define PLANE_SIZE (BLOCK_SIZE * BLOCKS_PER_PLANE)  // 1073741824 B = 1GiB
+#define DISK_SIZE (PLANE_SIZE * PLANES_PER_DISK)  // 2147483648 B = 2GiB
 
-void dprint_line();
-void dprint_txt();
-void dprint_txt2();
+#define PAGES_PER_DISK (PLANES_PER_DISK * BLOCKS_PER_PLANE * PAGES_PER_BLOCK)  // 524288 pgs
+#define DIR_ENTRIES_PER_BLOCK 32768  // No puse la división por miedo a que cambie el tipo de variable
 
-void dprint_char_xx(char **input);
-void dprint_char_x(char *input);
-void dprint_txt_char_xx(char **input);
-void dprint_txt_char_x(char *input);
-void dprint_char_xx2(char **input);
-void dprint_char_x2(char *input);
-void dprint_txt_char_xx2(char **input);
-void dprint_txt_char_x2(char *input);
-
-void dprint_pid(pid_t process_id);
-void dprint_txt_pid(pid_t process_id);
-
-void dprint_int(int input);
-void dprint_txt_int(int input);
-
-void dprint_float(float input);
-void dprint_txt_float(float input);
-
-void print_debug(char *input);
+long int calc_offset(int plane, // Número de planos
+                     int block, // Número de bloques
+                     int page, // Número de páginas
+                     int cell, // Número de celdas
+                     int bytes); // Número de bytes
