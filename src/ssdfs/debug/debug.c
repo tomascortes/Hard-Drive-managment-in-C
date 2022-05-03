@@ -184,8 +184,3 @@ void print_debug(char *input) {
         dprint_txt_char_x(input);
     }
 }
-
-
-void print_debug(char *input) {
-    dprint_txt_char_x(input);
-}
