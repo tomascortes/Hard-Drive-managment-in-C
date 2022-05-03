@@ -121,8 +121,22 @@ void osFile_copy_page_data(osFile* self, long int offset) {
 
 /// Carga datos desde la página cargada en memoria a un array.
 void osFile_load_data(osFile* self, int start, int end) {
-    // REVIEW: Favor revisar que haga bien la copia
+    int bytes_amount = end - start;
 
+    // Check de memoria
+    osFile_release_data_if_loaded(self);
+
+    // Reservo memoria para los bytes que voy a guardar
+    self->loaded_data = malloc(bytes_amount);
+
+    // Copio bytes
+    // ...Para cada byte del rango, lo copio a la nueva memoria
+    for (int bytes_copied = 0;
+         bytes_copied < bytes_amount;
+         bytes_copied++) {
+        // REVIEW: Favor revisar que haga bien la copia
+        self->loaded_data[bytes_copied] = self->loaded_page[start + bytes_copied];
+    }
 }
 
 /// Si hay una página cargada, la libera
