@@ -56,7 +56,8 @@ typedef struct osFile {
 } osFile;
 
 // ----- Setup -----
-/// Crea una nueva instancia de la representación de un archivo y retorna su ubicación en memoria
+/// Crea una nueva instancia de la representación de un archivo y retorna su
+/// ubicación en memoria
 osFile* osFile_new(char* name, char* disk_pointer);
 
 /// Settea el modo de operación (read/write)
@@ -73,7 +74,7 @@ void osFile_set_location(osFile* self,
 /// Desplazo el puntero n espacios
 void osFile_offset_pointer(osFile* self, int offset);
 
-// ----- Offser -----
+// ----- Offset -----
 /// Calcula el offset de una página del archivo en relación al inicio del disco
 long int osFile_calc_page_offset(osFile* self, int n_page);
 
@@ -100,6 +101,7 @@ void osFile_transfer_page(osFile* self, unsigned char content[PAGE_SIZE]);
 void osFile_write_page(osFile* self, int n_page);
 
 // ------ Mem -----
+/// Reservo memoria para una página y la asigno a self->loaded_page
 void osFile_reserve_page_mem(osFile* self);
 
 // ----- Data -----

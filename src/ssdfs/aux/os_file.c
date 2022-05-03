@@ -16,7 +16,9 @@
 
 #include "./os_file.h"
 
-// ----- Structs -----
+// ========================== Struct ==========================
+
+// =======================--- Setup ---========================
 /// Crea una nueva instancia de la representación de un archivo
 /// y retorna su ubicación en memoria
 osFile* osFile_new(char* name, char* disk_pointer) {
@@ -60,12 +62,30 @@ void osFile_set_location(osFile* self,
     self->current_pos = 0;
 }
 
+// ====================--- File pointer ---====================
+
 /// Desplazo el puntero n espacios
 void osFile_offset_pointer(osFile* self, int offset) {
     // TODO: revisar límites
     self->current_pos = self->current_pos + offset;
 }
 
+// =======================--- Offset ---=======================
+/// Calcula el offset de una página del archivo en relación al inicio del disco
+long int osFile_calc_page_offset(osFile* self, int n_page) {
+    long int page_offset;
+
+    // ---- OFFSET ----
+    // Pido el offset del bloque archivo y la página del input
+    page_offset = calc_offset(self->current_plane,
+                              self->current_block,
+                              n_page,
+                              0, 0);
+
+    return page_offset;
+}
+
+// =======================--- Page-R ---=======================
 /// Cargo la página "n_page" del bloque en la dirección de memoria self->loaded_page
 void osFile_load_page(osFile* self, int n_page) {
     // TODO: Revisar que página que mando no esté rotten.
@@ -112,26 +132,7 @@ void osFile_copy_page_data(osFile* self, long int offset) {
     fclose(file);
 }
 
-/// Carga datos desde la página cargada en memoria a un array.
-void osFile_load_data(osFile* self, int start, int end) {
-    int bytes_amount = end - start;
-
-    // Check de memoria
-    osFile_release_data_if_loaded(self);
-
-    // Reservo memoria para los bytes que voy a guardar
-    self->loaded_data = malloc(bytes_amount);
-
-    // Copio bytes
-    // ...Para cada byte del rango, lo copio a la nueva memoria
-    for (int bytes_copied = 0;
-         bytes_copied < bytes_amount;
-         bytes_copied++) {
-        // REVIEW: Favor revisar que haga bien la copia
-        self->loaded_data[bytes_copied] = self->loaded_page[start + bytes_copied];
-    }
-}
-
+// ========================--- Page ---========================
 /// Si hay una página cargada, la libera
 void osFile_release_page_if_loaded(osFile* self) {
     if (self->has_page_loaded) {
@@ -145,46 +146,10 @@ void osFile_release_page(osFile* self) {
     self->has_page_loaded = false;
 }
 
-/// Si hay una página cargada, la libera
-void osFile_release_data_if_loaded(osFile* self) {
-    if (self->has_data_loaded) {
-        osFile_release_data(self);
-    }
-}
-
-/// Libero la memoria de la página
-void osFile_release_data(osFile* self) {
-    free(self->loaded_data);
-    self->has_data_loaded = false;
-}
-
-void osFile_reserve_page_mem(osFile* self) {
-    // ---- Checks ----
-    // Saco páginas cargada si es que hay
-    osFile_release_page_if_loaded(self);
-
-    // ------ MEM -----
-    // Reservo memoria para la página
-    self->loaded_page = malloc(PAGE_SIZE);
-    self->has_page_loaded = true;
-}
-
-/// Calcula el offset de una página del archivo en relación al inicio del disco
-long int osFile_calc_page_offset(osFile* self, int n_page) {
-    long int page_offset;
-
-    // ---- OFFSET ----
-    // Pido el offset del bloque archivo y la página del input
-    page_offset = calc_offset(self->current_plane,
-                              self->current_block,
-                              n_page,
-                              0, 0);
-
-    return page_offset;
-}
-
+// =======================--- Page-W ---=======================
 /// Recibe el contenido de una página y lo guarda en memoria.
 /// Tiene que tener largo de una página
+// REVIEW: Favor revisar si puedo cambiar 'unsigned char' por 'const unsigned char'
 void osFile_transfer_page(osFile* self, unsigned char content[PAGE_SIZE]) {
     // ---- Checks ----
     // ------ MEM -----
@@ -226,6 +191,54 @@ void osFile_write_page(osFile* self, int n_page) {
     fclose(file);
 }
 
+// ========================--- Mem ---=========================
+/// Reservo memoria para una página y la asigno a self->loaded_page
+void osFile_reserve_page_mem(osFile* self) {
+    // ---- Checks ----
+    // Saco páginas cargada si es que hay
+    osFile_release_page_if_loaded(self);
+
+    // ------ MEM -----
+    // Reservo memoria para la página
+    self->loaded_page = malloc(PAGE_SIZE);
+    self->has_page_loaded = true;
+}
+
+// ========================--- Data ---========================
+/// Carga datos desde la página cargada en memoria a un array.
+void osFile_load_data(osFile* self, int start, int end) {
+    int bytes_amount = end - start;
+
+    // Check de memoria
+    osFile_release_data_if_loaded(self);
+
+    // Reservo memoria para los bytes que voy a guardar
+    self->loaded_data = malloc(bytes_amount);
+
+    // Copio bytes
+    // ...Para cada byte del rango, lo copio a la nueva memoria
+    for (int bytes_copied = 0;
+         bytes_copied < bytes_amount;
+         bytes_copied++) {
+        // REVIEW: Favor revisar que haga bien la copia
+        self->loaded_data[bytes_copied] = self->loaded_page[start + bytes_copied];
+    }
+}
+
+/// Si hay una página cargada, la libera
+void osFile_release_data_if_loaded(osFile* self) {
+    if (self->has_data_loaded) {
+        osFile_release_data(self);
+    }
+}
+
+/// Libero la memoria de la página
+void osFile_release_data(osFile* self) {
+    free(self->loaded_data);
+    self->has_data_loaded = false;
+}
+
+// =======================--- Clean ---========================
 /// Libera la memoria de todo lo asociado al struct. Luego libera la memoria del struct mismo.
 void osFile_destroy(osFile* self) {
     // Libero memoria puntero nombre
@@ -236,7 +249,7 @@ void osFile_destroy(osFile* self) {
     free(self);
 }
 
-/* ------------------------------------------------------------------------- */
+/* ========================================================================= */
 
 // TODO: Sacar si no la uso.
 //  La deje de usar por ahora, pero no la quiero borrar por si la vuelvo a necesitar
