@@ -60,6 +60,7 @@ void osFile_set_location(osFile* self,
     self->current_pos = 0;
 }
 
+/// Desplazo el puntero n espacios
 void osFile_offset_pointer(osFile* self, int offset) {
     // TODO: revisar límites
     self->current_pos = self->current_pos + offset;
@@ -118,6 +119,26 @@ void osFile_copy_page_data(osFile* self, long int offset) {
     fclose(file);
 }
 
+/// Carga datos desde la página cargada en memoria a un array.
+void osFile_load_data(osFile* self, int start, int end) {
+    int bytes_amount = end - start;
+
+    // Check de memoria
+    osFile_release_data_if_loaded(self);
+
+    // Reservo memoria para los bytes que voy a guardar
+    self->loaded_data = malloc(bytes_amount);
+
+    // Copio bytes
+    // ...Para cada byte del rango, lo copio a la nueva memoria
+    for (int bytes_copied = 0;
+         bytes_copied < bytes_amount;
+         bytes_copied++) {
+        // REVIEW: Favor revisar que haga bien la copia
+        self->loaded_data[bytes_copied] = self->loaded_page[start + bytes_copied];
+    }
+}
+
 /// Si hay una página cargada, la libera
 void osFile_release_page_if_loaded(osFile* self) {
     if (self->has_page_loaded) {
@@ -131,11 +152,25 @@ void osFile_release_page(osFile* self) {
     self->has_page_loaded = false;
 }
 
+/// Si hay una página cargada, la libera
+void osFile_release_data_if_loaded(osFile* self) {
+    if (self->has_data_loaded) {
+        osFile_release_data(self);
+    }
+}
+
+/// Libero la memoria de la página
+void osFile_release_data(osFile* self) {
+    free(self->loaded_data);
+    self->has_data_loaded = false;
+}
+
 /// Libera la memoria de todo lo asociado al struct. Luego libera la memoria del struct mismo.
 void osFile_destroy(osFile* self) {
     // Libero memoria puntero nombre
     free(self->name);
     osFile_release_page_if_loaded(self);
+    osFile_release_data_if_loaded(self);
     free(self->disk); // REVIEW: Hay que dejarlo???
     free(self);
 }
