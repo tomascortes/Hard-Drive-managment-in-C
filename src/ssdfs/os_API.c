@@ -167,10 +167,10 @@ void os_tree(){
     // para cumplir con las reglas de no ofrecer más funciones en la API
     //// FIXME: Me tira error.
     ////  "Function definition is not allowed here"
-    ////  No se puede definir una función dentro de otra.
+    ////  No se debería definir una función dentro de otra.
     ////  --------------------------------------------------------
     ////  Tal vez sirva definirla en otro lado. Está el paquete, librería o como se llame
-      en C, ./aux/auxiliary_fx. Tal vez poner esto ahí sea conveniente.
+    ////  en C, ./aux/auxiliary_fx. Tal vez poner esto ahí sea conveniente.
     void directree(int directory_block, int depth) {
         FILE* f2 = fopen(global_diskname, "rb");
         fseek(f2, directory_block * 1048576, SEEK_SET);
@@ -277,7 +277,7 @@ int os_exists(char* filename) {  // TODO: Pendiente
     // para cumplir con las reglas de no ofrecer más funciones en la API
     //// FIXME: Me tira error.
     ////  "Function definition is not allowed here"
-    ////  No se puede definir una función dentro de otra.
+    ////  No se debería definir una función dentro de otra.
     ////  --------------------------------------------------------
     ////  Tal vez sirva definirla en otro lado. Está el paquete, librería o como se llame
     ////  en C, ./aux/auxiliary_fx. Tal vez poner esto ahí sea conveniente.
