@@ -118,8 +118,8 @@ void osFile_copy_page_data(osFile* self, long int offset) {
     fclose(file);
 }
 
-/// Entrega un array del byte n al m de la página cargada
-void osFile_get_bytes(osFile* self, int start, int end) {
+/// Entrega un puntero con un array del byte n al m de la página cargada
+unsigned char* osFile_load_bytes(osFile* self, int start, int end) {
 
 }
 
@@ -136,11 +136,25 @@ void osFile_release_page(osFile* self) {
     self->has_page_loaded = false;
 }
 
+/// Si hay una página cargada, la libera
+void osFile_release_data_if_loaded(osFile* self) {
+    if (self->has_data_loaded) {
+        osFile_release_data(self);
+    }
+}
+
+/// Libero la memoria de la página
+void osFile_release_data(osFile* self) {
+    free(self->loaded_data);
+    self->has_data_loaded = false;
+}
+
 /// Libera la memoria de todo lo asociado al struct. Luego libera la memoria del struct mismo.
 void osFile_destroy(osFile* self) {
     // Libero memoria puntero nombre
     free(self->name);
     osFile_release_page_if_loaded(self);
+    osFile_release_data_if_loaded(self);
     free(self->disk); // REVIEW: Hay que dejarlo???
     free(self);
 }

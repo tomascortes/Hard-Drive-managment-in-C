@@ -48,6 +48,11 @@ typedef struct osFile {
     unsigned char* loaded_page; //página cargada en memoria
     bool has_page_loaded; // Si una página está cargada o no en heap
 
+    // NOTE: esto no es propio de un archivo como tal, pero no se me ocurría cómo más pasarlo
+    //  si no era por medio de este atributo.
+    unsigned char* loaded_data; //datos de una página cargados en memoria
+    bool has_data_loaded; // Si tiene datos cargados
+
 } osFile;
 
 /// Crea una nueva instancia de la representación de un archivo y retorna su ubicación en memoria
@@ -69,17 +74,23 @@ void osFile_offset_pointer(osFile* self, int offset);
 /// Cargo la página "n_page" del bloque en la dirección de memoria self->loaded_page
 void osFile_load_page(osFile* self, int n_page);
 
-/// Entrega un array del byte n al m de la página cargada
-void osFile_get_bytes(osFile* self, int start, int end);
-
 /// Carga los datos del disco en memoria dado un offset
 void osFile_copy_page_data(osFile* self, long int offset);
+
+/// Entrega un array del byte n al m de la página cargada
+unsigned char* osFile_load_bytes(osFile* self, int start, int end);
 
 /// Si hay una página cargada, la libera
 void osFile_release_page_if_loaded(osFile* self);
 
 /// Libero la memoria de la página
 void osFile_release_page(osFile* self);
+
+/// Si hay una página cargada, la libera
+void osFile_release_data_if_loaded(osFile* self);
+
+/// Libero la memoria de la página
+void osFile_release_data(osFile* self);
 
 /// Libera la memoria de todo lo asociado al struct. Luego libera la memoria del struct mismo.
 void osFile_destroy(osFile* self);
