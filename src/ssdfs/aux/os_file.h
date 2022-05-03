@@ -55,6 +55,7 @@ typedef struct osFile {
 
 } osFile;
 
+// ----- Setup -----
 /// Crea una nueva instancia de la representación de un archivo y retorna su ubicación en memoria
 osFile* osFile_new(char* name, char* disk_pointer);
 
@@ -68,17 +69,16 @@ void osFile_set_location(osFile* self,
                             // Bloque de índice dice el tamaño del archivo para ponerlo aquí.
                             int length_bytes);
 
-/// Cargo la página "n_page" del bloque en la dirección de memoria self->loaded_page
+// ----- File pointer -----
+/// Desplazo el puntero n espacios
 void osFile_offset_pointer(osFile* self, int offset);
 
+// ----- Page -----
 /// Cargo la página "n_page" del bloque en la dirección de memoria self->loaded_page
 void osFile_load_page(osFile* self, int n_page);
 
 /// Carga los datos del disco en memoria dado un offset
 void osFile_copy_page_data(osFile* self, long int offset);
-
-/// Entrega un array del byte n al m de la página cargada
-unsigned char* osFile_load_bytes(osFile* self, int start, int end);
 
 /// Si hay una página cargada, la libera
 void osFile_release_page_if_loaded(osFile* self);
@@ -86,12 +86,18 @@ void osFile_release_page_if_loaded(osFile* self);
 /// Libero la memoria de la página
 void osFile_release_page(osFile* self);
 
+// ----- Data -----
+
+/// Carga datos desde la página cargada en memoria a un array.
+void osFile_load_data(osFile* self, int start, int end);
+
 /// Si hay una página cargada, la libera
 void osFile_release_data_if_loaded(osFile* self);
 
 /// Libero la memoria de la página
 void osFile_release_data(osFile* self);
 
+// ----- Clean -----
 /// Libera la memoria de todo lo asociado al struct. Luego libera la memoria del struct mismo.
 void osFile_destroy(osFile* self);
 

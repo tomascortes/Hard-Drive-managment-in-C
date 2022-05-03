@@ -60,6 +60,7 @@ void osFile_set_location(osFile* self,
     self->current_pos = 0;
 }
 
+/// Desplazo el puntero n espacios
 void osFile_offset_pointer(osFile* self, int offset) {
     // TODO: revisar límites
     self->current_pos = self->current_pos + offset;
@@ -119,7 +120,7 @@ void osFile_copy_page_data(osFile* self, long int offset) {
 }
 
 /// Entrega un puntero con un array del byte n al m de la página cargada
-unsigned char* osFile_load_bytes(osFile* self, int start, int end) {
+void osFile_load_data(osFile* self, int start, int end) {
 
 }
 
