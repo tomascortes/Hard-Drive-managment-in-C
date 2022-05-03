@@ -73,6 +73,10 @@ void osFile_set_location(osFile* self,
 /// Desplazo el puntero n espacios
 void osFile_offset_pointer(osFile* self, int offset);
 
+// ----- Offser -----
+/// Calcula el offset de una página del archivo en relación al inicio del disco
+long int osFile_calc_page_offset(osFile* self, int n_page);
+
 // ---- Page-R ----
 /// Cargo la página "n_page" del bloque en la dirección de memoria self->loaded_page
 void osFile_load_page(osFile* self, int n_page);
@@ -92,11 +96,11 @@ void osFile_release_page(osFile* self);
 /// Tiene que tener largo de una página
 void osFile_transfer_page(osFile* self, unsigned char content[PAGE_SIZE]);
 
-/// Escribe el contenido que tiene guardado en memoria en la página n_page
+/// Escribe el contenido que tiene guardado en memoria en la página n_page del disco
 void osFile_write_page(osFile* self, int n_page);
 
-/// Escribe los datos en el discos dado el offset
-void osFile_save_page_data(osFile* self, long int offset);
+// ------ Mem -----
+void osFile_reserve_page_mem(osFile* self);
 
 // ----- Data -----
 /// Carga datos desde la página cargada en memoria a un array.
