@@ -67,6 +67,7 @@ osFile* osFile_set_location(osFile* self,
 osFile* osFile_offset_pointer(osFile* self, int offset) {
     // TODO: revisar límites
     self->current_pos = self->current_pos + offset;
+    return self;
 }
 
 char* osFile_get_block(osFile* self) {
@@ -79,7 +80,6 @@ char* osFile_get_page(osFile* self, char* block, int page) {
 
 // Reserva espacio para un array de bytes
 void osFile_load_page(osFile* self, char* block, int page) {
-
     return;
 }
 

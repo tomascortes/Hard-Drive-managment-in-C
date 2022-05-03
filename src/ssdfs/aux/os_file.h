@@ -46,8 +46,9 @@ typedef struct osFile {
 
 } osFile;
 
+char* osFile_get_block(osFile* self);
 osFile* osFile_new(char* name, char* disk_pointer);
-
+char* osFile_get_page(osFile* self, char* block, int page);
 osFile* osFile_set_mode(osFile* self, char mode[2]);
 osFile* osFile_set_location(osFile* self,
                             int plane,
