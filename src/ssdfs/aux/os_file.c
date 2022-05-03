@@ -16,7 +16,9 @@
 
 #include "./os_file.h"
 
-// ----- Structs -----
+// ========================== Struct ==========================
+
+// =======================--- Setup ---========================
 /// Crea una nueva instancia de la representación de un archivo
 /// y retorna su ubicación en memoria
 osFile* osFile_new(char* name, char* disk_pointer) {
@@ -60,21 +62,18 @@ void osFile_set_location(osFile* self,
     self->current_pos = 0;
 }
 
+// ====================--- File pointer ---====================
+
 /// Desplazo el puntero n espacios
 void osFile_offset_pointer(osFile* self, int offset) {
     // TODO: revisar límites
     self->current_pos = self->current_pos + offset;
 }
 
-/// Cargo la página "n_page" del bloque en la dirección de memoria self->loaded_page
-void osFile_load_page(osFile* self, int n_page) {
-    // TODO: Revisar que página que mando no esté rotten.
-    //  idealmente ANTES de pedir la lectura en esta función.
+// =======================--- Offset ---=======================
+/// Calcula el offset de una página del archivo en relación al inicio del disco
+long int osFile_calc_page_offset(osFile* self, int n_page) {
     long int page_offset;
-
-    // ---- Checks ----
-    // Saco páginas cargada si es que hay
-    osFile_release_page_if_loaded(self);
 
     // ---- OFFSET ----
     // Pido el offset del bloque archivo y la página del input
@@ -83,10 +82,23 @@ void osFile_load_page(osFile* self, int n_page) {
                               n_page,
                               0, 0);
 
+    return page_offset;
+}
+
+// =======================--- Page-R ---=======================
+/// Cargo la página "n_page" del bloque en la dirección de memoria self->loaded_page
+void osFile_load_page(osFile* self, int n_page) {
+    // TODO: Revisar que página que mando no esté rotten.
+    //  idealmente ANTES de pedir la lectura en esta función.
+    long int page_offset;
+
+    // ---- Checks ----
     // ------ MEM -----
-    // Reservo memoria para la página
-    self->loaded_page = malloc(PAGE_SIZE);
-    self->has_page_loaded = true;
+    osFile_reserve_page_mem(self);
+
+    // ---- OFFSET ----
+    // Pido el offset del bloque archivo y la página del input
+    page_offset = osFile_calc_page_offset(self, n_page);
 
     // ------ I/O -----
     osFile_copy_page_data(self, page_offset);
@@ -116,9 +128,83 @@ void osFile_copy_page_data(osFile* self, long int offset) {
     // Cargo el contenido de la página en el heap
     fread(self->loaded_page, PAGE_SIZE, 1, file);
 
+    // Cierro el archivo
     fclose(file);
 }
 
+// ========================--- Page ---========================
+/// Si hay una página cargada, la libera
+void osFile_release_page_if_loaded(osFile* self) {
+    if (self->has_page_loaded) {
+        osFile_release_page(self);
+    }
+}
+
+/// Libero la memoria de la página
+void osFile_release_page(osFile* self) {
+    free(self->loaded_page);
+    self->has_page_loaded = false;
+}
+
+// =======================--- Page-W ---=======================
+/// Recibe el contenido de una página y lo guarda en memoria.
+/// Tiene que tener largo de una página
+// REVIEW: Favor revisar si puedo cambiar 'unsigned char' por 'const unsigned char'
+void osFile_transfer_page(osFile* self, unsigned char content[PAGE_SIZE]) {
+    // ---- Checks ----
+    // ------ MEM -----
+    osFile_reserve_page_mem(self);
+
+    //// OPTIMIZE: Revisar si hay alguna forma más eficiente de mover grupos de datos
+    ////  grandes (4kiB)
+    // Copia byte por byte del array a memoria.
+    for (int bytes_copied = 0;
+         bytes_copied < PAGE_SIZE;
+         bytes_copied++) {
+        // REVIEW: Favor revisar que haga bien la copia
+        self->loaded_page[bytes_copied] = content[bytes_copied];
+    }
+}
+
+/// Escribe el contenido que tiene guardado en memoria en la página n_page del disco
+void osFile_write_page(osFile* self, int n_page) {
+    // TODO: Revisar que página que mando no esté rotten.
+    //  idealmente ANTES de pedir la escritura en esta función.
+    long int page_offset;
+    FILE* file;  // Puntero a archivo
+
+    // ---- OFFSET ----
+    page_offset = osFile_calc_page_offset(self, n_page);
+
+    // ---- I/O ----
+    // Abro un stream para el disco
+    file = fopen(self->disk, "wb");
+
+    // Desplazo el puntero al inicio de la pág.
+    fseek(file, page_offset, SEEK_SET);
+
+    // Cargo el contenido de la página en el heap}
+    // XXX: IMPORTANTE: Favor revisar que esté bien escrito
+    fwrite(self->loaded_page, PAGE_SIZE, 1, file);
+
+    // Cierro el archivo
+    fclose(file);
+}
+
+// ========================--- Mem ---=========================
+/// Reservo memoria para una página y la asigno a self->loaded_page
+void osFile_reserve_page_mem(osFile* self) {
+    // ---- Checks ----
+    // Saco páginas cargada si es que hay
+    osFile_release_page_if_loaded(self);
+
+    // ------ MEM -----
+    // Reservo memoria para la página
+    self->loaded_page = malloc(PAGE_SIZE);
+    self->has_page_loaded = true;
+}
+
+// ========================--- Data ---========================
 /// Carga datos desde la página cargada en memoria a un array.
 void osFile_load_data(osFile* self, int start, int end) {
     int bytes_amount = end - start;
@@ -140,19 +226,6 @@ void osFile_load_data(osFile* self, int start, int end) {
 }
 
 /// Si hay una página cargada, la libera
-void osFile_release_page_if_loaded(osFile* self) {
-    if (self->has_page_loaded) {
-        osFile_release_page(self);
-    }
-}
-
-/// Libero la memoria de la página
-void osFile_release_page(osFile* self) {
-    free(self->loaded_page);
-    self->has_page_loaded = false;
-}
-
-/// Si hay una página cargada, la libera
 void osFile_release_data_if_loaded(osFile* self) {
     if (self->has_data_loaded) {
         osFile_release_data(self);
@@ -165,6 +238,7 @@ void osFile_release_data(osFile* self) {
     self->has_data_loaded = false;
 }
 
+// =======================--- Clean ---========================
 /// Libera la memoria de todo lo asociado al struct. Luego libera la memoria del struct mismo.
 void osFile_destroy(osFile* self) {
     // Libero memoria puntero nombre
@@ -175,7 +249,7 @@ void osFile_destroy(osFile* self) {
     free(self);
 }
 
-/* ------------------------------------------------------------------------- */
+/* ========================================================================= */
 
 // TODO: Sacar si no la uso.
 //  La deje de usar por ahora, pero no la quiero borrar por si la vuelvo a necesitar
