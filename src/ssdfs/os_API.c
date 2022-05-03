@@ -35,6 +35,7 @@ void os_mount(char* diskname, unsigned life) {
     strcpy(global_diskname, diskname);
     // FIXME: "Narrowing conversion from 'unsigned int' to signed type 'int'
     //  is implementation-defined"
+    //  --------------------------------------------------------
     //  Tal vez algún check o casteo lo arregla?
     global_P_E = life;
     unactualized_change = 0;
