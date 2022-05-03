@@ -62,15 +62,15 @@ int main (int argc, char* const argv[]) {
     // Montar el disco pasado por consola con life = 5000
     os_mount(argv[1], 5000);
 
-    print_debug("Prueba bitmap comentada...");
+    print_debug("Prueba bitmap ");
     // os_bitmap(0); // Bitmap completo
     // os_bitmap(8); // Bitmap bloque N°8 (Se espera 1)
     // os_bitmap(2047); // Bitmap bloque N°395 (Se espera 0)
     // os_bitmap(2048); // Bitmap bloque inexistente (Se espera SEGFAULT)
-    print_debug("...Fin prueba bitmap comentada\n");
+    print_debug("...Fin prueba bitmap\n");
 
     print_debug("Printea el os_lifemap de páginas 1270 a la 1300");
-    os_lifemap(1270, 1300);
+    // os_lifemap(1270, 1300);
     print_debug("Fin de la función de os_lifemap lifemap\n");
 
     print_debug("Prueba os_lifemap comentadas...");
@@ -80,6 +80,11 @@ int main (int argc, char* const argv[]) {
     print_debug("Corre os_tree");
     os_tree();
     print_debug("Termina de correr os_tree\n");
+
+    print_debug("Buscar archivo filename");
+    os_exists("/dir1ta/yocuando.mp4");
+    os_exists("/message.txtav");
+    print_debug("Termina de correr buscar archivo filename\n");
 
     print_debug("Prueba mark_as_used comentadas...");
     //mark_as_used(3);
