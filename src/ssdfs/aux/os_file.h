@@ -73,18 +73,30 @@ void osFile_set_location(osFile* self,
 /// Desplazo el puntero n espacios
 void osFile_offset_pointer(osFile* self, int offset);
 
-// ----- Page -----
+// ---- Page-R ----
 /// Cargo la página "n_page" del bloque en la dirección de memoria self->loaded_page
 void osFile_load_page(osFile* self, int n_page);
 
 /// Carga los datos del disco en memoria dado un offset
 void osFile_copy_page_data(osFile* self, long int offset);
 
+// ----- Page -----
 /// Si hay una página cargada, la libera
 void osFile_release_page_if_loaded(osFile* self);
 
 /// Libero la memoria de la página
 void osFile_release_page(osFile* self);
+
+// ---- Page-W ----
+/// Recibe el contenido de una página y lo guarda en memoria.
+/// Tiene que tener largo de una página
+void osFile_transfer_page(osFile* self, unsigned char content[PAGE_SIZE]);
+
+/// Escribe el contenido que tiene guardado en memoria en la página n_page
+void osFile_write_page(osFile* self, int n_page);
+
+/// Escribe los datos en el discos dado el offset
+void osFile_save_page_data(osFile* self, long int offset);
 
 // ----- Data -----
 /// Carga datos desde la página cargada en memoria a un array.

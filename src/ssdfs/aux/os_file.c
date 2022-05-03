@@ -165,6 +165,22 @@ void osFile_release_data(osFile* self) {
     self->has_data_loaded = false;
 }
 
+/// Recibe el contenido de una página y lo guarda en memoria.
+/// Tiene que tener largo de una página
+void osFile_transfer_page(osFile* self, unsigned char content[PAGE_SIZE]) {
+
+}
+
+/// Escribe el contenido que tiene guardado en memoria en la página n_page
+void osFile_write_page(osFile* self, int n_page) {
+
+}
+
+/// Escribe los datos en el discos dado el offset
+void osFile_save_page_data(osFile* self, long int offset) {
+
+}
+
 /// Libera la memoria de todo lo asociado al struct. Luego libera la memoria del struct mismo.
 void osFile_destroy(osFile* self) {
     // Libero memoria puntero nombre
