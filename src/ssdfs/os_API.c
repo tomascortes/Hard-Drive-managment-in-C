@@ -55,8 +55,8 @@ void os_bitmap(unsigned num) {
     if (num == 0) {
         printf("\nBitmap del Disco\n");
 
-        int fill=0;
-        int free=0;
+        int fill = 0;
+        int free = 0;
 
         for (int i = 0; i < 256; i++) {
             for (int j = 7; j >= 0; j--) {
@@ -106,13 +106,13 @@ void os_lifemap(int lower, int upper) {
     // Me muevo 1 MiB, para llegar al bloque N°1, de directorio.
     fseek(f, 1 * BLOCK_SIZE, SEEK_SET);
 
-    if (upper > 524288 || lower < -1 || lower > 524288 || upper < -2 ) {
+    if (upper > PAGES_PER_DISK || lower < -1 || lower > PAGES_PER_DISK || upper < -2 ) {
         printf("Error de input para os_lifemap\n");
         return;
     }
 
     if (lower  == -1 && upper == -1) {
-        upper = 524288;
+        upper = PAGES_PER_DISK;
         lower = 0;
     }
 
@@ -122,7 +122,7 @@ void os_lifemap(int lower, int upper) {
     int block_visited = 0;
     // Son 524288 paginas entre los 2 planos, por lo que recorremos 524288 numeros
     // Son 4096 bloques en el disco
-    for (int i = 0; i < 524288; i++) {
+    for (int i = 0; i < PAGES_PER_DISK; i++) {
         int buffer; // see leen ints de 4 bytes
         fread(&buffer, sizeof(int), 1, f); // Leo una entrada de un int
 
@@ -131,10 +131,10 @@ void os_lifemap(int lower, int upper) {
             block_visited = 1;
         }
 
-        if (i%256 == 0 && block_visited == 1){
+        if (i % 256 == 0 && block_visited == 1){
           // Se suman las condiciones de bloque visitado
             rotten_blocks += rotten_found;
-            total_blocks ++;
+            total_blocks++;
             rotten_found = 0;
             block_visited = 0;
         }
@@ -173,7 +173,7 @@ void os_tree(){
     ////  en C, ./aux/auxiliary_fx. Tal vez poner esto ahí sea conveniente.
     void directree(int directory_block, int depth) {
         FILE* f2 = fopen(global_diskname, "rb");
-        fseek(f2, directory_block * 1048576, SEEK_SET);
+        fseek(f2, directory_block * BLOCK_SIZE, SEEK_SET);
         // Cada bloque tiene 1048576 bytes
         
         // Son 32768 entradas en un bloque de directorio
@@ -222,7 +222,7 @@ void os_tree(){
     FILE *f = fopen(global_diskname, "rb");
 
     // Me muevo 3 MiB, para llegar al bloque N°3, de directorio.
-    fseek(f, 3145728, SEEK_SET);
+    fseek(f, 3 * BLOCK_SIZE, SEEK_SET);
 
     printf("~\n"); // root
     int depth = 1; // Para cachar que tan profundo estoy
@@ -233,7 +233,7 @@ void os_tree(){
         // Buffer para guardar los bytes de una entrada
         fread(buffer, sizeof(buffer), 1, f); // Leo una entrada
 
-        if(buffer[0] == 1){ // directorio:
+        if (buffer[0] == 1) { // directorio:
             for (int k = 0; k < depth; k++) { // Desplazar depth a la derecha
                 printf("| ");
             }
@@ -289,7 +289,7 @@ int os_exists(char* filename) {  // TODO: Pendiente
     ////  Además califica al tiro como "code smell" por el código repetido.
     int directreen(int directory_block, char* filename, char* path) {
         FILE* f2 = fopen(global_diskname, "rb");
-        fseek(f2, directory_block * 1048576, SEEK_SET);
+        fseek(f2, directory_block * BLOCK_SIZE, SEEK_SET);
         // Cada bloque tiene 1048576 bytes
         
         // Son 32768 entradas en un bloque de directorio
@@ -543,7 +543,7 @@ void print_names() {
     FILE *f = fopen(global_diskname, "rb");
 
     // Me muevo 3 MiB, para llegar al bloque N°3, del directorio base.
-    int offset = 3 * 1024 * 1024; // 3MiB
+    int offset = 3 * BLOCK_SIZE; // 3MiB
     fseek(f, offset, SEEK_SET);
 
     // root está en el bloque 3 por convención, por lo que si

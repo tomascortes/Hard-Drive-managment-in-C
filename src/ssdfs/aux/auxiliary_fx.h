@@ -9,11 +9,13 @@
 #define BYTES_PER_CELL 2
 
 // Dependen de las de antes
-#define CELL_SIZE BYTES_PER_CELL
-#define PAGE_SIZE (CELL_SIZE * CELLS_PER_PAGE)
-#define BLOCK_SIZE (PAGE_SIZE * PAGES_PER_BLOCK)
-#define PLANE_SIZE (BLOCK_SIZE * BLOCKS_PER_PLANE)
-#define DISK_SIZE (PLANE_SIZE * PLANES_PER_DISK)
+#define CELL_SIZE BYTES_PER_CELL  // 2 B
+#define PAGE_SIZE (CELL_SIZE * CELLS_PER_PAGE)  // 4096 B = 4kiB
+#define BLOCK_SIZE (PAGE_SIZE * PAGES_PER_BLOCK)  // 1048576 B = 1MiB
+#define PLANE_SIZE (BLOCK_SIZE * BLOCKS_PER_PLANE)  // 1073741824 B = 1GiB
+#define DISK_SIZE (PLANE_SIZE * PLANES_PER_DISK)  // 2147483648 B = 2GiB
+
+#define PAGES_PER_DISK (PLANES_PER_DISK * BLOCKS_PER_PLANE * PAGES_PER_BLOCK)  // 524288 pgs
 
 long int calc_offset(int plane, // Número de planos
                      int block, // Número de bloques
