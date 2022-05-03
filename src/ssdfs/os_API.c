@@ -144,7 +144,6 @@ void os_lifemap(int lower, int upper) {
     printf("\nCantidad de bloques rotten: %d", rotten_blocks);
     printf("\nCantidad de bloques sanos: %d\n", total_blocks - rotten_blocks);
     fclose(f); // Evitamos leaks
-    return;
 }
 
 /* Esta función debe recorrer el disco completo. Para cada bloque que contenga páginas
