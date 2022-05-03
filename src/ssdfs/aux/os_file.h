@@ -23,7 +23,7 @@
 
 #include "./auxiliary_fx.h"
 
-// Representación de archivos abiertos mediate struct
+/// Representación de archivos abiertos mediate struct
 typedef struct osFile {
     char* name;  // Nombre del archivo
     // Puse 2 caracteres para que sea un poco más a prueba de errores
@@ -50,18 +50,34 @@ typedef struct osFile {
 
 } osFile;
 
+/// Crea una nueva instancia de la representación de un archivo y retorna su ubicación en memoria
 osFile* osFile_new(char* name, char* disk_pointer);
 
+/// Settea el modo de operación (read/write)
 void osFile_set_mode(osFile* self, char mode[2]);
+
+/// Settea la ubicación del puntero y largo del archivo
 void osFile_set_location(osFile* self,
                             int plane,
                             int block,
-                            // Bloque de índice dice el tamaño del archivo
+                            // Bloque de índice dice el tamaño del archivo para ponerlo aquí.
                             int length_bytes);
+
+/// Cargo la página "n_page" del bloque en la dirección de memoria self->loaded_page
 void osFile_offset_pointer(osFile* self, int offset);
+
+/// Cargo la página "n_page" del bloque en la dirección de memoria self->loaded_page
 void osFile_load_page(osFile* self, int n_page);
+
+/// Carga los datos del disco en memoria dado un offset
 void osFile_copy_page_data(osFile* self, long int offset);
+
+/// Si hay una página cargada, la libera
 void osFile_release_page_if_loaded(osFile* self);
+
+/// Libero la memoria de la página
 void osFile_release_page(osFile* self);
+
+/// Libera la memoria de todo lo asociado al struct. Luego libera la memoria del struct mismo.
 void osFile_destroy(osFile* self);
 
