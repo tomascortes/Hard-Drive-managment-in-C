@@ -323,6 +323,11 @@ int os_exists(char* filename) {  // TODO: Pendiente
                 }
                 strcat(path, "/"); // Concatenar nuevo directorio
                 int puntero = buffer[1]; // Pesco los bytes 1-4
+                //// FIXME: Me tira error.
+                ////  Hace referencia a una función que marca como indefinida.
+                ////  --------------------------------------------------------
+                ////  Supongo que no definir una función dentro de otra solucionaría el
+                ////  problema
                 if (directreen(puntero, filename, path2)){// Función recursiva para leer
                     fclose(f2); // Evitamos leaks
                     return 1;
@@ -372,6 +377,11 @@ int os_exists(char* filename) {  // TODO: Pendiente
             }
             strcat(path, "/");
             int puntero = buffer[1]; // Pesco los bytes 1-4
+            //// FIXME: Me tira error.
+            ////  Hace referencia a una función que marca como indefinida.
+            ////  --------------------------------------------------------
+            ////  Supongo que no definir una función dentro de otra solucionaría el
+            ////  problema
             if (directreen(puntero, filename, path)){// Función recursiva para leer
                 fclose(f); // Evitamos leaks
                 printf("¡Esta!\n");
@@ -473,7 +483,7 @@ int os_close(osFile* file_desc) {  // TODO: Pendiente
     }
 
     else {
-        free(file_desc);  // XXX: Por qué se libera memoria aquí??
+        free(file_desc);  //// XXX: Por qué se libera memoria aquí??
         osFile_destroy(file_desc);
     }
 
