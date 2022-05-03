@@ -2,19 +2,25 @@
 #include "./debug.h"
 
 // https://qnaplus.com/c-program-to-sleep-in-milliseconds/
-void just_wait() {
+void wait_debug(int time_ms) {
+    if (DEBUG_MODE && SIMULATE_WAIT) {
+        usleep(time_ms * 1000);
+    }
+}
+
+void just_wait_debug() {
     if (DEBUG_MODE && SIMULATE_WAIT) {
         usleep(WAITING_TIME * 1000);
     }
 }
 
-void just_wait_longer() {
+void wait_longer_debug() {
     if (DEBUG_MODE && SIMULATE_WAIT) {
         usleep(WAITING_TIME2 * 1000);
     }
 }
 
-void wait_just_a_bit() {
+void wait_a_bit_debug() {
     if (DEBUG_MODE && SIMULATE_WAIT) {
         usleep(WAITING_TIME3 * 1000);
     }
@@ -83,30 +89,38 @@ void dprint_char_x2(char *input) {
 
 // Printea "DEBUG: **input\n"
 void dprint_txt_char_xx(char **input) {
-    dprint_txt();
-    dprint_char_xx(input);
-    dprint_line();
+    if (DEBUG_MODE) {
+        dprint_txt();
+        dprint_char_xx(input);
+        dprint_line();
+    }
 }
 
 // Printea "DEBUG: **input\n"
 void dprint_txt_char_xx2(char **input) {
-    dprint_txt2();
-    dprint_char_xx2(input);
-    dprint_line();
+    if (DEBUG_MODE) {
+        dprint_txt2();
+        dprint_char_xx2(input);
+        dprint_line();
+    }
 }
 
 // Printea "DEBUG: *input\n"
 void dprint_txt_char_x(char *input) {
-    dprint_txt();
-    dprint_char_x(input);
-    dprint_line();
+    if (DEBUG_MODE) {
+        dprint_txt();
+        dprint_char_x(input);
+        dprint_line();
+    }
 }
 
 // Printea "DEBUG: *input\n"
 void dprint_txt_char_x2(char *input) {
-    dprint_txt2();
-    dprint_char_x2(input);
-    dprint_line();
+    if (DEBUG_MODE) {
+        dprint_txt2();
+        dprint_char_x2(input);
+        dprint_line();
+    }
 }
 
 
@@ -121,9 +135,11 @@ void dprint_pid(pid_t process_id) {
 
 // Printea "DEBUG: pid\n"
 void dprint_txt_pid(pid_t process_id) {
-    dprint_txt();
-    dprint_pid(process_id);
-    dprint_line();
+    if (DEBUG_MODE) {
+        dprint_txt();
+        dprint_pid(process_id);
+        dprint_line();
+    }
 }
 
 // Printea "input"
@@ -137,9 +153,11 @@ void dprint_int(int input) {
 
 // Printea "DEBUG: input\n"
 void dprint_txt_int(int input) {
-    dprint_txt();
-    dprint_int(input);
-    dprint_line();
+    if (DEBUG_MODE) {
+        dprint_txt();
+        dprint_int(input);
+        dprint_line();
+    }
 }
 
 // Printea "input"
@@ -153,12 +171,16 @@ void dprint_float(float input) {
 
 // Printea "DEBUG: input\n"
 void dprint_txt_float(float input) {
-    dprint_txt();
-    dprint_float(input);
-    dprint_line();
+    if (DEBUG_MODE) {
+        dprint_txt();
+        dprint_float(input);
+        dprint_line();
+    }
 }
 
 
 void print_debug(char *input) {
-    dprint_txt_char_x(input);
+    if (DEBUG_MODE) {
+        dprint_txt_char_x(input);
+    }
 }
