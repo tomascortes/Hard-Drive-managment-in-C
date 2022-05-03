@@ -39,7 +39,7 @@ osFile* osFile_new(char* name, char* disk_pointer) {
 
 /// Settea el modo de operación (read/write)
 void osFile_set_mode(osFile* self, char* mode) {
-    // Revisar validez
+    // TODO: Revisar validez
     // https://stackoverflow.com/questions/19365901/how-do-i-modify-the-character-array-in-this-struct-c
     strncpy(self->mode,  // Atributo a modificar
             mode,  // Nuevo contenido
@@ -48,9 +48,9 @@ void osFile_set_mode(osFile* self, char* mode) {
 
 /// Settea la ubicación del puntero y largo del archivo
 void osFile_set_location(osFile* self,
-                            int plane,
-                            int block,
-                            int length_bytes) {
+                         int plane,
+                         int block,
+                         int length_bytes) {
     self->current_plane = plane;
     self->current_block = block;
 
