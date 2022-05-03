@@ -69,6 +69,9 @@ void osFile_offset_pointer(osFile* self, int offset);
 /// Cargo la página "n_page" del bloque en la dirección de memoria self->loaded_page
 void osFile_load_page(osFile* self, int n_page);
 
+/// Entrega un array del byte n al m de la página cargada
+void osFile_get_bytes(osFile* self, int start, int end);
+
 /// Carga los datos del disco en memoria dado un offset
 void osFile_copy_page_data(osFile* self, long int offset);
 

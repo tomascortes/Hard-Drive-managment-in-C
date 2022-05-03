@@ -118,7 +118,8 @@ void osFile_copy_page_data(osFile* self, long int offset) {
     fclose(file);
 }
 
-void osFile_get_data(osFile* self) {
+/// Entrega un array del byte n al m de la página cargada
+void osFile_get_bytes(osFile* self, int start, int end) {
 
 }
 
