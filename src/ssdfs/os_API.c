@@ -177,8 +177,8 @@ void os_tree(){
         // Cada bloque tiene 1048576 bytes
         
         // Son 32768 entradas en un bloque de directorio
-        for (int i = 0; i < 32768; i++) {
-            unsigned char buffer[32]; // Buffer para guardar los bytes de una entrada
+        for (int i = 0; i < DIR_ENTRIES_PER_BLOCK; i++) {
+            unsigned char buffer[DIR_ENTRY_SIZE]; // Buffer para guardar los bytes de una entrada
             fread(buffer, sizeof(buffer), 1, f2); // Leo una entrada
 
             if(buffer[0] == 3) { // archivo:
@@ -186,7 +186,7 @@ void os_tree(){
                     printf("| ");
                 }
 
-                for (int j = 5; j < 32; j++) {
+                for (int j = 5; j < DIR_ENTRY_SIZE; j++) {
                     printf("%c", buffer[j]);
                 }
 
@@ -198,7 +198,7 @@ void os_tree(){
                     printf("| ");
                 }
 
-                for (int j = 5; j < 32; j++) {
+                for (int j = 5; j < DIR_ENTRY_SIZE; j++) {
                     printf("%c", buffer[j]);
                 }
 
@@ -228,8 +228,8 @@ void os_tree(){
     int depth = 1; // Para cachar que tan profundo estoy
 
     // Son 32768 entradas en un bloque de directorio
-    for (int i = 0; i < 32768; i++) {
-        unsigned char buffer[32];
+    for (int i = 0; i < DIR_ENTRIES_PER_BLOCK; i++) {
+        unsigned char buffer[DIR_ENTRY_SIZE];
         // Buffer para guardar los bytes de una entrada
         fread(buffer, sizeof(buffer), 1, f); // Leo una entrada
 
@@ -237,7 +237,7 @@ void os_tree(){
             for (int k = 0; k < depth; k++) { // Desplazar depth a la derecha
                 printf("| ");
             }
-            for (int j = 5; j < 32; j++) { // Printear nombre del directorio
+            for (int j = 5; j < DIR_ENTRY_SIZE; j++) { // Printear nombre del directorio
                 printf("%c", buffer[j]);
             }
 
@@ -258,7 +258,7 @@ void os_tree(){
             for (int k = 0; k < depth; k++) {
                 printf("| ");
             }
-            for (int j = 5; j < 32; j++) { // Printear nombre del archivo
+            for (int j = 5; j < DIR_ENTRY_SIZE; j++) { // Printear nombre del archivo
                 printf("%c", buffer[j]);
             }
 
@@ -293,15 +293,15 @@ int os_exists(char* filename) {  // TODO: Pendiente
         // Cada bloque tiene 1048576 bytes
         
         // Son 32768 entradas en un bloque de directorio
-        for (int i = 0; i < 32768; i++) {
-            unsigned char buffer[32]; // Buffer para guardar los bytes de una entrada
+        for (int i = 0; i < DIR_ENTRIES_PER_BLOCK; i++) {
+            unsigned char buffer[DIR_ENTRY_SIZE]; // Buffer para guardar los bytes de una entrada
             fread(buffer, sizeof(buffer), 1, f2); // Leo una entrada
 
             if(buffer[0] == 3) { // archivo:
                 char path2[100]; // path actual
                 char aux[2]; // variable para concatenar char
                 strcpy(path2, path); // Copiar strings
-                for (int j = 5; j < 32; j++) { // Printear nombre del archivo
+                for (int j = 5; j < DIR_ENTRY_SIZE; j++) { // Printear nombre del archivo
                     aux[1] = '\0'; 
                     aux[0] = buffer[j];
                     strcat(path2, aux); // Concatenar char
@@ -316,7 +316,7 @@ int os_exists(char* filename) {  // TODO: Pendiente
                 char path2[100]; // path actual
                 char aux[2]; // variable para concatenar char
                 strcpy(path2, path); // Copiar strings
-                for (int j = 5; j < 32; j++) { // Printear nombre del directorio
+                for (int j = 5; j < DIR_ENTRY_SIZE; j++) { // Printear nombre del directorio
                     aux[1] = '\0';
                     aux[0] = buffer[j];
                     strcat(path2, aux); // Concatenar char
@@ -348,14 +348,14 @@ int os_exists(char* filename) {  // TODO: Pendiente
     fseek(f, BLOCK_SIZE * 3, SEEK_SET);
 
     // Son 32768 entradas en un bloque de directorio
-    for (int i = 0; i < 32768; i++) {
-        unsigned char buffer[32];
+    for (int i = 0; i < DIR_ENTRIES_PER_BLOCK; i++) {
+        unsigned char buffer[DIR_ENTRY_SIZE];
         // Buffer para guardar los bytes de una entrada
         fread(buffer, sizeof(buffer), 1, f); // Leo una entrada
         if(buffer[0] == 3){ // archivo:
             char path[100] = "/"; // path inicial
             char aux[2]; // variable para concatenar char
-            for (int j = 5; j < 32; j++) { // Printear nombre del archivo
+            for (int j = 5; j < DIR_ENTRY_SIZE; j++) { // Printear nombre del archivo
                 aux[1] = '\0';
                 aux[0] = buffer[j];
                 strcat(path, aux); // Concatenar char
@@ -370,7 +370,7 @@ int os_exists(char* filename) {  // TODO: Pendiente
         else if (buffer[0] == 1) { // directorio:
             char path[100] = "/"; // path inicial
             char aux[2]; // variable para concatenar char
-            for (int j = 5; j < 32; j++) { // Printear nombre del directorio
+            for (int j = 5; j < DIR_ENTRY_SIZE; j++) { // Printear nombre del directorio
                 aux[1] = '\0';
                 aux[0] = buffer[j];
                 strcat(path, aux); // Concatenar char
