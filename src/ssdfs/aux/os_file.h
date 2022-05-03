@@ -16,16 +16,15 @@
 
 #pragma once
 
-#include <stdbool.h>
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
+#define PLANES_PER_DISK 2
+#define BLOCKS_PER_PLANE 1024
+#define PAGES_PER_BLOCK 256
+#define CELLS_PER_PAGE 2048
+#define BYTES_PER_CELL 2
 
-#include "./auxiliary_fx.h"
-
-/// Representación de archivos abiertos mediate struct
+// Representación de archivos abiertos mediate struct
 typedef struct osFile {
-    char* name;  // Nombre del archivo
+    char *name;  // Nombre del archivo
     // Puse 2 caracteres para que sea un poco más a prueba de errores
     char mode[2]; // r -> ReadOnly || w-> WriteOnly || {rw,wr,r+} -> ReadWrite || N -> Null
 
@@ -45,58 +44,17 @@ typedef struct osFile {
     int current_pos; // Posición actual dentro de la página actual
     // pos --> {0..4096}
 
-    unsigned char* loaded_page; //página cargada en memoria
-    bool has_page_loaded; // Si una página está cargada o no en heap
-
-    // NOTE: esto no es propio de un archivo como tal, pero no se me ocurría cómo más pasarlo
-    //  si no era por medio de este atributo.
-    unsigned char* loaded_data; //datos de una página cargados en memoria
-    bool has_data_loaded; // Si tiene datos cargados
-
 } osFile;
 
-// ----- Setup -----
-/// Crea una nueva instancia de la representación de un archivo y retorna su ubicación en memoria
+char* osFile_get_block(osFile* self);
 osFile* osFile_new(char* name, char* disk_pointer);
-
-/// Settea el modo de operación (read/write)
-void osFile_set_mode(osFile* self, char mode[2]);
-
-/// Settea la ubicación del puntero y largo del archivo
-void osFile_set_location(osFile* self,
+char* osFile_get_page(osFile* self, char* block, int page);
+osFile* osFile_set_mode(osFile* self, char mode[2]);
+osFile* osFile_set_location(osFile* self,
                             int plane,
                             int block,
-                            // Bloque de índice dice el tamaño del archivo para ponerlo aquí.
+                            // Bloque de índice dice el tamaño del archivo
                             int length_bytes);
-
-// ----- File pointer -----
-/// Desplazo el puntero n espacios
-void osFile_offset_pointer(osFile* self, int offset);
-
-// ----- Page -----
-/// Cargo la página "n_page" del bloque en la dirección de memoria self->loaded_page
-void osFile_load_page(osFile* self, int n_page);
-
-/// Carga los datos del disco en memoria dado un offset
-void osFile_copy_page_data(osFile* self, long int offset);
-
-/// Si hay una página cargada, la libera
-void osFile_release_page_if_loaded(osFile* self);
-
-/// Libero la memoria de la página
-void osFile_release_page(osFile* self);
-
-// ----- Data -----
-/// Carga datos desde la página cargada en memoria a un array.
-void osFile_load_data(osFile* self, int start, int end);
-
-/// Si hay una página cargada, la libera
-void osFile_release_data_if_loaded(osFile* self);
-
-/// Libero la memoria de la página
-void osFile_release_data(osFile* self);
-
-// ----- Clean -----
-/// Libera la memoria de todo lo asociado al struct. Luego libera la memoria del struct mismo.
+osFile* osFile_offset_pointer(osFile* self, int offset);
 void osFile_destroy(osFile* self);
 
