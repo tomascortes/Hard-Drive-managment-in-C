@@ -14,13 +14,11 @@
  * | Luis González    | ljgonzalez1    | ljgonzalez@uc.cl  | 16625439    |
  * +------------------+----------------+-------------------+-------------+ */
 
-#include <stdbool.h>
-#include <stdlib.h>
-#include <string.h>
 #include "os_file.h"
 
 // ----- Structs -----
-/* Representa un archivo abierto con todos sus atributos */
+/// Crea una nueva instancia de la representación de un archivo
+/// y retorna su ubicación en memoria
 osFile* osFile_new(char* name, char* disk_pointer) {
     // Reservo memoria
     osFile* instance_pointer = malloc(sizeof(osFile));
@@ -32,24 +30,24 @@ osFile* osFile_new(char* name, char* disk_pointer) {
     instance_pointer->name = name;
 
     // Inicializo con valores por defecto. Inválidos para propósitos del FS
-    instance_pointer = osFile_set_mode(instance_pointer, "N");
+    osFile_set_mode(instance_pointer, "N");
+    instance_pointer->has_page_loaded = false;
 
     // Retorno el puntero a la representación del archivo
     return instance_pointer;
 }
 
-// Settea el modo de operación (read/write)
-osFile* osFile_set_mode(osFile* self, char* mode) {
+/// Settea el modo de operación (read/write)
+void osFile_set_mode(osFile* self, char* mode) {
     // Revisar validez
     // https://stackoverflow.com/questions/19365901/how-do-i-modify-the-character-array-in-this-struct-c
     strncpy(self->mode,  // Atributo a modificar
             mode,  // Nuevo contenido
             sizeof(self->mode));  // Máximo espacio (Para evitar stack overflow)
-
-    return self;
 }
 
-osFile* osFile_set_location(osFile* self,
+/// Settea la ubicación del puntero y largo del archivo
+void osFile_set_location(osFile* self,
                             int plane,
                             int block,
                             int length_bytes) {
@@ -60,59 +58,89 @@ osFile* osFile_set_location(osFile* self,
 
     self->current_page = 0;
     self->current_pos = 0;
-
-    return self;
 }
 
-osFile* osFile_offset_pointer(osFile* self, int offset) {
+void osFile_offset_pointer(osFile* self, int offset) {
     // TODO: revisar límites
     self->current_pos = self->current_pos + offset;
 }
 
-char* osFile_get_block(osFile* self) {
-    return;
+/// Cargo la página "n_page" del bloque en la dirección de memoria self->loaded_page
+void osFile_load_page(osFile* self, int n_page) {
+    // TODO: Revisar que página que mando no esté rotten.
+    //  idealmente ANTES de pedir la lectura en esta función.
+    long int page_offset;
+
+    // ---- Checks ----
+    // Saco páginas cargada si es que hay
+    osFile_release_page_if_loaded(self);
+
+    // ---- OFFSET ----
+    // Pido el offset del bloque archivo y la página del input
+    page_offset = calc_offset(self->current_plane,
+                              self->current_block,
+                              n_page,
+                              0, 0);
+
+    // ------ MEM -----
+    // Reservo memoria para la página
+    self->loaded_page = malloc(PAGE_SIZE);
+    self->has_page_loaded = true;
+
+    // ------ I/O -----
+    osFile_copy_page_data(self, page_offset);
 }
 
-char* osFile_get_page(osFile* self, char* block, int page) {
-    return;
+/// Carga los datos del disco en memoria dado un offset
+void osFile_copy_page_data(osFile* self, long int offset) {
+    FILE* file;  // Puntero a archivo
+
+    //  https://www.tutorialspoint.com/c_standard_library/c_function_fopen.htm
+    //  Mode: "r" --> Opens a file for reading. The file must exist.
+    //  https://stackoverflow.com/questions/2174889/whats-the-differences-between-r-and-rb-in-fopen
+    //  'You should use "rb" if you're opening non-text files, because in this case,
+    //  the translations are not appropriate.'
+    // Abro un stream para el disco
+    file = fopen(self->disk, "rb");
+
+    // Desplazo el puntero al inicio de la pág.
+    fseek(file, offset, SEEK_SET);
+
+    //  https://www.tutorialspoint.com/c_standard_library/c_function_fread.htm
+    //  size_t fread(void *ptr, size_t size, size_t nmemb, FILE *stream)
+    //      ptr − This is the pointer to a block of memory with a minimum size of size*nmemb bytes.
+    //      size − This is the size in bytes of each element to be read.
+    //      nmemb − This is the number of elements, each one with a size of size bytes.
+    //      stream − This is the pointer to a FILE object that specifies an input stream.
+    // Cargo el contenido de la página en el heap
+    fread(self->loaded_page, PAGE_SIZE, 1, file);
+
+    fclose(file);
 }
 
-// Reserva espacio para un array de bytes
-void osFile_load_page(osFile* self, char* block, int page) {
-
-    return;
+/// Si hay una página cargada, la libera
+void osFile_release_page_if_loaded(osFile* self) {
+    if (self->has_page_loaded) {
+        osFile_release_page(self);
+    }
 }
 
-// Libero la memoria de la página
-void osFile_release_page(osFile* self, char* block, int page) {
-    return;
+/// Libero la memoria de la página
+void osFile_release_page(osFile* self) {
+    free(self->loaded_page);
+    self->has_page_loaded = false;
 }
 
-int osFile_get_blk_start_pos(osFile* self) {
-    // Defino variables
-    int current_offset = 0;
-    int plane_offset;
-    int block_offset;
-
-    // Calculo offsets
-    block_offset = PAGES_PER_BLOCK * CELLS_PER_PAGE * BYTES_PER_CELL;
-    plane_offset = BLOCKS_PER_PLANE * block_offset;
-
-    // Desplazo el inicio al del archivo
-    // NOTE: El plano 0 es el primer plano
-    // NOTE: El bloque 0 es el primer plano
-    current_offset += self->current_plane * plane_offset;
-    current_offset += self->current_block * block_offset;
-
-    return current_offset;
-}
-
+/// Libera la memoria de todo lo asociado al struct. Luego libera la memoria del struct mismo.
 void osFile_destroy(osFile* self) {
     // Libero memoria puntero nombre
     free(self->name);
+    osFile_release_page_if_loaded(self);
     free(self->disk); // REVIEW: Hay que dejarlo???
     free(self);
 }
+
+/* ------------------------------------------------------------------------- */
 
 // TODO: Sacar si no la uso.
 //  La deje de usar por ahora, pero no la quiero borrar por si la vuelvo a necesitar

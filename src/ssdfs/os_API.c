@@ -268,8 +268,8 @@ osFile* os_open(char* filename, char mode) {  // TODO: Pendiente
     // if (os_exist(...) || ! mode == "w") { ...
     osFile* file_desc = osFile_new(filename, global_diskname);
     // TODO: ...
-    //file_desc = osFile_set_mode(file_desc, &mode);
-    //file_desc = osFile_set_location(...);
+    //osFile_set_mode(file_desc, &mode);
+    //osFile_set_location(...);
     // TODO: ...
     // }
     return file_desc;
