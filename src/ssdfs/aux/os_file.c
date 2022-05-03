@@ -14,7 +14,7 @@
  * | Luis González    | ljgonzalez1    | ljgonzalez@uc.cl  | 16625439    |
  * +------------------+----------------+-------------------+-------------+ */
 
-#include "os_file.h"
+#include "./os_file.h"
 
 // ----- Structs -----
 /// Crea una nueva instancia de la representación de un archivo

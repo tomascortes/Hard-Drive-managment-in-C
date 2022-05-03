@@ -58,16 +58,16 @@ void mark_as_used(int bloque) {
 int main (int argc, char* const argv[]) {
     print_debug("Iniciando el programa..."); wait_debug(200);
 
-    print_debug("Montando el disco con life = 5000"); wait_debug(200);
+    print_debug("Montando el disco con life = 5000\n"); wait_debug(200);
     // Montar el disco pasado por consola con life = 5000
     os_mount(argv[1], 5000);
 
-    print_debug("Cosas comentadas...");
+    print_debug("Prueba bitmap || Comentado");
     // os_bitmap(0); // Bitmap completo
     // os_bitmap(8); // Bitmap bloque N°8 (Se espera 1)
     // os_bitmap(2047); // Bitmap bloque N°395 (Se espera 0)
     // os_bitmap(2048); // Bitmap bloque inexistente (Se espera SEGFAULT)
-    print_debug("...Fin cosas comentadas\n"); wait_debug(200);
+    print_debug("...Fin prueba bitmap || Comentado\n"); wait_debug(200);
 
     printf("\n");
 
@@ -75,20 +75,19 @@ int main (int argc, char* const argv[]) {
     os_lifemap(1270, 1300);
     print_debug("Fin de la función de lifemap"); wait_debug(200);
 
-    print_debug("Cosas comentadas...");
-    // os_lifemap(524288/4 - 5000, 524288/4-2000);
-    print_debug("...Fin cosas comentadas\n");
-
     print_debug("Corre os_tree"); wait_debug(200);
     os_tree();
-    print_debug("Termina de correr os_tree"); wait_debug(200);
+    print_debug("Termina de correr os_tree\n"); wait_debug(200);
 
-    print_debug("Cosas comentadas...");
+    print_debug("Buscar archivo filename");
+    os_exists("/dir1ta/yocuando.mp4");
+    os_exists("/message.txtav");
+    print_debug("Termina de correr buscar archivo filename\n");
+
+    print_debug("Prueba mark_as_used comentadas...");
     //mark_as_used(3);
     //os_bitmap(0);
-    print_debug("...Fin cosas comentadas\n");
-
-    print_debug("Fin del programa\n"); wait_debug(200);
+    print_debug("...Fin prueba mark_as_used comentadas...\n"); wait_debug(200);
 
     return 0;
 }
