@@ -19,7 +19,7 @@
 #include "./debug/debug.h"
 
 // Busca en el bitmap el bit correspondiente al bloque
-// hy lo marca como usado (lo pone en 1)
+// y lo marca como usado (lo pone en 1)
 // Creo que me falta debuggear esto, no usar por ahora uwu
 void mark_as_used(int bloque) {
     // El bit que corresponda al bloque va a estar en el byte:
