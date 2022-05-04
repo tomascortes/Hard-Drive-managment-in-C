@@ -258,7 +258,7 @@ void os_tree(){
 /* Permite revisar si un archivo existe o no. Retorna 1 en caso de que exista, 0 de caso
  * contrario. */
 
-int os_exists(char* filename) {  // TODO: Pendiente
+int os_exists(char* filename) {
     // Defino la verión recursiva de la función acá adentro
     // para cumplir con las reglas de no ofrecer más funciones en la API
     // FIXME: "Function definition is not allowed here"
@@ -282,7 +282,6 @@ int os_exists(char* filename) {  // TODO: Pendiente
                     aux[0] = buffer[j];
                     strcat(path2, aux); // Concatenar char
                 }
-                printf("Path: %s\n", path2);
                 if (strcmp(path2, filename) == 0) { // compara con filename
                     fclose(f2); // Evitamos leaks
                     return 1;
@@ -310,8 +309,6 @@ int os_exists(char* filename) {  // TODO: Pendiente
         return 0;
     }
 
-    printf("Filename: %s\n", filename);
-
     // Abro el archivo
     FILE *f = fopen(global_diskname, "rb");
 
@@ -331,10 +328,8 @@ int os_exists(char* filename) {  // TODO: Pendiente
                 aux[0] = buffer[j];
                 strcat(path, aux); // Concatenar char
             }
-            printf("Path: %s\n", path);
             if (strcmp(path, filename) == 0) { // compara con filename
                 fclose(f); // Evitamos leaks
-                printf("¡Esta!\n");
                 return 1;
             }
         } 
@@ -350,14 +345,12 @@ int os_exists(char* filename) {  // TODO: Pendiente
             int puntero = buffer[1]; // Pesco los bytes 1-4
             if (directreen(puntero, filename, path)){// Función recursiva para leer
                 fclose(f); // Evitamos leaks
-                printf("¡Esta!\n");
                 return 1;
             }; 
         }
     }
 
     fclose(f); // Evitamos leaks
-    printf("¡No Esta!\n");
     return 0;
 }
 
@@ -365,14 +358,25 @@ int os_exists(char* filename) {  // TODO: Pendiente
  * osFile* que lo representa. Si mode='w', se verifica que el archivo no exista, y se
  * retorna un nuevo osFile* que lo representa. */
 osFile* os_open(char* filename, char mode) {  // TODO: Pendiente
-    // if (os_exist(...) || ! mode == "w") { ...
-    osFile* file_desc = osFile_new(filename, global_diskname);
-    // TODO: ...
-    //file_desc = osFile_set_mode(file_desc, &mode);
-    //file_desc = osFile_set_location(...);
-    // TODO: ...
-    // }
-    return file_desc;
+    if (mode =='r') {
+        if (os_exists(filename)) {
+            printf("(Lectura) Encuentra archivo. return osFile.\n");
+            return NULL;
+        } else {
+            printf("(Lectura) No encuentra archivo. return NULL.\n");
+            return NULL;
+        }
+    }
+    if (mode == 'w') {
+        if (os_exists(filename)) {
+            printf("(Escritura) Encuentra archivo. return NULL.\n");
+            return NULL;
+        } else {
+            printf("(Escritura) No encuentra archivo. return osFile.\n");
+            return NULL;
+        }
+    }
+    return NULL;
 }
 
 /* Esta función sirve para leer archivos. Lee los siguientes nbytes desde el archivo
