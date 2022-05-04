@@ -175,7 +175,7 @@ void os_tree(){
         FILE* f2 = fopen(global_diskname, "rb");
         fseek(f2, directory_block * BLOCK_SIZE, SEEK_SET);
         // Cada bloque tiene 1048576 bytes
-        
+
         // Son 32768 entradas en un bloque de directorio
         for (int i = 0; i < DIR_ENTRIES_PER_BLOCK; i++) {
             unsigned char buffer[DIR_ENTRY_SIZE]; // Buffer para guardar los bytes de una entrada
@@ -254,8 +254,8 @@ void os_tree(){
             // dentro del directorio
             directree(puntero, depth);
             depth--; // Vuelvo a la profundidad anterior
-        } 
-        
+        }
+
         else if (buffer[0] == 3) { // archivo:
             for (int k = 0; k < depth; k++) {
                 printf("| ");
