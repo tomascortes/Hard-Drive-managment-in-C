@@ -14,9 +14,6 @@
  * | Luis González    | ljgonzalez1    | ljgonzalez@uc.cl  | 16625439    |
  * +------------------+----------------+-------------------+-------------+ */
 
-#include <stdio.h>
-#include <string.h>
-#include <stdbool.h>
 #include "./os_API.h"
 #include "./debug/debug.h"
 

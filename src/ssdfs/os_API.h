@@ -16,6 +16,9 @@
 
 #pragma once
 #include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+#include <stdbool.h>
 
 #include "./aux/os_file.h"  // NOTE: Trabajando en esto
 
