@@ -22,7 +22,7 @@
 #include <stdbool.h>
 
 // Constante
-#define DEBUG_MODE 1
+#define DEBUG_MODE 0
 #define SIMULATE_WAIT 1
 #define WAITING_TIME 250  // ms
 #define WAITING_TIME2 1000  // ms
