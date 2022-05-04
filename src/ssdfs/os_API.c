@@ -162,59 +162,8 @@ int os_trim(unsigned limit) {  // TODO: Pendiente
 void os_tree(){
     // Defino la verión recursiva de la función acá adentro
     // para cumplir con las reglas de no ofrecer más funciones en la API
-    //// FIXME: Me tira error.
-    ////  "Function definition is not allowed here"
-    ////  No se debería definir una función dentro de otra.
-    ////  --------------------------------------------------------
-    ////  Tal vez sirva definirla en otro lado. Está el paquete, librería o como se llame
-    ////  en C, ./aux/auxiliary_fx. Tal vez poner esto ahí sea conveniente.
-    void directree(int directory_block, int depth) {
-        FILE* f2 = fopen(global_diskname, "rb");
-        fseek(f2, directory_block * BLOCK_SIZE, SEEK_SET);
-        // Cada bloque tiene 1048576 bytes
-        
-        // Son 32768 entradas en un bloque de directorio
-        for (int i = 0; i < DIR_ENTRIES_PER_BLOCK; i++) {
-            unsigned char buffer[DIR_ENTRY_SIZE]; // Buffer para guardar los bytes de una entrada
-            fread(buffer, sizeof(buffer), 1, f2); // Leo una entrada
 
-            if(buffer[0] == 3) { // archivo:
-                for (int k = 0; k < depth; k++){
-                    printf("| ");
-                }
-
-                for (int j = 5; j < DIR_ENTRY_SIZE; j++) {
-                    printf("%c", buffer[j]);
-                }
-
-                printf("\n");
-            }
-
-            else if(buffer[0] == 1) { // Directorio
-                for (int k = 0; k < depth; k++){
-                    printf("| ");
-                }
-
-                for (int j = 5; j < DIR_ENTRY_SIZE; j++) {
-                    printf("%c", buffer[j]);
-                }
-
-                printf("\n");
-                depth++; // Subo la profundidad en 1
-                int puntero = buffer[1];
-                //// FIXME: Me tira error.
-                ////  Hace referencia a una función que marca como indefinida.
-                ////  --------------------------------------------------------
-                ////  Supongo que no definir una función dentro de otra solucionaría el
-                ////  problema
-                directree(puntero, depth); // Llamada recursiva
-                depth--; // Vuelvo a la profundidad anterior
-            }
-        }
-
-        fclose(f2); // Evitamos leaks
-    }
-
+    //// NOTE: Moví directree a ./aux/directree.*    - Luis
     // Abro el archivo
     FILE *f = fopen(global_diskname, "rb");
 
