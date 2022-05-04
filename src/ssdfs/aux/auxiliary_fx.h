@@ -14,33 +14,30 @@
  * | Luis González    | ljgonzalez1    | ljgonzalez@uc.cl  | 16625439    |
  * +------------------+----------------+-------------------+-------------+ */
 
+/* Para funciónes auxiliares */
+
 #pragma once
-#include <stdlib.h>
 
-#include "./aux/os_file.h"  // NOTE: Trabajando en esto
+#define PLANES_PER_DISK 2
+#define BLOCKS_PER_PLANE 1024
+#define PAGES_PER_BLOCK 256
+#define CELLS_PER_PAGE 2048
+#define BYTES_PER_CELL 2
 
-char global_diskname[1023];
-int global_P_E;
-int unactualized_change;
+#define DIR_ENTRY_SIZE 32
 
-// Funciones generales
-void os_mount(char* diskname, unsigned life);
-void os_bitmap(unsigned num);
-void os_lifemap(int lower, int upper);  // TODO: Pendiente
-int os_trim(unsigned limit);  // TODO: Pendiente
-void os_tree();
+// Dependen de las de antes
+#define CELL_SIZE BYTES_PER_CELL  // 2 B
+#define PAGE_SIZE (CELL_SIZE * CELLS_PER_PAGE)  // 4096 B = 4kiB
+#define BLOCK_SIZE (PAGE_SIZE * PAGES_PER_BLOCK)  // 1048576 B = 1MiB
+#define PLANE_SIZE (BLOCK_SIZE * BLOCKS_PER_PLANE)  // 1073741824 B = 1GiB
+#define DISK_SIZE (PLANE_SIZE * PLANES_PER_DISK)  // 2147483648 B = 2GiB
 
-// Funciones de manejo de archivos
-int os_exists(char* filename);  // TODO: Pendiente
-osFile* os_open(char* filename, char mode);  // TODO: Pendiente
-int os_read(osFile* file_desc, void* buffer, int nbytes);  // NOTE: Trabajando en esto
-int os_write(osFile* file_desc, void* buffer, int nbytes);  // TODO: Pendiente
-int os_close(osFile* file_desc);  // TODO: Pendiente
-int os_rm(char* filename);  // TODO: Pendiente
-int os_mkdir(char* path);  // TODO: Pendiente
-int os_rmdir(char* path);  // TODO: Pendiente
-int os_rmrfdir(char* path);  // TODO: Pendiente
-int os_unload(char* orig, char* dest);  // TODO: Pendiente
-int os_load(char* orig);  // TODO: Pendiente
+#define PAGES_PER_DISK (PLANES_PER_DISK * BLOCKS_PER_PLANE * PAGES_PER_BLOCK)  // 524288 pgs
+#define DIR_ENTRIES_PER_BLOCK 32768  // No puse la división por miedo a que cambie el tipo de variable
 
-void print_names();
+long int calc_offset(int plane, // Número de planos
+                     int block, // Número de bloques
+                     int page, // Número de páginas
+                     int cell, // Número de celdas
+                     int bytes); // Número de bytes

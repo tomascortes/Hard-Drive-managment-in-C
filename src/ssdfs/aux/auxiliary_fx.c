@@ -14,33 +14,22 @@
  * | Luis González    | ljgonzalez1    | ljgonzalez@uc.cl  | 16625439    |
  * +------------------+----------------+-------------------+-------------+ */
 
-#pragma once
-#include <stdlib.h>
+/* Para funciónes auxiliares */
 
-#include "./aux/os_file.h"  // NOTE: Trabajando en esto
+#include "auxiliary_fx.h"
 
-char global_diskname[1023];
-int global_P_E;
-int unactualized_change;
+// Calcula offsets en base a plano, bloque, página, celta y byte
+// NOTE: El plano 0 es el primer plano
+//  El bloque 0 es el primer bloque
+//  ...
+long int calc_offset(int plane, int block, int page, int cell, int bytes) {
+    long int offset = 0;
 
-// Funciones generales
-void os_mount(char* diskname, unsigned life);
-void os_bitmap(unsigned num);
-void os_lifemap(int lower, int upper);  // TODO: Pendiente
-int os_trim(unsigned limit);  // TODO: Pendiente
-void os_tree();
+    offset += bytes;
+    offset += cell * CELL_SIZE;
+    offset += page * PAGE_SIZE;
+    offset += block * BLOCK_SIZE;
+    offset += plane * PLANE_SIZE;
 
-// Funciones de manejo de archivos
-int os_exists(char* filename);  // TODO: Pendiente
-osFile* os_open(char* filename, char mode);  // TODO: Pendiente
-int os_read(osFile* file_desc, void* buffer, int nbytes);  // NOTE: Trabajando en esto
-int os_write(osFile* file_desc, void* buffer, int nbytes);  // TODO: Pendiente
-int os_close(osFile* file_desc);  // TODO: Pendiente
-int os_rm(char* filename);  // TODO: Pendiente
-int os_mkdir(char* path);  // TODO: Pendiente
-int os_rmdir(char* path);  // TODO: Pendiente
-int os_rmrfdir(char* path);  // TODO: Pendiente
-int os_unload(char* orig, char* dest);  // TODO: Pendiente
-int os_load(char* orig);  // TODO: Pendiente
-
-void print_names();
+    return offset;
+}

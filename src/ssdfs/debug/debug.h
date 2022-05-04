@@ -14,33 +14,46 @@
  * | Luis González    | ljgonzalez1    | ljgonzalez@uc.cl  | 16625439    |
  * +------------------+----------------+-------------------+-------------+ */
 
+// Compilar sólo una vez
 #pragma once
-#include <stdlib.h>
 
-#include "./aux/os_file.h"  // NOTE: Trabajando en esto
+#include <unistd.h>
+#include <stdio.h>
+#include <stdbool.h>
 
-char global_diskname[1023];
-int global_P_E;
-int unactualized_change;
+// Constante
+#define DEBUG_MODE 1
+#define SIMULATE_WAIT 1
+#define WAITING_TIME 250  // ms
+#define WAITING_TIME2 1000  // ms
+#define WAITING_TIME3 2000  // ms
 
-// Funciones generales
-void os_mount(char* diskname, unsigned life);
-void os_bitmap(unsigned num);
-void os_lifemap(int lower, int upper);  // TODO: Pendiente
-int os_trim(unsigned limit);  // TODO: Pendiente
-void os_tree();
+// Funciones
+void wait_debug(int time_ms);
+void just_wait_debug();
+void wait_longer_debug();
+void wait_a_bit_debug();
 
-// Funciones de manejo de archivos
-int os_exists(char* filename);  // TODO: Pendiente
-osFile* os_open(char* filename, char mode);  // TODO: Pendiente
-int os_read(osFile* file_desc, void* buffer, int nbytes);  // NOTE: Trabajando en esto
-int os_write(osFile* file_desc, void* buffer, int nbytes);  // TODO: Pendiente
-int os_close(osFile* file_desc);  // TODO: Pendiente
-int os_rm(char* filename);  // TODO: Pendiente
-int os_mkdir(char* path);  // TODO: Pendiente
-int os_rmdir(char* path);  // TODO: Pendiente
-int os_rmrfdir(char* path);  // TODO: Pendiente
-int os_unload(char* orig, char* dest);  // TODO: Pendiente
-int os_load(char* orig);  // TODO: Pendiente
+void dprint_line();
+void dprint_txt();
+void dprint_txt2();
 
-void print_names();
+void dprint_char_xx(char **input);
+void dprint_char_x(char *input);
+void dprint_txt_char_xx(char **input);
+void dprint_txt_char_x(char *input);
+void dprint_char_xx2(char **input);
+void dprint_char_x2(char *input);
+void dprint_txt_char_xx2(char **input);
+void dprint_txt_char_x2(char *input);
+
+void dprint_pid(pid_t process_id);
+void dprint_txt_pid(pid_t process_id);
+
+void dprint_int(int input);
+void dprint_txt_int(int input);
+
+void dprint_float(float input);
+void dprint_txt_float(float input);
+
+void print_debug(char *input);
