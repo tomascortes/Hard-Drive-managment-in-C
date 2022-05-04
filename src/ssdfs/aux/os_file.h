@@ -117,4 +117,3 @@ void osFile_release_data(osFile* self);
 // ----- Clean -----
 /// Libera la memoria de todo lo asociado al struct. Luego libera la memoria del struct mismo.
 void osFile_destroy(osFile* self);
-

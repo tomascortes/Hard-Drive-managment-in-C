@@ -291,7 +291,7 @@ int os_exists(char* filename) {  // TODO: Pendiente
         FILE* f2 = fopen(global_diskname, "rb");
         fseek(f2, directory_block * BLOCK_SIZE, SEEK_SET);
         // Cada bloque tiene 1048576 bytes
-        
+
         // Son 32768 entradas en un bloque de directorio
         for (int i = 0; i < DIR_ENTRIES_PER_BLOCK; i++) {
             unsigned char buffer[DIR_ENTRY_SIZE]; // Buffer para guardar los bytes de una entrada
@@ -302,7 +302,7 @@ int os_exists(char* filename) {  // TODO: Pendiente
                 char aux[2]; // variable para concatenar char
                 strcpy(path2, path); // Copiar strings
                 for (int j = 5; j < DIR_ENTRY_SIZE; j++) { // Printear nombre del archivo
-                    aux[1] = '\0'; 
+                    aux[1] = '\0';
                     aux[0] = buffer[j];
                     strcat(path2, aux); // Concatenar char
                 }
@@ -331,7 +331,7 @@ int os_exists(char* filename) {  // TODO: Pendiente
                 if (directreen(puntero, filename, path2)){// Función recursiva para leer
                     fclose(f2); // Evitamos leaks
                     return 1;
-                }; 
+                };
             }
         }
 
@@ -366,7 +366,7 @@ int os_exists(char* filename) {  // TODO: Pendiente
                 printf("¡Esta!\n");
                 return 1;
             }
-        } 
+        }
         else if (buffer[0] == 1) { // directorio:
             char path[100] = "/"; // path inicial
             char aux[2]; // variable para concatenar char
@@ -386,7 +386,7 @@ int os_exists(char* filename) {  // TODO: Pendiente
                 fclose(f); // Evitamos leaks
                 printf("¡Esta!\n");
                 return 1;
-            }; 
+            };
         }
     }
 
