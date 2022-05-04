@@ -160,9 +160,6 @@ int os_trim(unsigned limit) {  // TODO: Pendiente
 /* Función para imprimir el árbol de directorios y archivos del sistema, a partir del
  * directorio base. */
 void os_tree(){
-    // Defino la verión recursiva de la función acá adentro
-    // para cumplir con las reglas de no ofrecer más funciones en la API
-
     //// NOTE: Moví directree a ./aux/directree.*    - Luis
     // Abro el archivo
     FILE *f = fopen(global_diskname, "rb");
