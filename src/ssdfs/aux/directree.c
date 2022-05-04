@@ -16,7 +16,7 @@
 
 #include "directree.h"
 
-void directree(int directory_block, int depth, char* global_diskname) {
+void aux_directree(int directory_block, int depth, char* global_diskname) {
     // Defino la verión recursiva de la función acá adentro
     // para cumplir con las reglas de no ofrecer más funciones en la API
 
@@ -53,12 +53,7 @@ void directree(int directory_block, int depth, char* global_diskname) {
             printf("\n");
             depth++; // Subo la profundidad en 1
             int puntero = buffer[1];
-            //// FIXME: Me tira error.
-            ////  Hace referencia a una función que marca como indefinida.
-            ////  --------------------------------------------------------
-            ////  Supongo que no definir una función dentro de otra solucionaría el
-            ////  problema
-            directree(puntero, depth); // Llamada recursiva
+            aux_directree(puntero, depth, global_diskname); // Llamada recursiva
             depth--; // Vuelvo a la profundidad anterior
         }
     }

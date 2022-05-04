@@ -187,12 +187,7 @@ void os_tree(){
             printf("\n");
             int puntero = buffer[1]; // Pesco los bytes 1-4
             depth++; // Subo la profundidad en 1
-            //// FIXME: Me tira error.
-            ////  Hace referencia a una función que marca como indefinida.
-            ////  --------------------------------------------------------
-            ////  Supongo que no definir una función dentro de otra solucionaría el
-            ////  problema
-            directree(puntero, depth); // Función recursiva para leer
+            aux_directree(puntero, depth, global_diskname); // Función recursiva para leer
                                           // dentro del directorio
             depth--; // Vuelvo a la profundidad anterior
         } 

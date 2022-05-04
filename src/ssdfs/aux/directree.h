@@ -17,6 +17,8 @@
 #pragma once
 
 #include <stdio.h>
+#include <stdlib.h>
+#include "./auxiliary_fx.h"
 
-void directree(int directory_block, int depth);
+void aux_directree(int directory_block, int depth, char* global_diskname);
 

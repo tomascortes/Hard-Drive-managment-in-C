@@ -21,6 +21,7 @@
 #include <stdbool.h>
 
 #include "./aux/os_file.h"  // NOTE: Trabajando en esto
+#include "./aux/directree.h"  // NOTE: Trabajando en esto
 
 char global_diskname[1023];
 int global_P_E;
