@@ -210,73 +210,7 @@ void os_tree(){
 // ----- Funciones de manejo de archivos -----
 /* Permite revisar si un archivo existe o no. Retorna 1 en caso de que exista, 0 de caso
  * contrario. */
-int os_exists(char* filename) {  // TODO: Pendiente
-    // Defino la verión recursiva de la función acá adentro
-    // para cumplir con las reglas de no ofrecer más funciones en la API
-    //// FIXME: Me tira error.
-    ////  "Function definition is not allowed here"
-    ////  No se debería definir una función dentro de otra.
-    ////  --------------------------------------------------------
-    ////  Tal vez sirva definirla en otro lado. Está el paquete, librería o como se llame
-    ////  en C, ./aux/auxiliary_fx. Tal vez poner esto ahí sea conveniente.
-    ////  --------------------------------------------------------
-    ////  Además es casi lo mismo que lo que está arriba.
-    ////  Estoy seguro que se puede hacer de tal forma que resulte los siguiente
-    ////  os_tree   -> directree_general -> directree_solo_diferencias
-    ////  os_exists -> directree_general -> directreen_solon_diferenciasn
-    ////  Además califica al tiro como "code smell" por el código repetido.
-    int directreen(int directory_block, char* filename, char* path) {
-        FILE* f2 = fopen(global_diskname, "rb");
-        fseek(f2, directory_block * BLOCK_SIZE, SEEK_SET);
-        // Cada bloque tiene 1048576 bytes
-
-        // Son 32768 entradas en un bloque de directorio
-        for (int i = 0; i < DIR_ENTRIES_PER_BLOCK; i++) {
-            unsigned char buffer[DIR_ENTRY_SIZE]; // Buffer para guardar los bytes de una entrada
-            fread(buffer, sizeof(buffer), 1, f2); // Leo una entrada
-
-            if(buffer[0] == 3) { // archivo:
-                char path2[100]; // path actual
-                char aux[2]; // variable para concatenar char
-                strcpy(path2, path); // Copiar strings
-                for (int j = 5; j < DIR_ENTRY_SIZE; j++) { // Printear nombre del archivo
-                    aux[1] = '\0';
-                    aux[0] = buffer[j];
-                    strcat(path2, aux); // Concatenar char
-                }
-                printf("Path: %s\n", path2);
-                if (strcmp(path2, filename) == 0) { // compara con filename
-                    fclose(f2); // Evitamos leaks
-                    return 1;
-                }
-            }
-            else if(buffer[0] == 1) { // Directorio
-                char path2[100]; // path actual
-                char aux[2]; // variable para concatenar char
-                strcpy(path2, path); // Copiar strings
-                for (int j = 5; j < DIR_ENTRY_SIZE; j++) { // Printear nombre del directorio
-                    aux[1] = '\0';
-                    aux[0] = buffer[j];
-                    strcat(path2, aux); // Concatenar char
-                }
-                strcat(path, "/"); // Concatenar nuevo directorio
-                int puntero = buffer[1]; // Pesco los bytes 1-4
-                //// FIXME: Me tira error.
-                ////  Hace referencia a una función que marca como indefinida.
-                ////  --------------------------------------------------------
-                ////  Supongo que no definir una función dentro de otra solucionaría el
-                ////  problema
-                if (directreen(puntero, filename, path2)){// Función recursiva para leer
-                    fclose(f2); // Evitamos leaks
-                    return 1;
-                };
-            }
-        }
-
-        fclose(f2); // Evitamos leaks
-        return 0;
-    }
-
+int os_exists(char* filename) {
     printf("Filename: %s\n", filename);
 
     // Abro el archivo
@@ -295,6 +229,7 @@ int os_exists(char* filename) {  // TODO: Pendiente
             char aux[2]; // variable para concatenar char
             for (int j = 5; j < DIR_ENTRY_SIZE; j++) { // Printear nombre del archivo
                 aux[1] = '\0';
+                // WARN: Se está tirando un "unsign char" a "char"
                 aux[0] = buffer[j];
                 strcat(path, aux); // Concatenar char
             }
@@ -315,21 +250,19 @@ int os_exists(char* filename) {  // TODO: Pendiente
             }
             strcat(path, "/");
             int puntero = buffer[1]; // Pesco los bytes 1-4
-            //// FIXME: Me tira error.
-            ////  Hace referencia a una función que marca como indefinida.
-            ////  --------------------------------------------------------
-            ////  Supongo que no definir una función dentro de otra solucionaría el
-            ////  problema
-            if (directreen(puntero, filename, path)){// Función recursiva para leer
+
+            // Función recursiva para leer
+            if (aux_directreen(puntero, filename, path, global_diskname)) {
                 fclose(f); // Evitamos leaks
                 printf("¡Esta!\n");
                 return 1;
-            };
+            }
         }
     }
 
     fclose(f); // Evitamos leaks
     printf("¡No Esta!\n");
+
     return 0;
 }
 

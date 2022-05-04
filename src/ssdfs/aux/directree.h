@@ -18,7 +18,9 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include "./auxiliary_fx.h"
 
 void aux_directree(int directory_block, int depth, char* global_diskname);
+int aux_directreen(int directory_block, char* filename, char* path, char* global_diskname);
 
