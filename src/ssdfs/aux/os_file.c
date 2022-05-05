@@ -94,11 +94,16 @@ long int osFile_calc_page_offset(osFile* self, int n_page) {
 }
 
 // =======================--- Page-R ---=======================
+/// Resetea cuenta de bytes cargados
+void osFile_reset_bytes_count(osFile* self) {
+    self->bytes_loaded_count = 0;
+}
+
 /// Carga la página en la que se encuentra el puntero de lectura a memoria
 void osFile_load_pointer_page(osFile* self, int* rotten_array_pointer) {
     self->current_pos;
 
-    self->bytes_loaded += PAGE_SIZE;
+    self->bytes_loaded_count += PAGE_SIZE;
 }
 
 /// Cargo la página "n_page" del bloque en la dirección de memoria self->loaded_page
