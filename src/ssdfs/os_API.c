@@ -357,6 +357,11 @@ int os_read(osFile* file_desc, void* buffer, int nbytes) {  // NOTE: Trabajando 
     // Retorna la cantidad de bytes efectivamente leída del disco
     bytes_read = end_pos - starting_pos;
 
+    // MEM leak = feo :(
+    free(rotten_pages);
+
+    // TODO: ... falta calc. bytes leídos...
+
     return bytes_read;
 }
 
