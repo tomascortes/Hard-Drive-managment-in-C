@@ -53,6 +53,10 @@ typedef struct osFile {
     unsigned char* loaded_data; //datos de una página cargados en memoria
     bool has_data_loaded; // Si tiene datos cargados
 
+    // De uso temporal por lectura
+    // Cantidad de bytes leídos. Debe resetearse cada vez que se lee
+
+
 } osFile;
 
 // ----- Setup -----
@@ -79,6 +83,9 @@ void osFile_offset_pointer(osFile* self, int offset);
 long int osFile_calc_page_offset(osFile* self, int n_page);
 
 // ---- Page-R ----
+/// Carga la página en la que se encuentra el puntero de lectura a memoria
+void osFile_load_pointer_page(osFile* self, int* rotten_array_pointer);
+
 /// Cargo la página "n_page" del bloque en la dirección de memoria self->loaded_page
 void osFile_load_page(osFile* self, int n_page);
 
@@ -105,8 +112,6 @@ void osFile_write_page(osFile* self, int n_page);
 void osFile_reserve_page_mem(osFile* self);
 
 // ----- Data -----
-void osFile_load_pointer_page(osFile* self);
-
 /// Carga datos desde la página cargada en memoria a un array.
 void osFile_load_data(osFile* self, int start, int end);
 

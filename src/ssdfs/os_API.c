@@ -332,7 +332,11 @@ int os_read(osFile* file_desc, void* buffer, int nbytes) {  // NOTE: Trabajando 
     // (nbytes - 1 // page_size) + 1 = Páginas por leer
     // Usa la función piso/división parte entera, por eso el +-1
     // Y como solo se pueden leer páginas como número entero...
-    osFile_load_pointer_page(file_desc);
+    osFile_load_pointer_page(file_desc, rotten_pages);
+
+
+
+
 
     int iter;
     int starting_pos;
