@@ -275,7 +275,7 @@ int os_exists(char* filename) {
 /* Esta función abre un archivo. Si mode='r', se busca el archivo filename y se retorna el
  * osFile* que lo representa. Si mode='w', se verifica que el archivo no exista, y se
  * retorna un nuevo osFile* que lo representa. */
-osFile* os_open(char* filename, char mode) {  // TODO: Pendiente
+osFile* os_open(char* filename, char mode) {  // NOTE: En proceso
     if (mode =='r') {
         if (os_exists(filename)) {
             printf("(Lectura) Encuentra archivo. return osFile.\n");
@@ -344,7 +344,7 @@ int os_read(osFile* file_desc, void* buffer, int nbytes) {  // NOTE: Trabajando 
  * rotten o porque el archivo no puede crecer más, este número puede ser menor a nbytes
  * (incluso 0). Esta función aumenta en 1 el contador P/E en el lifemap asociado a cada
  * página que se escriba. */
-int os_write(osFile* file_desc, void* buffer, int nbytes) {  // TODO: WIP
+int os_write(osFile* file_desc, void* buffer, int nbytes) {  // NOTE: En proceso
     if (strcmp(file_desc->mode, "w") != 0) {
         printf("Error: El archivo debe estar en modo write.\n");
         exit(-1);
@@ -366,7 +366,7 @@ int os_write(osFile* file_desc, void* buffer, int nbytes) {  // TODO: WIP
  * disco.*/
 int os_close(osFile* file_desc) {
     osFile_destroy(file_desc);
-    // TODO: Marcar como cerrado en el disco si es necesario
+    // TODO: Marcar como cerrado en el disco *SI* es necesario
     return 0;
 }
 
