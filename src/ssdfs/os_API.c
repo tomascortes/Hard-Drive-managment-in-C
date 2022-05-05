@@ -330,7 +330,8 @@ int os_read(osFile* file_desc, void* buffer, int nbytes) {  // NOTE: Trabajando 
                                               global_diskname);
     }
 
-    //
+    // Reseteo cuenta de bytes leídos para hacer la comparación
+    osFile_reset_bytes_count(file_desc);
 
     // (nbytes - 1 // page_size) + 1 = Páginas por leer
     // Usa la función piso/división parte entera, por eso el +-1
