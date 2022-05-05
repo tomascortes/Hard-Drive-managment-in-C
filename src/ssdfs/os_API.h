@@ -20,6 +20,7 @@
 #include <string.h>
 #include <stdbool.h>
 
+#include "./debug/debug.h"
 #include "./aux/os_file.h"  // NOTE: Trabajando en esto
 #include "./aux/directree.h"  // NOTE: Trabajando en esto
 

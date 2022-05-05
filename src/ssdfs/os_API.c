@@ -15,7 +15,6 @@
  * +------------------+----------------+-------------------+-------------+ */
 
 #include "./os_API.h"
-#include "./debug/debug.h"
 
 // ===== API de ssdfs =====
 
@@ -265,15 +264,12 @@ int os_exists(char* filename) {
             // Función recursiva para leer
             if (aux_directreen(puntero, filename, path, global_diskname)) {
                 fclose(f); // Evitamos leaks
-                printf("¡Esta!\n");
                 return 1;
             }
         }
     }
 
     fclose(f); // Evitamos leaks
-    printf("¡No Esta!\n");
-
     return 0;
 }
 
@@ -281,14 +277,29 @@ int os_exists(char* filename) {
  * osFile* que lo representa. Si mode='w', se verifica que el archivo no exista, y se
  * retorna un nuevo osFile* que lo representa. */
 osFile* os_open(char* filename, char mode) {  // TODO: Pendiente
-    // if (os_exist(...) || ! mode == "w") { ...
-    osFile* file_desc = osFile_new(filename, global_diskname);
-    // TODO: ...
-    //osFile_set_mode(file_desc, &mode);
-    //osFile_set_location(...);
-    // TODO: ...
-    // }
-    return file_desc;
+    if (mode =='r') {
+        if (os_exists(filename)) {
+            printf("(Lectura) Encuentra archivo. return osFile.\n");
+            // osFile* os_file = osFile_new(filename, global_diskname);
+            // osFile_set_mode(os_file, &mode);
+            // osFile_set_location(os_file, plane, block, length_bytes);
+            return NULL;
+        } else {
+            printf("(Lectura) No encuentra archivo. return NULL.\n");
+            return NULL;
+        }
+    }
+    if (mode == 'w') {
+        if (os_exists(filename)) {
+            printf("(Escritura) Encuentra archivo. return NULL.\n");
+            return NULL;
+        } else {
+            printf("(Escritura) No encuentra archivo. return osFile.\n");
+            // osFile_new(filename, global_diskname);
+            return NULL;
+        }
+    }
+    return NULL;
 }
 
 /* Esta función sirve para leer archivos. Lee los siguientes nbytes desde el archivo
