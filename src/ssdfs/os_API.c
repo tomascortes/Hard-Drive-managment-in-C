@@ -214,7 +214,7 @@ void os_tree(){
  * contrario. */
 int os_exists(char* filename) {
     //// NOTE: Moví directreen a ./aux/directree.*:aux_directreen    - Luis
-    printf("Filename: %s\n", filename);
+    // printf("Filename: %s\n", filename);  // TODO: Sacar línea
 
     // Abro el archivo
     FILE *f = fopen(global_diskname, "rb");
@@ -239,7 +239,7 @@ int os_exists(char* filename) {
                 strcat(path, aux); // Concatenar char
             }
 
-            printf("Path: %s\n", path);
+            // printf("Path: %s\n", path);  // TODO: Sacar línea
 
             if (strcmp(path, filename) == 0) { // compara con filename
                 fclose(f); // Evitamos leaks
