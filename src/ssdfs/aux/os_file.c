@@ -62,12 +62,20 @@ void osFile_set_location(osFile* self,
     self->current_pos = 0;
 }
 
+void mark_rotten_pages(osFile* self, int*) {
+
+}
+
+
 // ====================--- File pointer ---====================
 
 /// Desplazo el puntero n espacios
 void osFile_offset_pointer(osFile* self, int offset) {
-    // TODO: revisar límites
-    self->current_pos = self->current_pos + offset;
+    // Desplaza el puntero sólo si no excede el largo del archivo.
+    // ... y no es negativo
+    if (self->current_pos + offset < self->length && self->current_pos + offset >= 0) {
+        self->current_pos += offset;
+    }
 }
 
 // =======================--- Offset ---=======================
@@ -86,6 +94,13 @@ long int osFile_calc_page_offset(osFile* self, int n_page) {
 }
 
 // =======================--- Page-R ---=======================
+/// Carga la página en la que se encuentra el puntero de lectura a memoria
+void osFile_load_pointer_page(osFile* self, int* rotten_array_pointer) {
+    self->current_pos;
+
+    self->bytes_loaded += PAGE_SIZE;
+}
+
 /// Cargo la página "n_page" del bloque en la dirección de memoria self->loaded_page
 void osFile_load_page(osFile* self, int n_page) {
     // TODO: Revisar que página que mando no esté rotten.

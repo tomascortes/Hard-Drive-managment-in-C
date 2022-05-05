@@ -311,6 +311,34 @@ osFile* os_open(char* filename, char mode) {  // NOTE: En proceso
 // TODO: Hacer que acepte números mayores a el espacio restante.
 // TODO: Procesar págs. rotten.
 int os_read(osFile* file_desc, void* buffer, int nbytes) {  // NOTE: Trabajando en esto
+    int page_offset;
+    int* rotten_pages;
+
+    // Caso borde: nbytes = 0 ==> No se lee ningún byte
+    if (nbytes == 0) {
+        return 0;
+    }
+
+    // Reviso las páginas rotten.
+    rotten_pages = calloc(PAGES_PER_BLOCK, sizeof(bool));
+
+    page_offset = file_desc->current_plane * BLOCKS_PER_PLANE * PAGES_PER_BLOCK;
+    page_offset += file_desc->current_block * PAGES_PER_BLOCK;
+
+    for (int n_page = 0; n_page < PAGES_PER_BLOCK; n_page ++) {
+        rotten_pages[n_page] = is_page_rotten(n_page + page_offset,
+                                              global_diskname);
+    }
+
+    // (nbytes - 1 // page_size) + 1 = Páginas por leer
+    // Usa la función piso/división parte entera, por eso el +-1
+    // Y como solo se pueden leer páginas como número entero...
+    osFile_load_pointer_page(file_desc, rotten_pages);
+
+
+
+
+
     int iter;
     int starting_pos;
     int end_pos;
@@ -333,6 +361,11 @@ int os_read(osFile* file_desc, void* buffer, int nbytes) {  // NOTE: Trabajando 
 
     // Retorna la cantidad de bytes efectivamente leída del disco
     bytes_read = end_pos - starting_pos;
+
+    // MEM leak = feo :(
+    free(rotten_pages);
+
+    // TODO: ... falta calc. bytes leídos...
 
     return bytes_read;
 }
