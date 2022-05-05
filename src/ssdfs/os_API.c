@@ -307,10 +307,7 @@ osFile* os_open(char* filename, char mode) {  // NOTE: En proceso
  * nbytes es mayor a la cantidad de Bytes restantes en el archivo o en el caso que el
  * archivo contenga páginas rotten. La lectura de read se efectúa desde la posición del
  * archivo inmediatamente posterior a la última posición leı́da por un llamado a read. */
-// NOTE: Asumo que los inputs cumplen las siguientes características
-// TODO: Hacer que acepte números mayores a el espacio restante.
-// TODO: Procesar págs. rotten.
-int os_read(osFile* file_desc, void* buffer, int nbytes) {  // NOTE: Trabajando en esto
+int os_read(osFile* file_desc, void* buffer, int nbytes) {  // REVIEW
     int page_offset;
     int* rotten_pages;
 
