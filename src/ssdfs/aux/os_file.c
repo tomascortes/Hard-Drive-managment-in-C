@@ -242,10 +242,10 @@ void osFile_release_data(osFile* self) {
 /// Libera la memoria de todo lo asociado al struct. Luego libera la memoria del struct mismo.
 void osFile_destroy(osFile* self) {
     // Libero memoria puntero nombre
-    free(self->name);
+    free(self->name); // REVIEW: Revisar que funciones
     osFile_release_page_if_loaded(self);
     osFile_release_data_if_loaded(self);
-    free(self->disk); // REVIEW: Hay que dejarlo???
+    // free(self->disk); // REVIEW: Hay que dejarlo???
     free(self);
 }
 
