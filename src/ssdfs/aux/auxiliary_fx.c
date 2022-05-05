@@ -33,3 +33,21 @@ long int calc_offset(int plane, int block, int page, int cell, int bytes) {
 
     return offset;
 }
+
+bool is_page_rotten(int page, char* diskname) {
+    // Abro el archivo
+    FILE* file = fopen(diskname, "rb");
+    int buffer;
+
+    fseek(file,  BLOCK_SIZE + (page * sizeof(int)), SEEK_SET);
+
+    // Leo una entrada de un int
+    fread(&buffer, sizeof(int), 1, file);
+
+    if (buffer == -1) {
+        return true;
+
+    } else {
+        return false;
+    }
+}
