@@ -338,11 +338,6 @@ int os_exists(char* filename) {
             }
             strcat(path, "/");
             int puntero = buffer[1]; // Pesco los bytes 1-4
-            //// FIXME: Me tira error.
-            ////  Hace referencia a una función que marca como indefinida.
-            ////  --------------------------------------------------------
-            ////  Supongo que no definir una función dentro de otra solucionaría el
-            ////  problema
             if (directreen(puntero, filename, path)){// Función recursiva para leer
                 fclose(f); // Evitamos leaks
                 return 1;
@@ -361,6 +356,9 @@ osFile* os_open(char* filename, char mode) {  // TODO: Pendiente
     if (mode =='r') {
         if (os_exists(filename)) {
             printf("(Lectura) Encuentra archivo. return osFile.\n");
+            // osFile* os_file = osFile_new(filename, global_diskname);
+            // osFile_set_mode(os_file, &mode);
+            // osFile_set_location(os_file, plane, block, length_bytes);
             return NULL;
         } else {
             printf("(Lectura) No encuentra archivo. return NULL.\n");
@@ -373,6 +371,7 @@ osFile* os_open(char* filename, char mode) {  // TODO: Pendiente
             return NULL;
         } else {
             printf("(Escritura) No encuentra archivo. return osFile.\n");
+            osFile_new(filename, disk_pointer);
             return NULL;
         }
     }

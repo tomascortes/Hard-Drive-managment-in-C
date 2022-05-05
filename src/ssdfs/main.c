@@ -73,8 +73,9 @@ int main (int argc, char* const argv[]) {
     print_debug("Termina de correr os_tree\n");
 
     print_debug("Buscar archivo filename");
-    // os_exists("/dir1ta/yocuando.mp4");
-    // os_exists("/message.txtav");
+    printf("%d\n", os_exists("/dir1ta/yocuando.mp4"));
+    printf("%d\n", os_exists("/message.txtav"));
+    printf("%d\n", os_exists("/tumama.txt"));
     print_debug("Termina de correr buscar archivo filename\n");
 
     print_debug("Buscar archivo os_open");
