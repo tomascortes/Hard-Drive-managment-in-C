@@ -364,16 +364,8 @@ int os_write(osFile* file_desc, void* buffer, int nbytes) {  // TODO: WIP
 /* Esta función permite cerrar un archivo. Cierra el archivo indicado por file desc. Debe
  * garantizar que cuando esta función retorna, el archivo se encuentra actualizado en
  * disco.*/
-int os_close(osFile* file_desc) {  // TODO: Pendiente
-    if (unactualized_change == 1) {
-        printf("El disco no está actualizado con los respectivos cambios");
-    }
-
-    else {
-        free(file_desc);  //// XXX: Por qué se libera memoria aquí??
-        osFile_destroy(file_desc);
-    }
-
+int os_close(osFile* file_desc) {
+    osFile_destroy(file_desc);
     return 0;
 }
 
