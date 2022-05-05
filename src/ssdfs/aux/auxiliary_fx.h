@@ -18,6 +18,9 @@
 
 #pragma once
 
+#include <stdbool.h>
+#include <stdio.h>
+
 #define PLANES_PER_DISK 2
 #define BLOCKS_PER_PLANE 1024
 #define PAGES_PER_BLOCK 256
@@ -41,3 +44,5 @@ long int calc_offset(int plane, // Número de planos
                      int page, // Número de páginas
                      int cell, // Número de celdas
                      int bytes); // Número de bytes
+
+bool is_page_rotten(int page, char* diskname);
