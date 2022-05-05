@@ -14,11 +14,7 @@
  * | Luis González    | ljgonzalez1    | ljgonzalez@uc.cl  | 16625439    |
  * +------------------+----------------+-------------------+-------------+ */
 
-#include <stdio.h>
-#include <string.h>
-#include <stdbool.h>
 #include "./os_API.h"
-#include "./debug/debug.h"
 
 // ===== API de ssdfs =====
 
@@ -33,7 +29,7 @@ void os_mount(char* diskname, unsigned life) {
     /* Crea una variable global con el nombre del archivo y otra con el
      * valor de life */
     strcpy(global_diskname, diskname);
-    //// FIXME: "Narrowing conversion from 'unsigned int' to signed type 'int'
+    //// WARN: "Narrowing conversion from 'unsigned int' to signed type 'int'
     ////  is implementation-defined"
     ////  --------------------------------------------------------
     ////  Tal vez algún check o casteo lo arregla?
@@ -163,48 +159,7 @@ int os_trim(unsigned limit) {  // TODO: Pendiente
 /* Función para imprimir el árbol de directorios y archivos del sistema, a partir del
  * directorio base. */
 void os_tree(){
-    // Defino la verión recursiva de la función acá adentro
-    // para cumplir con las reglas de no ofrecer más funciones en la API
-    void directree(int directory_block, int depth) {
-        FILE* f2 = fopen(global_diskname, "rb");
-        fseek(f2, directory_block * BLOCK_SIZE, SEEK_SET);
-        // Son 32768 entradas en un bloque de directorio
-        for (int i = 0; i < DIR_ENTRIES_PER_BLOCK; i++) {
-            unsigned char buffer[DIR_ENTRY_SIZE]; // Buffer para guardar los bytes de una entrada
-            fread(buffer, sizeof(buffer), 1, f2); // Leo una entrada
-
-            if(buffer[0] == 3) { // archivo:
-                for (int k = 0; k < depth; k++){
-                    printf("| ");
-                }
-
-                for (int j = 5; j < DIR_ENTRY_SIZE; j++) {
-                    printf("%c", buffer[j]);
-                }
-
-                printf("\n");
-            }
-
-            else if(buffer[0] == 1) { // Directorio
-                for (int k = 0; k < depth; k++){
-                    printf("| ");
-                }
-
-                for (int j = 5; j < DIR_ENTRY_SIZE; j++) {
-                    printf("%c", buffer[j]);
-                }
-
-                printf("\n");
-                depth++; // Subo la profundidad en 1
-                int puntero = buffer[1]; // Pesco los bytes 1-4
-                directree(puntero, depth); // Llamada recursiva
-                depth--; // Vuelvo a la profundidad anterior
-            }
-        }
-
-        fclose(f2); // Evitamos leaks
-    }
-
+    //// NOTE: Moví directree a ./aux/directree.*:aux_directree    - Luis
     // Abro el archivo
     FILE *f = fopen(global_diskname, "rb");
 
@@ -224,6 +179,7 @@ void os_tree(){
             for (int k = 0; k < depth; k++) { // Desplazar depth a la derecha
                 printf("| ");
             }
+
             for (int j = 5; j < DIR_ENTRY_SIZE; j++) { // Printear nombre del directorio
                 printf("%c", buffer[j]);
             }
@@ -231,8 +187,10 @@ void os_tree(){
             printf("\n");
             int puntero = buffer[1]; // Pesco los bytes 1-4
             depth++; // Subo la profundidad en 1
-            directree(puntero, depth); // Función recursiva para leer
-                                          // dentro del directorio
+
+            // Función recursiva para leer
+            // dentro del directorio
+            aux_directree(puntero, depth, global_diskname);
             depth--; // Vuelvo a la profundidad anterior
         } 
         
@@ -254,55 +212,9 @@ void os_tree(){
 // ----- Funciones de manejo de archivos -----
 /* Permite revisar si un archivo existe o no. Retorna 1 en caso de que exista, 0 de caso
  * contrario. */
-
 int os_exists(char* filename) {
-    // Defino la verión recursiva de la función acá adentro
-    // para cumplir con las reglas de no ofrecer más funciones en la API
-    int directreen(int directory_block, char* filename, char* path) {
-        FILE* f2 = fopen(global_diskname, "rb");
-        fseek(f2, directory_block * BLOCK_SIZE, SEEK_SET);
-        // Cada bloque tiene 1048576 bytes
-
-        // Son 32768 entradas en un bloque de directorio
-        for (int i = 0; i < DIR_ENTRIES_PER_BLOCK; i++) {
-            unsigned char buffer[DIR_ENTRY_SIZE]; // Buffer para guardar los bytes de una entrada
-            fread(buffer, sizeof(buffer), 1, f2); // Leo una entrada
-
-            if(buffer[0] == 3) { // archivo:
-                char path2[100]; // path actual
-                char aux[2]; // variable para concatenar char
-                strcpy(path2, path); // Copiar strings
-                for (int j = 5; j < DIR_ENTRY_SIZE; j++) { // Printear nombre del archivo
-                    aux[1] = '\0';
-                    aux[0] = buffer[j];
-                    strcat(path2, aux); // Concatenar char
-                }
-                if (strcmp(path2, filename) == 0) { // compara con filename
-                    fclose(f2); // Evitamos leaks
-                    return 1;
-                }
-            }
-            else if(buffer[0] == 1) { // Directorio
-                char path2[100]; // path actual
-                char aux[2]; // variable para concatenar char
-                strcpy(path2, path); // Copiar strings
-                for (int j = 5; j < DIR_ENTRY_SIZE; j++) { // Printear nombre del directorio
-                    aux[1] = '\0';
-                    aux[0] = buffer[j];
-                    strcat(path2, aux); // Concatenar char
-                }
-                strcat(path, "/"); // Concatenar nuevo directorio
-                int puntero = buffer[1]; // Pesco los bytes 1-4
-                if (directreen(puntero, filename, path2)){// Función recursiva para leer
-                    fclose(f2); // Evitamos leaks
-                    return 1;
-                };
-            }
-        }
-
-        fclose(f2); // Evitamos leaks
-        return 0;
-    }
+    //// NOTE: Moví directreen a ./aux/directree.*:aux_directreen    - Luis
+    printf("Filename: %s\n", filename);
 
     // Abro el archivo
     FILE *f = fopen(global_diskname, "rb");
@@ -315,33 +227,44 @@ int os_exists(char* filename) {
         unsigned char buffer[DIR_ENTRY_SIZE];
         // Buffer para guardar los bytes de una entrada
         fread(buffer, sizeof(buffer), 1, f); // Leo una entrada
+
         if(buffer[0] == 3){ // archivo:
             char path[100] = "/"; // path inicial
             char aux[2]; // variable para concatenar char
+
             for (int j = 5; j < DIR_ENTRY_SIZE; j++) { // Printear nombre del archivo
                 aux[1] = '\0';
+                //// WARN: Se está tirando un "unsign char" a "char"
                 aux[0] = buffer[j];
                 strcat(path, aux); // Concatenar char
             }
+
+            printf("Path: %s\n", path);
+
             if (strcmp(path, filename) == 0) { // compara con filename
                 fclose(f); // Evitamos leaks
                 return 1;
             }
         }
+
         else if (buffer[0] == 1) { // directorio:
             char path[100] = "/"; // path inicial
             char aux[2]; // variable para concatenar char
             for (int j = 5; j < DIR_ENTRY_SIZE; j++) { // Printear nombre del directorio
                 aux[1] = '\0';
+                //// WARN: Se está tirando un "unsign char" a "char"
                 aux[0] = buffer[j];
                 strcat(path, aux); // Concatenar char
             }
+
             strcat(path, "/");
             int puntero = buffer[1]; // Pesco los bytes 1-4
-            if (directreen(puntero, filename, path)){// Función recursiva para leer
+
+            // Función recursiva para leer
+            if (aux_directreen(puntero, filename, path, global_diskname)) {
                 fclose(f); // Evitamos leaks
                 return 1;
-            };
+            }
         }
     }
 
@@ -429,6 +352,7 @@ int os_write(osFile* file_desc, void* buffer, int nbytes) {  // TODO: WIP
 
     // Numero de bytes en un bloque, no se puede escribir entre bloques
     long int max_size = BLOCK_SIZE;
+
     if (nbytes > max_size) {
         printf("Error: no se puede escribir un archivo tan grande.\n");
         exit(-1);
@@ -532,6 +456,7 @@ void print_names() {
             printf("\n");
         }
     }
+
     fclose(f); // Evitamos leaks
 }
 
