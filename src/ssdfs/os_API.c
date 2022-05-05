@@ -366,7 +366,6 @@ int os_write(osFile* file_desc, void* buffer, int nbytes) {  // NOTE: En proceso
  * disco.*/
 int os_close(osFile* file_desc) {
     osFile_destroy(file_desc);
-    // TODO: Marcar como cerrado en el disco *SI* es necesario
     return 0;
 }
 
