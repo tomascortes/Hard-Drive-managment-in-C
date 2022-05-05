@@ -322,11 +322,12 @@ int os_read(osFile* file_desc, void* buffer, int nbytes) {  // NOTE: Trabajando 
     // Reviso las páginas rotten.
     rotten_pages = calloc(PAGES_PER_BLOCK, sizeof(bool));
 
-    page_offset = file_desc->current_plane * BLOCKS_PER_PLANE;
-    page_offset += file_desc->current_block;
+    page_offset = file_desc->current_plane * BLOCKS_PER_PLANE * PAGES_PER_BLOCK;
+    page_offset += file_desc->current_block * PAGES_PER_BLOCK;
 
     for (int n_page = 0; n_page < PAGES_PER_BLOCK; n_page ++) {
-        rotten_pages[n_page] = is_page_rotten(n_page + page_offset, global_diskname);
+        rotten_pages[n_page] = is_page_rotten(n_page + page_offset,
+                                              global_diskname);
     }
 
     // (nbytes - 1 // page_size) + 1 = Páginas por leer
