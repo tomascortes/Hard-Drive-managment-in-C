@@ -366,6 +366,7 @@ int os_write(osFile* file_desc, void* buffer, int nbytes) {  // TODO: WIP
  * disco.*/
 int os_close(osFile* file_desc) {
     osFile_destroy(file_desc);
+    // TODO: Marcar como cerrado en el disco si es necesario
     return 0;
 }
 
