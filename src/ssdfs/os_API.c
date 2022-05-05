@@ -14,11 +14,7 @@
  * | Luis González    | ljgonzalez1    | ljgonzalez@uc.cl  | 16625439    |
  * +------------------+----------------+-------------------+-------------+ */
 
-#include <stdio.h>
-#include <string.h>
-#include <stdbool.h>
 #include "./os_API.h"
-#include "./debug/debug.h"
 
 // ===== API de ssdfs =====
 
@@ -163,61 +159,7 @@ int os_trim(unsigned limit) {  // TODO: Pendiente
 /* Función para imprimir el árbol de directorios y archivos del sistema, a partir del
  * directorio base. */
 void os_tree(){
-    // Defino la verión recursiva de la función acá adentro
-    // para cumplir con las reglas de no ofrecer más funciones en la API
-    //// FIXME: Me tira error.
-    ////  "Function definition is not allowed here"
-    ////  No se debería definir una función dentro de otra.
-    ////  --------------------------------------------------------
-    ////  Tal vez sirva definirla en otro lado. Está el paquete, librería o como se llame
-    ////  en C, ./aux/auxiliary_fx. Tal vez poner esto ahí sea conveniente.
-    void directree(int directory_block, int depth) {
-        FILE* f2 = fopen(global_diskname, "rb");
-        fseek(f2, directory_block * BLOCK_SIZE, SEEK_SET);
-        // Cada bloque tiene 1048576 bytes
-
-        // Son 32768 entradas en un bloque de directorio
-        for (int i = 0; i < DIR_ENTRIES_PER_BLOCK; i++) {
-            unsigned char buffer[DIR_ENTRY_SIZE]; // Buffer para guardar los bytes de una entrada
-            fread(buffer, sizeof(buffer), 1, f2); // Leo una entrada
-
-            if(buffer[0] == 3) { // archivo:
-                for (int k = 0; k < depth; k++){
-                    printf("| ");
-                }
-
-                for (int j = 5; j < DIR_ENTRY_SIZE; j++) {
-                    printf("%c", buffer[j]);
-                }
-
-                printf("\n");
-            }
-
-            else if(buffer[0] == 1) { // Directorio
-                for (int k = 0; k < depth; k++){
-                    printf("| ");
-                }
-
-                for (int j = 5; j < DIR_ENTRY_SIZE; j++) {
-                    printf("%c", buffer[j]);
-                }
-
-                printf("\n");
-                depth++; // Subo la profundidad en 1
-                int puntero = buffer[1];
-                //// FIXME: Me tira error.
-                ////  Hace referencia a una función que marca como indefinida.
-                ////  --------------------------------------------------------
-                ////  Supongo que no definir una función dentro de otra solucionaría el
-                ////  problema
-                directree(puntero, depth); // Llamada recursiva
-                depth--; // Vuelvo a la profundidad anterior
-            }
-        }
-
-        fclose(f2); // Evitamos leaks
-    }
-
+    //// NOTE: Moví directree a ./aux/directree.*:aux_directree    - Luis
     // Abro el archivo
     FILE *f = fopen(global_diskname, "rb");
 
@@ -245,17 +187,13 @@ void os_tree(){
             printf("\n");
             int puntero = buffer[1]; // Pesco los bytes 1-4
             depth++; // Subo la profundidad en 1
-            //// FIXME: Me tira error.
-            ////  Hace referencia a una función que marca como indefinida.
-            ////  --------------------------------------------------------
-            ////  Supongo que no definir una función dentro de otra solucionaría el
-            ////  problema
+
             // Función recursiva para leer
             // dentro del directorio
-            directree(puntero, depth);
+            aux_directree(puntero, depth, global_diskname);
             depth--; // Vuelvo a la profundidad anterior
-        }
-
+        } 
+        
         else if (buffer[0] == 3) { // archivo:
             for (int k = 0; k < depth; k++) {
                 printf("| ");
@@ -275,82 +213,8 @@ void os_tree(){
 /* Permite revisar si un archivo existe o no. Retorna 1 en caso de que exista, 0 de caso
  * contrario. */
 int os_exists(char* filename) {
-    // Defino la verión recursiva de la función acá adentro
-    // para cumplir con las reglas de no ofrecer más funciones en la API
-    //// FIXME: Me tira error.
-    ////  "Function definition is not allowed here"
-    ////  No se debería definir una función dentro de otra.
-    ////  --------------------------------------------------------
-    ////  Tal vez sirva definirla en otro lado. Está el paquete, librería o como se llame
-    ////  en C, ./aux/auxiliary_fx. Tal vez poner esto ahí sea conveniente.
-    ////  --------------------------------------------------------
-    ////  Además es casi lo mismo que lo que está arriba.
-    ////  Estoy seguro que se puede hacer de tal forma que resulte los siguiente
-    ////  os_tree   -> directree_general -> directree_solo_diferencias
-    ////  os_exists -> directree_general -> directreen_solon_diferenciasn
-    ////  Además califica al tiro como "code smell" por el código repetido.
-    int directreen(int directory_block, char* filename, char* path) {
-        FILE* f2 = fopen(global_diskname, "rb");
-        fseek(f2, directory_block * BLOCK_SIZE, SEEK_SET);
-        // Cada bloque tiene 1048576 bytes
-
-        // Son 32768 entradas en un bloque de directorio
-        for (int i = 0; i < DIR_ENTRIES_PER_BLOCK; i++) {
-            unsigned char buffer[DIR_ENTRY_SIZE]; // Buffer para guardar los bytes de una entrada
-            fread(buffer, sizeof(buffer), 1, f2); // Leo una entrada
-
-            if(buffer[0] == 3) { // archivo:
-                char path2[100]; // path actual
-                char aux[2]; // variable para concatenar char
-                strcpy(path2, path); // Copiar strings
-
-                for (int j = 5; j < DIR_ENTRY_SIZE; j++) { // Printear nombre del archivo
-                    aux[1] = '\0';
-                    //// WARN: Se está tirando un "unsign char" a "char"
-                    aux[0] = buffer[j];
-                    strcat(path2, aux); // Concatenar char
-                }
-
-                printf("Path: %s\n", path2);
-
-                if (strcmp(path2, filename) == 0) { // compara con filename
-                    fclose(f2); // Evitamos leaks
-                    return 1;
-                }
-            }
-
-            else if(buffer[0] == 1) { // Directorio
-                char path2[100]; // path actual
-                char aux[2]; // variable para concatenar char
-                strcpy(path2, path); // Copiar strings
-
-                for (int j = 5; j < DIR_ENTRY_SIZE; j++) { // Printear nombre del directorio
-                    aux[1] = '\0';
-                    //// WARN: Se está tirando un "unsign char" a "char"
-                    aux[0] = buffer[j];
-                    strcat(path2, aux); // Concatenar char
-                }
-
-                strcat(path, "/"); // Concatenar nuevo directorio
-                int puntero = buffer[1]; // Pesco los bytes 1-4
-                //// FIXME: Me tira error.
-                ////  Hace referencia a una función que marca como indefinida.
-                ////  --------------------------------------------------------
-                ////  Supongo que no definir una función dentro de otra solucionaría el
-                ////  problema
-                if (directreen(puntero, filename, path2)){// Función recursiva para leer
-                    fclose(f2); // Evitamos leaks
-
-                    return 1;
-                }
-            }
-        }
-
-        fclose(f2); // Evitamos leaks
-        return 0;
-    }
-
-    printf("Filename: %s\n", filename);
+    //// NOTE: Moví directreen a ./aux/directree.*:aux_directreen    - Luis
+    // printf("Filename: %s\n", filename);  // TODO: Sacar línea
 
     // Abro el archivo
     FILE *f = fopen(global_diskname, "rb");
@@ -364,26 +228,28 @@ int os_exists(char* filename) {
         // Buffer para guardar los bytes de una entrada
         fread(buffer, sizeof(buffer), 1, f); // Leo una entrada
 
-        if(buffer[0] == 3) { // archivo:
+        if(buffer[0] == 3){ // archivo:
             char path[100] = "/"; // path inicial
             char aux[2]; // variable para concatenar char
+
             for (int j = 5; j < DIR_ENTRY_SIZE; j++) { // Printear nombre del archivo
                 aux[1] = '\0';
                 //// WARN: Se está tirando un "unsign char" a "char"
                 aux[0] = buffer[j];
                 strcat(path, aux); // Concatenar char
             }
-            printf("Path: %s\n", path);
+
+            // printf("Path: %s\n", path);  // TODO: Sacar línea
+
             if (strcmp(path, filename) == 0) { // compara con filename
                 fclose(f); // Evitamos leaks
-                printf("¡Esta!\n");
                 return 1;
             }
         }
+
         else if (buffer[0] == 1) { // directorio:
             char path[100] = "/"; // path inicial
             char aux[2]; // variable para concatenar char
-
             for (int j = 5; j < DIR_ENTRY_SIZE; j++) { // Printear nombre del directorio
                 aux[1] = '\0';
                 //// WARN: Se está tirando un "unsign char" a "char"
@@ -394,39 +260,45 @@ int os_exists(char* filename) {
             strcat(path, "/");
             int puntero = buffer[1]; // Pesco los bytes 1-4
 
-            //// FIXME: Me tira error.
-            ////  Hace referencia a una función que marca como indefinida.
-            ////  --------------------------------------------------------
-            ////  Supongo que no definir una función dentro de otra solucionaría el
-            ////  problema
             // Función recursiva para leer
-            if (directreen(puntero, filename, path)) {
+            if (aux_directreen(puntero, filename, path, global_diskname)) {
                 fclose(f); // Evitamos leaks
-                printf("¡Esta!\n");
-
                 return 1;
             }
         }
     }
 
     fclose(f); // Evitamos leaks
-    printf("¡No Esta!\n");
-
     return 0;
 }
 
 /* Esta función abre un archivo. Si mode='r', se busca el archivo filename y se retorna el
  * osFile* que lo representa. Si mode='w', se verifica que el archivo no exista, y se
  * retorna un nuevo osFile* que lo representa. */
-osFile* os_open(char* filename, char mode) {  // TODO: Pendiente
-    // if (os_exist(...) || ! mode == "w") { ...
-    osFile* file_desc = osFile_new(filename, global_diskname);
-    // TODO: ...
-    //osFile_set_mode(file_desc, &mode);
-    //osFile_set_location(...);
-    // TODO: ...
-    // }
-    return file_desc;
+osFile* os_open(char* filename, char mode) {  // NOTE: En proceso
+    if (mode =='r') {
+        if (os_exists(filename)) {
+            printf("(Lectura) Encuentra archivo. return osFile.\n");
+            // osFile* os_file = osFile_new(filename, global_diskname);
+            // osFile_set_mode(os_file, &mode);
+            // osFile_set_location(os_file, plane, block, length_bytes);
+            return NULL;
+        } else {
+            printf("(Lectura) No encuentra archivo. return NULL.\n");
+            return NULL;
+        }
+    }
+    if (mode == 'w') {
+        if (os_exists(filename)) {
+            printf("(Escritura) Encuentra archivo. return NULL.\n");
+            return NULL;
+        } else {
+            printf("(Escritura) No encuentra archivo. return osFile.\n");
+            // osFile_new(filename, global_diskname);
+            return NULL;
+        }
+    }
+    return NULL;
 }
 
 /* Esta función sirve para leer archivos. Lee los siguientes nbytes desde el archivo
@@ -472,7 +344,7 @@ int os_read(osFile* file_desc, void* buffer, int nbytes) {  // NOTE: Trabajando 
  * rotten o porque el archivo no puede crecer más, este número puede ser menor a nbytes
  * (incluso 0). Esta función aumenta en 1 el contador P/E en el lifemap asociado a cada
  * página que se escriba. */
-int os_write(osFile* file_desc, void* buffer, int nbytes) {  // TODO: WIP
+int os_write(osFile* file_desc, void* buffer, int nbytes) {  // NOTE: En proceso
     if (strcmp(file_desc->mode, "w") != 0) {
         printf("Error: El archivo debe estar en modo write.\n");
         exit(-1);
@@ -480,6 +352,7 @@ int os_write(osFile* file_desc, void* buffer, int nbytes) {  // TODO: WIP
 
     // Numero de bytes en un bloque, no se puede escribir entre bloques
     long int max_size = BLOCK_SIZE;
+
     if (nbytes > max_size) {
         printf("Error: no se puede escribir un archivo tan grande.\n");
         exit(-1);
@@ -491,16 +364,8 @@ int os_write(osFile* file_desc, void* buffer, int nbytes) {  // TODO: WIP
 /* Esta función permite cerrar un archivo. Cierra el archivo indicado por file desc. Debe
  * garantizar que cuando esta función retorna, el archivo se encuentra actualizado en
  * disco.*/
-int os_close(osFile* file_desc) {  // TODO: Pendiente
-    if (unactualized_change == 1) {
-        printf("El disco no está actualizado con los respectivos cambios");
-    }
-
-    else {
-        free(file_desc);  //// XXX: Por qué se libera memoria aquí??
-        osFile_destroy(file_desc);
-    }
-
+int os_close(osFile* file_desc) {
+    osFile_destroy(file_desc);
     return 0;
 }
 
@@ -583,6 +448,7 @@ void print_names() {
             printf("\n");
         }
     }
+
     fclose(f); // Evitamos leaks
 }
 
