@@ -371,7 +371,7 @@ osFile* os_open(char* filename, char mode) {  // TODO: Pendiente
             return NULL;
         } else {
             printf("(Escritura) No encuentra archivo. return osFile.\n");
-            osFile_new(filename, disk_pointer);
+            // osFile_new(filename, global_diskname);
             return NULL;
         }
     }
