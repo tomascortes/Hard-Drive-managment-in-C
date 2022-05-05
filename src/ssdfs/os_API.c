@@ -275,7 +275,7 @@ int os_exists(char* filename) {
 /* Esta función abre un archivo. Si mode='r', se busca el archivo filename y se retorna el
  * osFile* que lo representa. Si mode='w', se verifica que el archivo no exista, y se
  * retorna un nuevo osFile* que lo representa. */
-osFile* os_open(char* filename, char mode) {  // TODO: Pendiente
+osFile* os_open(char* filename, char mode) {  // NOTE: En proceso
     if (mode =='r') {
         if (os_exists(filename)) {
             printf("(Lectura) Encuentra archivo. return osFile.\n");
@@ -344,7 +344,7 @@ int os_read(osFile* file_desc, void* buffer, int nbytes) {  // NOTE: Trabajando 
  * rotten o porque el archivo no puede crecer más, este número puede ser menor a nbytes
  * (incluso 0). Esta función aumenta en 1 el contador P/E en el lifemap asociado a cada
  * página que se escriba. */
-int os_write(osFile* file_desc, void* buffer, int nbytes) {  // TODO: WIP
+int os_write(osFile* file_desc, void* buffer, int nbytes) {  // NOTE: En proceso
     if (strcmp(file_desc->mode, "w") != 0) {
         printf("Error: El archivo debe estar en modo write.\n");
         exit(-1);
@@ -364,16 +364,8 @@ int os_write(osFile* file_desc, void* buffer, int nbytes) {  // TODO: WIP
 /* Esta función permite cerrar un archivo. Cierra el archivo indicado por file desc. Debe
  * garantizar que cuando esta función retorna, el archivo se encuentra actualizado en
  * disco.*/
-int os_close(osFile* file_desc) {  // TODO: Pendiente
-    if (unactualized_change == 1) {
-        printf("El disco no está actualizado con los respectivos cambios");
-    }
-
-    else {
-        free(file_desc);  //// XXX: Por qué se libera memoria aquí??
-        osFile_destroy(file_desc);
-    }
-
+int os_close(osFile* file_desc) {
+    osFile_destroy(file_desc);
     return 0;
 }
 
