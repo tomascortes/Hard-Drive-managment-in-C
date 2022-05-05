@@ -330,6 +330,8 @@ int os_read(osFile* file_desc, void* buffer, int nbytes) {  // NOTE: Trabajando 
                                               global_diskname);
     }
 
+    //
+
     // (nbytes - 1 // page_size) + 1 = Páginas por leer
     // Usa la función piso/división parte entera, por eso el +-1
     // Y como solo se pueden leer páginas como número entero...
