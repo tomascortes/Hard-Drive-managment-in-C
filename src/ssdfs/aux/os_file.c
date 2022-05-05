@@ -62,12 +62,18 @@ void osFile_set_location(osFile* self,
     self->current_pos = 0;
 }
 
+void mark_rotten_pages(osFile* self, int*) {
+
+}
+
+
 // ====================--- File pointer ---====================
 
 /// Desplazo el puntero n espacios
 void osFile_offset_pointer(osFile* self, int offset) {
-    // TODO: revisar límites
-    self->current_pos = self->current_pos + offset;
+    if (self->current_pos + offset <= self->length)
+
+    self->current_pos += offset;
 }
 
 // =======================--- Offset ---=======================
