@@ -35,7 +35,7 @@ void mark_as_used(int bloque) {
     unsigned char data = buffer[byte]; // Saco el byte que me sirve
     fclose(f);
 
-    //// Convierto el bit que me interesa en 1
+    // Convierto el bit que me interesa en 1
     data = data | (1 << offset);
 
     // Puntero al byte de datos a escribir
@@ -72,12 +72,20 @@ int main (int argc, char* const argv[]) {
     os_tree();
     print_debug("Termina de correr os_tree\n"); wait_debug(200);
 
-    print_debug("Buscar archivo filename");
-    os_exists("/dir1ta/yocuando.mp4");
-    os_exists("/message.txtav");
-    print_debug("Termina de correr buscar archivo filename\n");
+    print_debug("Buscar archivo filename"); wait_debug(200);
+    printf("%d\n", os_exists("/dir1ta/yocuando.mp4"));
+    printf("%d\n", os_exists("/message.txtav"));
+    printf("%d\n", os_exists("/tumama.txt"));
+    print_debug("Termina de correr buscar archivo filename\n"); wait_debug(200);
 
-    print_debug("Prueba mark_as_used comentadas...");
+    print_debug("Buscar archivo os_open"); wait_debug(200);
+    os_open("/dir1ta/yocuando.mp4", 'r');
+    os_open("/dir1ta/yocuando.mp45", 'r');
+    os_open("/dir1ta/yocuando.mp4", 'w');
+    os_open("/dir1ta/yocuando.mp45", 'w');
+    print_debug("Termina de buscar os_open\n"); wait_debug(200);
+
+    print_debug("Prueba mark_as_used comentadas..."); wait_debug(200);
     //mark_as_used(3);
     //os_bitmap(0);
     print_debug("...Fin prueba mark_as_used comentadas...\n"); wait_debug(200);

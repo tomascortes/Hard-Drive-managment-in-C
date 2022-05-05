@@ -87,7 +87,7 @@ int aux_directreen(int directory_block, char* filename,
                 strcat(path2, aux); // Concatenar char
             }
 
-            printf("Path: %s\n", path2);
+            // printf("Path: %s\n", path2);  // TODO: Sacar línea
 
             if (strcmp(path2, filename) == 0) { // compara con filename
                 fclose(f2); // Evitamos leaks
