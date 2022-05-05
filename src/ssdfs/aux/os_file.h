@@ -105,6 +105,8 @@ void osFile_write_page(osFile* self, int n_page);
 void osFile_reserve_page_mem(osFile* self);
 
 // ----- Data -----
+void osFile_load_pointer_page(osFile* self);
+
 /// Carga datos desde la página cargada en memoria a un array.
 void osFile_load_data(osFile* self, int start, int end);
 

@@ -86,6 +86,11 @@ long int osFile_calc_page_offset(osFile* self, int n_page) {
 }
 
 // =======================--- Page-R ---=======================
+/// Carga la página en la que se encuentra el puntero de lectura a memoria
+void osFile_load_pointer_page(osFile* self) {
+
+}
+
 /// Cargo la página "n_page" del bloque en la dirección de memoria self->loaded_page
 void osFile_load_page(osFile* self, int n_page) {
     // TODO: Revisar que página que mando no esté rotten.

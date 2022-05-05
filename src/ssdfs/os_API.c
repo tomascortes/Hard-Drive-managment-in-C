@@ -311,6 +311,18 @@ osFile* os_open(char* filename, char mode) {  // NOTE: En proceso
 // TODO: Hacer que acepte números mayores a el espacio restante.
 // TODO: Procesar págs. rotten.
 int os_read(osFile* file_desc, void* buffer, int nbytes) {  // NOTE: Trabajando en esto
+    int number_of_pages;
+
+    // Caso borde: nbytes = 0 ==> No se lee ningún byte
+    if (nbytes == 0) {
+        return 0;
+    }
+
+    // (nbytes - 1 // page_size) + 1 = Páginas por leer
+    // Usa la función piso/división parte entera, por eso el +-1
+    // Y como solo se pueden leer páginas como número entero...
+    osFile_load_pointer_page(file_desc)
+
     int iter;
     int starting_pos;
     int end_pos;
