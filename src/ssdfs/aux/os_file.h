@@ -38,12 +38,14 @@ typedef struct osFile {
     // cada pag tiene 2048 celdas
     // cada celda son 16b
 
-    int length; // Largo en bytes del archivo
+    long int length; // Largo en bytes del archivo
 
     int current_page; // Página actual
     // page --> {0..256}
     int current_pos; // Posición actual dentro de la página actual
     // pos --> {0..4096}
+    int index_block; // numero de bloque index
+    // entre 4 y 
 
     unsigned char* loaded_page; //página cargada en memoria
     bool has_page_loaded; // Si una página está cargada o no en heap
@@ -64,11 +66,7 @@ osFile* osFile_new(char* name, char* disk_pointer);
 void osFile_set_mode(osFile* self, char mode[2]);
 
 /// Settea la ubicación del puntero y largo del archivo
-void osFile_set_location(osFile* self,
-                            int plane,
-                            int block,
-                            // Bloque de índice dice el tamaño del archivo para ponerlo aquí.
-                            int length_bytes);
+void osFile_set_location(osFile* self, char* filename);
 
 // ----- File pointer -----
 /// Desplazo el puntero n espacios

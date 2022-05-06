@@ -59,4 +59,5 @@ int find_file(int directory_block,
 int find_dir(int directory_block,
              char* filename,
              char* path);
-
+int get_index_file(int directory_block, char* filename, char* path);
+int get_index_pointer_and_length(char* filenamem);

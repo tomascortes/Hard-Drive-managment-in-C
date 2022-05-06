@@ -26,7 +26,7 @@
 
 ### Supuestos adicionales ocupados
 
-- ¿?
+- Para abrir un nuevo disco se tienen que haber cerrado todos los archivos
 - ¿?
 
 ---
