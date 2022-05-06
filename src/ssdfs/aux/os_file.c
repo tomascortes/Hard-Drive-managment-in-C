@@ -62,12 +62,20 @@ void osFile_set_location(osFile* self,
     self->current_pos = 0;
 }
 
+//void mark_rotten_pages(osFile* self, int*) {
+//
+//}
+
+
 // ====================--- File pointer ---====================
 
 /// Desplazo el puntero n espacios
 void osFile_offset_pointer(osFile* self, int offset) {
-    // TODO: revisar límites
-    self->current_pos = self->current_pos + offset;
+    // Desplaza el puntero sólo si no excede el largo del archivo.
+    // ... y no es negativo
+    if (self->current_pos + offset < self->length && self->current_pos + offset >= 0) {
+        self->current_pos += offset;
+    }
 }
 
 // =======================--- Offset ---=======================
@@ -86,6 +94,48 @@ long int osFile_calc_page_offset(osFile* self, int n_page) {
 }
 
 // =======================--- Page-R ---=======================
+/// Resetea cuenta de bytes cargados
+void osFile_reset_bytes_count(osFile* self) {
+    self->bytes_loaded_count = 0;
+}
+
+/// Calcula la página del bloque en la que se encuentra el puntero
+int osFile_get_current_page(osFile* self, const int* rotten_array_pointer) {
+    int current_page_num = 0;
+    int number_of_pages_with_data;
+
+    if (self->current_pos == 0) {
+        number_of_pages_with_data = self->current_pos / PAGE_SIZE + 1;
+
+    } else {
+        number_of_pages_with_data = (self->current_pos - 1) / PAGE_SIZE + 1;
+    }
+
+    while (number_of_pages_with_data - 1 > 0 || current_page_num >= PAGES_PER_BLOCK - 1) {
+        // REVIEW: Checkear que no sea loop infinito
+        // Si la página no está podrida
+        if (rotten_array_pointer[current_page_num] == 0) {
+            // Avanza una página de datos
+            number_of_pages_with_data--;
+        }
+
+        current_page_num++;
+    }
+
+    return current_page_num;
+}
+
+/// Carga la página en la que se encuentra el puntero de lectura a memoria
+void osFile_load_pointer_page(osFile* self, const int* rotten_array_pointer) {
+    int current_page_num = osFile_get_current_page(self, rotten_array_pointer);
+
+    // Cuento como página leida
+    self->bytes_loaded_count += PAGE_SIZE;
+
+    // Cargo la página en mem.
+    osFile_load_page(self, current_page_num);
+}
+
 /// Cargo la página "n_page" del bloque en la dirección de memoria self->loaded_page
 void osFile_load_page(osFile* self, int n_page) {
     // TODO: Revisar que página que mando no esté rotten.
@@ -223,6 +273,9 @@ void osFile_load_data(osFile* self, int start, int end) {
         // REVIEW: Favor revisar que haga bien la copia
         self->loaded_data[bytes_copied] = self->loaded_page[start + bytes_copied];
     }
+
+    // Muevo el puntero
+    self->current_pos += bytes_amount;
 }
 
 /// Si hay una página cargada, la libera

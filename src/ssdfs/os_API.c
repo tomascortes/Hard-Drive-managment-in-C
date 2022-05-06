@@ -307,34 +307,92 @@ osFile* os_open(char* filename, char mode) {  // NOTE: En proceso
  * nbytes es mayor a la cantidad de Bytes restantes en el archivo o en el caso que el
  * archivo contenga páginas rotten. La lectura de read se efectúa desde la posición del
  * archivo inmediatamente posterior a la última posición leı́da por un llamado a read. */
-// NOTE: Asumo que los inputs cumplen las siguientes características
-// TODO: Hacer que acepte números mayores a el espacio restante.
-// TODO: Procesar págs. rotten.
-int os_read(osFile* file_desc, void* buffer, int nbytes) {  // NOTE: Trabajando en esto
-    int iter;
-    int starting_pos;
-    int end_pos;
-    int bytes_read;
+int os_read(osFile* file_desc, void* buffer, int nbytes) {  // REVIEW
+    int page_offset;
+    int* rotten_pages;
 
-    // file_desc -->  Archivo
-    // nbytes    -->  Cantidad de bytes que voy a leer
-    // buffer    -->  Lugar donde guardo la info
-    starting_pos = file_desc->current_pos;
+    int starting_page_byte;
+    int end_page_byte;
+    int reading_delta;
+    int amount_read = 0;
 
-    for (iter = 0; iter <= nbytes; iter++) {
-        osFile_offset_pointer(file_desc, 1);
-        // Lectura y escritura usando little endian
-        // Lectura de páginas completas
+    int buffer_counter = 0;
 
-        // NOTE: Still working on it....
+    // Caso borde: nbytes = 0 ==> No se lee ningún byte
+    if (nbytes == 0) {
+        return 0;
     }
 
-    end_pos = file_desc->current_pos;
+    // Reviso las páginas rotten.
+    rotten_pages = calloc(PAGES_PER_BLOCK, sizeof(bool));
 
-    // Retorna la cantidad de bytes efectivamente leída del disco
-    bytes_read = end_pos - starting_pos;
+    page_offset = file_desc->current_plane * BLOCKS_PER_PLANE * PAGES_PER_BLOCK;
+    page_offset += file_desc->current_block * PAGES_PER_BLOCK;
 
-    return bytes_read;
+    for (int n_page = 0; n_page < PAGES_PER_BLOCK; n_page ++) {
+        rotten_pages[n_page] = is_page_rotten(n_page + page_offset,
+                                              global_diskname);
+    }
+
+    // Reseteo cuenta de bytes leídos para hacer la comparación
+    osFile_reset_bytes_count(file_desc);
+
+    // Mientras que me queden bytes por leer debo seguir avanzando loopea
+    while (nbytes > 0) {
+        // (nbytes - 1 // page_size) + 1 = Páginas por leer
+        // Usa la función piso/división parte entera, por eso el +-1
+        // Y como solo se pueden leer páginas como número entero...
+        osFile_load_pointer_page(file_desc, rotten_pages);
+
+        // Inicio y fin de lectura de la página
+        starting_page_byte = file_desc->current_pos % PAGE_SIZE;
+
+        if (nbytes >= PAGE_SIZE) {
+            end_page_byte = PAGE_SIZE;
+
+        } else {
+            end_page_byte = nbytes;
+        }
+
+        // Cant. de bytes leídos
+        reading_delta = end_page_byte - starting_page_byte + 1;
+
+        // Sustraigo bytes efectivamente leídos
+        nbytes -= reading_delta;
+
+        // Check de largo de archivo
+        if (file_desc->current_pos + reading_delta > file_desc->length) {
+            reading_delta = file_desc->length - file_desc->current_pos;
+            end_page_byte = starting_page_byte + reading_delta;
+        }
+
+        // Bytes realmente leidos
+        amount_read += reading_delta;
+
+        // Cargo bytes a heap
+        osFile_load_data(file_desc, starting_page_byte, end_page_byte);
+
+
+        // Copio heap a buffer byte por byte
+        for (int byte = 0; byte < reading_delta; byte++) {
+            // BUG: No sé cómo copiar un byte de heap (unsigened char*) a buffer (void*)
+            //  "Incomplete type 'void' is not assignable"
+            //  La siguiente línea representa la idea de lo que quiero hacer.
+            buffer[buffer_counter] = file_desc->loaded_data[byte];
+            buffer_counter++;
+        }
+    }
+
+    // MEM leak := feo
+    // :(
+    free(rotten_pages);
+
+    // XXX: No sé si con bytes leidos tengo que retornar los leídos del disco,
+    //  esto es: (páginas * tamaño página);
+    //  o bytes leidos de archivo: (mín(nbytes, largo restante)).
+    //  Por ahora dejo las páginas, pero puede estar malo.
+    //  Igual hay que aclararlo en el README como supuesto indep de lo que se haga.
+    return file_desc->bytes_loaded_count;
 }
 
 /* Esta función permite escribir un archivo. Escribe en el archivo descrito por file desc
