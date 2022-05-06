@@ -104,8 +104,6 @@ int osFile_get_current_page(osFile* self, const int* rotten_array_pointer) {
     int current_page_num = 0;
     int number_of_pages_with_data;
 
-    self->bytes_loaded_count += PAGE_SIZE;
-
     if (self->current_pos == 0) {
         number_of_pages_with_data = self->current_pos / PAGE_SIZE + 1;
 
@@ -128,8 +126,14 @@ int osFile_get_current_page(osFile* self, const int* rotten_array_pointer) {
 }
 
 /// Carga la página en la que se encuentra el puntero de lectura a memoria
-void osFile_load_pointer_page(osFile* self, int* rotten_array_pointer) {
+void osFile_load_pointer_page(osFile* self, const int* rotten_array_pointer) {
+    int current_page_num = osFile_get_current_page(self, rotten_array_pointer);
 
+    // Cuento como página leida
+    self->bytes_loaded_count += PAGE_SIZE;
+
+    // Cargo la página en mem.
+    osFile_load_page(self, current_page_num);
 }
 
 /// Cargo la página "n_page" del bloque en la dirección de memoria self->loaded_page
