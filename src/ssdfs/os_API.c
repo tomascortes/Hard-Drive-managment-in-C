@@ -317,6 +317,9 @@ int os_read(osFile* file_desc, void* buffer, int nbytes) {  // NOTE: Trabajando 
     int starting_page_byte;
     int end_page_byte;
     int reading_delta;
+    int amount_read = 0;
+
+    int buffer_counter = 0;
 
     // Caso borde: nbytes = 0 ==> No se lee ningún byte
     if (nbytes == 0) {
@@ -337,7 +340,7 @@ int os_read(osFile* file_desc, void* buffer, int nbytes) {  // NOTE: Trabajando 
     // Reseteo cuenta de bytes leídos para hacer la comparación
     osFile_reset_bytes_count(file_desc);
 
-    // Mientras que me queden bytes por leer debo seguir avanzando loopeand
+    // Mientras que me queden bytes por leer debo seguir avanzando loopea
     while (nbytes > 0) {
         // (nbytes - 1 // page_size) + 1 = Páginas por leer
         // Usa la función piso/división parte entera, por eso el +-1
@@ -360,44 +363,37 @@ int os_read(osFile* file_desc, void* buffer, int nbytes) {  // NOTE: Trabajando 
         // Sustraigo bytes efectivamente leídos
         nbytes -= reading_delta;
 
-        // Cargo bytes a buffer
+        // Check de largo de archivo
+        if (file_desc->current_pos + reading_delta > file_desc->length) {
+            reading_delta = file_desc->length - file_desc->current_pos;
+            end_page_byte = starting_page_byte + reading_delta;
+        }
+
+        // Bytes realmente leidos
+        amount_read += reading_delta;
+
+        // Cargo bytes a heap
         osFile_load_data(file_desc, starting_page_byte, end_page_byte);
 
-        for (int byte = 0; byte < reading_delta; byte++)
+
+        // Copio heap a buffer byte por byte
+        for (int byte = 0; byte < reading_delta; byte++) {
+            // BUG: No sé cómo copiar un byte de heap (unsigened char*) a buffer (void*)
+            //  "Incomplete type 'void' is not assignable"
+            //  La siguiente línea representa la idea de lo que quiero hacer.
+            buffer[buffer_counter] = file_desc->loaded_data[byte];
+        }
     }
 
 
-
-
-
-
-    int iter;
-    int starting_pos;
-    int end_pos;
-    int bytes_read;
-
-    // file_desc -->  Archivo
-    // nbytes    -->  Cantidad de bytes que voy a leer
-    // buffer    -->  Lugar donde guardo la info
-    starting_pos = file_desc->current_pos;
-
-    for (iter = 0; iter <= nbytes; iter++) {
-        osFile_offset_pointer(file_desc, 1);
-        // Lectura y escritura usando little endian
-        // Lectura de páginas completas
-
-        // NOTE: Still working on it....
-    }
-
-    end_pos = file_desc->current_pos;
-
-    // Retorna la cantidad de bytes efectivamente leída del disco
-    bytes_read = end_pos - starting_pos;
-
-    // MEM leak = feo :(
+    // MEM leak := feo
+    // :(
     free(rotten_pages);
 
-    // TODO: ... falta calc. bytes leídos...
+    // XXX: No sé si con bytes leidos tengo que retornar los leídos del disco,
+    //  esto es: (páginas * tamaño página);
+    //  o bytes leidos de archivo: (mín(nbytes, largo restante)).
+    //  Por ahora dejo las páginas, pero puede estar malo.
 
     return bytes_read;
 }
