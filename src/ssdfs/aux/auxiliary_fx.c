@@ -87,8 +87,9 @@ int find_file(int directory_block, char* filename, char* path) {
                 strcat(path2, aux); // Concatenar char
             }
             strcat(path, "/"); // Concatenar nuevo directorio
-            int puntero = buffer[1]; // Pesco los bytes 1-4
-            if (find_file(puntero, filename, path2)){// Función recursiva para leer
+            int *puntero;
+            puntero = &buffer[1];
+            if (find_file(*puntero, filename, path2)){// Función recursiva para leer
                 fclose(f2); // Evitamos leaks
                 return 1;
             };
@@ -122,12 +123,13 @@ int dir_exists(char* dirname) {
                 strcat(path, aux); // Concatenar char
             }
             strcat(path, "/");
-            int puntero = buffer[1]; // Pesco los bytes 1-4
+            int *puntero;
+            puntero = &buffer[1];
             if (strcmp(path, dirname) == 0) { // compara con filename
                 fclose(f); // Evitamos leaks
                 return 1;
             }
-            if (find_dir(puntero, dir, path)){// Función recursiva para leer
+            if (find_dir(*puntero, dir, path)){// Función recursiva para leer
                 fclose(f); // Evitamos leaks
                 return 1;
             };
@@ -159,12 +161,13 @@ int find_dir(int directory_block, char* dirname, char* path) {
                 strcat(path2, aux); // Concatenar char
             }
             strcat(path2, "/"); // Concatenar nuevo directorio
-            int puntero = buffer[1]; // Pesco los bytes 1-4
+            int *puntero;
+            puntero = &buffer[1];
             if (strcmp(path2, dirname) == 0) { // compara con filename
                 fclose(f2); // Evitamos leaks
                 return 1;
             }
-            if (find_dir(puntero, dirname, path2)){// Función recursiva para leer
+            if (find_dir(*puntero, dirname, path2)){// Función recursiva para leer
                 fclose(f2); // Evitamos leaks
                 return 1;
             };
@@ -211,8 +214,9 @@ int get_index_file(int directory_block, char* filename, char* path) {
                 strcat(path2, aux); // Concatenar char
             }
             strcat(path, "/"); // Concatenar nuevo directorio
-            int puntero = buffer[1]; // Pesco los bytes 1-4
-            if (get_index_file(puntero, filename, path2)){// Función recursiva para leer
+            int *puntero;
+            puntero = &buffer[1];
+            if (get_index_file(*puntero, filename, path2)){// Función recursiva para leer
                 fclose(f2); // Evitamos leaks
                 return 1;
             };
@@ -270,4 +274,46 @@ int get_index_pointer_and_length(char* filename) {
 
     fclose(f); // Evitamos leaks
     return 0;
+}
+
+// Defino la verión recursiva de la función acá adentro
+// para cumplir con las reglas de no ofrecer más funciones en la API
+void directree(int directory_block, int depth, char* global_diskname) {
+    //NOTE: Consejo: Poner un maxdepth para que no haga stack overflow si se sale de control
+    FILE* f2 = fopen(global_diskname, "rb");
+    fseek(f2, directory_block * BLOCK_SIZE, SEEK_SET);
+    // Cada bloque tiene 1048576 bytes
+
+    // Son 32768 entradas en un bloque de directorio
+    for (int i = 0; i < DIR_ENTRIES_PER_BLOCK; i++) {
+        unsigned char buffer[DIR_ENTRY_SIZE]; // Buffer para guardar los bytes de una entrada
+        fread(buffer, sizeof(buffer), 1, f2); // Leo una entrada
+        
+        if (buffer[0] == 1) { // Directorio
+            for (int k = 0; k < depth; k++) { // Desplazar depth a la derecha
+                printf("| ");
+            }
+            for (int j = 5; j < DIR_ENTRY_SIZE; j++) { // Printear nombre del directorio
+                printf("%c", buffer[j]);
+            }
+            printf("\n");
+            int *puntero;
+            puntero = &buffer[1];
+            depth++; // Subo la profundidad en 1
+            directree(*puntero, depth, global_diskname); // Llamada recursiva
+            depth--; // Vuelvo a la profundidad anterior
+        }
+
+        else if (buffer[0] == 3) { // archivo:
+            for (int k = 0; k < depth; k++) {
+                printf("| ");
+            }
+            for (int j = 5; j < DIR_ENTRY_SIZE; j++) { // Printear nombre del archivo
+                printf("%c", buffer[j]);
+            }
+            printf("\n");
+        }
+    }
+
+    fclose(f2); // Evitamos leaks
 }

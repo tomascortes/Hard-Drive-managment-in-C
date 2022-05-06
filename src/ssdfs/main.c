@@ -49,49 +49,18 @@ void mark_as_used(int bloque) {
 }
 
 int main (int argc, char* const argv[]) {
-    print_debug("Iniciando el programa..."); wait_debug(200);
-
-    print_debug("Montando el disco con life = 5000\n"); wait_debug(200);
+   
     // Montar el disco pasado por consola con life = 5000
     os_mount(argv[1], 5000);
 
-    // print_debug("Prueba bitmap || Comentado");
-    // // os_bitmap(0); // Bitmap completo
-    // // os_bitmap(8); // Bitmap bloque N°8 (Se espera 1)
-    // // os_bitmap(2047); // Bitmap bloque N°395 (Se espera 0)
-    // // os_bitmap(2048); // Bitmap bloque inexistente (Se espera SEGFAULT)
-    // print_debug("...Fin prueba bitmap || Comentado\n"); wait_debug(200);
-
-    // printf("\n");
-
-    // print_debug("Printea el lifemap de páginas 1270 a la 1300"); wait_debug(200);
-    // os_lifemap(1270, 1300);
-    // print_debug("Fin de la función de lifemap"); wait_debug(200);
-
-    // print_debug("Corre os_tree");
-    // // os_tree();
-    // print_debug("Termina de correr os_tree\n");
-
-    // print_debug("Buscar archivo filename");
-    // printf("%d\n", os_exists("/dir1ta/yocuando.mp4"));
-    // printf("%d\n", os_exists("/message.txtav"));
-    // printf("%d\n", os_exists("/tumama.txt"));
-    // print_debug("Termina de correr buscar archivo filename\n");
-
-    print_debug("Buscar archivo os_open");
-    // os_lifemap(102*256, 102*256 + 1000);
+    // Ver todos los archivos y directorios
     os_tree();
-    // os_lifemap(338*256, 338*256 + 1000);
-    // os_open("/dir1ta/amogus.mp4", 'r');
-    // os_open("/dir1ta/yocuando.mp45", 'r');
-    // os_open("/dir1ta/yocuando.mp4", 'w');
-    // os_open("/dir1ta/yocuando.mp45", 'w');
-    print_debug("Termina de buscar os_open\n");
 
-    // print_debug("Prueba mark_as_used comentadas...");
-    // //mark_as_used(3);
-    // //os_bitmap(0);
-    // print_debug("...Fin prueba mark_as_used comentadas...\n"); wait_debug(200);
+    // Abre el archivo
+    osFile* os_file = os_open("/dir1ta/amogus.mp4", 'r');
+
+    // TODO: Malo
+    osFile_destroy(os_file);
 
     return 0;
 }

@@ -22,7 +22,6 @@
 
 #include "./debug/debug.h"
 #include "./aux/os_file.h"
-#include "./aux/directree.h"  // NOTE: Trabajando en esto
 
 // Funciones generales
 void os_mount(char* diskname, unsigned life);

@@ -29,10 +29,6 @@ void os_mount(char* diskname, unsigned life) {
     /* Crea una variable global con el nombre del archivo y otra con el
      * valor de life */
     strcpy(global_diskname, diskname);
-    //// WARN: "Narrowing conversion from 'unsigned int' to signed type 'int'
-    ////  is implementation-defined"
-    ////  --------------------------------------------------------
-    ////  Tal vez algún check o casteo lo arregla?
     global_P_E = life;
     unactualized_change = 0;
 }
@@ -179,19 +175,14 @@ void os_tree(){
             for (int k = 0; k < depth; k++) { // Desplazar depth a la derecha
                 printf("| ");
             }
-
             for (int j = 5; j < DIR_ENTRY_SIZE; j++) { // Printear nombre del directorio
                 printf("%c", buffer[j]);
             }
-
             printf("\n");
             int *puntero;
             puntero = &buffer[1];
             depth++; // Subo la profundidad en 1
-
-            // Función recursiva para leer
-            // dentro del directorio
-            aux_directree(*puntero, depth, global_diskname);
+            directree(*puntero, depth, global_diskname); // Llamada recursiva
             depth--; // Vuelvo a la profundidad anterior
         } 
         
@@ -202,7 +193,6 @@ void os_tree(){
             for (int j = 5; j < DIR_ENTRY_SIZE; j++) { // Printear nombre del archivo
                 printf("%c", buffer[j]);
             }
-
             printf("\n");
         }
     }
@@ -223,6 +213,7 @@ int os_exists(char* filename) {
     // Son 32768 entradas en un bloque de directorio
     for (int i = 0; i < DIR_ENTRIES_PER_BLOCK; i++) {
         unsigned char buffer[DIR_ENTRY_SIZE];
+        
         // Buffer para guardar los bytes de una entrada
         fread(buffer, sizeof(buffer), 1, f); // Leo una entrada
 
@@ -232,13 +223,9 @@ int os_exists(char* filename) {
 
             for (int j = 5; j < DIR_ENTRY_SIZE; j++) { // Printear nombre del archivo
                 aux[1] = '\0';
-                //// WARN: Se está tirando un "unsign char" a "char"
                 aux[0] = buffer[j];
                 strcat(path, aux); // Concatenar char
             }
-
-            // printf("Path: %s\n", path);  // TODO: Sacar línea
-
             if (strcmp(path, filename) == 0) { // compara con filename
                 fclose(f); // Evitamos leaks
                 return 1;
@@ -254,10 +241,10 @@ int os_exists(char* filename) {
                 aux[0] = buffer[j];
                 strcat(path, aux); // Concatenar char
             }
-
             strcat(path, "/");
-            int puntero = buffer[1]; // Pesco los bytes 1-4
-            if (find_file(puntero, filename, path)){// Función recursiva para leer
+            int *puntero;
+            puntero = &buffer[1];
+            if (find_file(*puntero, filename, path)){// Función recursiva para leer
                 fclose(f); // Evitamos leaks
                 return 1;
             }
@@ -276,9 +263,7 @@ osFile* os_open(char* filename, char mode) {  // NOTE: En proceso
         if (os_exists(filename)) {
             printf("(Lectura) Encuentra archivo. return osFile.\n");
             osFile* os_file = osFile_new(filename, global_diskname);
-            // osFile_set_mode(os_file, &mode);
-            osFile_set_location(os_file, filename);
-            return NULL;
+            return os_file;
         } else {
             printf("(Lectura) No encuentra archivo. return NULL.\n");
             return NULL;
@@ -342,98 +327,92 @@ osFile* os_open(char* filename, char mode) {  // NOTE: En proceso
  * archivo contenga páginas rotten. La lectura de read se efectúa desde la posición del
  * archivo inmediatamente posterior a la última posición leı́da por un llamado a read. */
 int os_read(osFile* file_desc, void* buffer, int nbytes) {  // REVIEW
-    int page_offset;
-    int* rotten_pages;
+    // int page_offset;
+    // int* rotten_pages;
 
-    int starting_page_byte;
-    int end_page_byte;
-    int reading_delta;
-    int amount_read = 0;
+    // int starting_page_byte;
+    // int end_page_byte;
+    // int reading_delta;
+    // int amount_read = 0;
 
-    int buffer_counter = 0;
+    // int buffer_counter = 0;
 
-    if (strcmp(file_desc->mode, "r") != 0) {
-        printf("Archivo no está abierto en modo lectura");
-        return 0;
-    }
+    // if (strcmp(file_desc->mode, "r") != 0) {
+    //     printf("Archivo no está abierto en modo lectura");
+    //     return 0;
+    // }
 
-    // Caso borde: nbytes = 0 ==> No se lee ningún byte
-    if (nbytes == 0) {
-        return 0;
-    }
+    // // Caso borde: nbytes = 0 ==> No se lee ningún byte
+    // if (nbytes == 0) {
+    //     return 0;
+    // }
 
-    // Reviso las páginas rotten.
-    rotten_pages = calloc(PAGES_PER_BLOCK, sizeof(bool));
+    // // Reviso las páginas rotten.
+    // rotten_pages = calloc(PAGES_PER_BLOCK, sizeof(bool));
 
-    page_offset = file_desc->current_plane * BLOCKS_PER_PLANE * PAGES_PER_BLOCK;
-    page_offset += file_desc->current_block * PAGES_PER_BLOCK;
+    // page_offset = file_desc->current_plane * BLOCKS_PER_PLANE * PAGES_PER_BLOCK;
+    // page_offset += file_desc->current_block * PAGES_PER_BLOCK;
 
-    for (int n_page = 0; n_page < PAGES_PER_BLOCK; n_page ++) {
-        rotten_pages[n_page] = is_page_rotten(n_page + page_offset,
-                                              global_diskname);
-    }
+    // for (int n_page = 0; n_page < PAGES_PER_BLOCK; n_page ++) {
+    //     rotten_pages[n_page] = is_page_rotten(n_page + page_offset,
+    //                                           global_diskname);
+    // }
 
-    // Reseteo cuenta de bytes leídos para hacer la comparación
-    osFile_reset_bytes_count(file_desc);
+    // // Reseteo cuenta de bytes leídos para hacer la comparación
+    // osFile_reset_bytes_count(file_desc);
 
-    // Mientras que me queden bytes por leer debo seguir avanzando loopea
-    while (nbytes > 0) {
-        // (nbytes - 1 // page_size) + 1 = Páginas por leer
-        // Usa la función piso/división parte entera, por eso el +-1
-        // Y como solo se pueden leer páginas como número entero...
-        osFile_load_pointer_page(file_desc, rotten_pages);
+    // // Mientras que me queden bytes por leer debo seguir avanzando loopea
+    // while (nbytes > 0) {
+    //     // (nbytes - 1 // page_size) + 1 = Páginas por leer
+    //     // Usa la función piso/división parte entera, por eso el +-1
+    //     // Y como solo se pueden leer páginas como número entero...
+    //     osFile_load_pointer_page(file_desc, rotten_pages);
 
-        // Inicio y fin de lectura de la página
-        starting_page_byte = file_desc->current_pos % PAGE_SIZE;
+    //     // Inicio y fin de lectura de la página
+    //     starting_page_byte = file_desc->current_pos % PAGE_SIZE;
 
-        if (nbytes >= PAGE_SIZE) {
-            end_page_byte = PAGE_SIZE;
+    //     if (nbytes >= PAGE_SIZE) {
+    //         end_page_byte = PAGE_SIZE;
 
-        } else {
-            end_page_byte = nbytes;
-        }
+    //     } else {
+    //         end_page_byte = nbytes;
+    //     }
 
-        // Cant. de bytes leídos
-        reading_delta = end_page_byte - starting_page_byte + 1;
+    //     // Cant. de bytes leídos
+    //     reading_delta = end_page_byte - starting_page_byte + 1;
 
-        // Sustraigo bytes efectivamente leídos
-        nbytes -= reading_delta;
+    //     // Sustraigo bytes efectivamente leídos
+    //     nbytes -= reading_delta;
 
-        // Check de largo de archivo
-        if (file_desc->current_pos + reading_delta > file_desc->length) {
-            reading_delta = file_desc->length - file_desc->current_pos;
-            end_page_byte = starting_page_byte + reading_delta;
-        }
+    //     // Check de largo de archivo
+    //     if (file_desc->current_pos + reading_delta > file_desc->length) {
+    //         reading_delta = file_desc->length - file_desc->current_pos;
+    //         end_page_byte = starting_page_byte + reading_delta;
+    //     }
 
-        // Bytes realmente leidos
-        amount_read += reading_delta;
+    //     // Bytes realmente leidos
+    //     amount_read += reading_delta;
 
-        // Cargo bytes a heap
-        osFile_load_data(file_desc, starting_page_byte, end_page_byte);
+    //     // Cargo bytes a heap
+    //     osFile_load_data(file_desc, starting_page_byte, end_page_byte);
 
 
-        // Copio heap a buffer byte por byte
-        for (int byte = 0; byte < reading_delta; byte++) {
-            // BUG: No sé cómo copiar un byte de heap (unsigened char*) a buffer (void*)
-            //  "Incomplete type 'void' is not assignable"
-            //  La siguiente línea representa la idea de lo que quiero hacer.
-            //  void* buffer?!?!?!!?
-            // buffer[buffer_counter] = file_desc->loaded_data[byte];
-            buffer_counter++;
-        }
-    }
+    //     // Copio heap a buffer byte por byte
+    //     for (int byte = 0; byte < reading_delta; byte++) {
+    //         // BUG: No sé cómo copiar un byte de heap (unsigened char*) a buffer (void*)
+    //         //  "Incomplete type 'void' is not assignable"
+    //         //  La siguiente línea representa la idea de lo que quiero hacer.
+    //         //  void* buffer?!?!?!!?
+    //         // buffer[buffer_counter] = file_desc->loaded_data[byte];
+    //         buffer_counter++;
+    //     }
+    // }
 
-    // MEM leak := feo
-    // :(
-    free(rotten_pages);
+    // // MEM leak := feo
+    // // :(
+    // free(rotten_pages);
 
-    // XXX: No sé si con bytes leidos tengo que retornar los leídos del disco,
-    //  esto es: (páginas * tamaño página);
-    //  o bytes leidos de archivo: (mín(nbytes, largo restante)).
-    //  Por ahora dejo las páginas, pero puede estar malo.
-    //  Igual hay que aclararlo en el README como supuesto indep de lo que se haga.
-    // return file_desc->bytes_loaded_count;
-    return file_desc->bytes_loaded_count;
+    return 0;
 }
 
 /* Esta función permite escribir un archivo. Escribe en el archivo descrito por file desc
@@ -550,9 +529,3 @@ void print_names() {
 
     fclose(f); // Evitamos leaks
 }
-
-// Prints bits of int
-/*for (int j = 31; j >= 0; j--) {
-    int bit = (puntero & (1 << j)) >> j; // Shift left para sacar el bit
-    printf("%d", bit);
-}*/

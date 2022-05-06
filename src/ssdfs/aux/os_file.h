@@ -25,49 +25,24 @@
 
 /// Representación de archivos abiertos mediate struct
 typedef struct osFile {
-    char* name;  // Nombre del archivo
-    // Puse 2 caracteres para que sea un poco más a prueba de errores
-    char mode[2]; // r -> ReadOnly || w-> WriteOnly || {rw,wr,r+} -> ReadWrite || N -> Null
+    char* filename;  // Nombre del archivo
 
     char* disk; // Puntero al disco para hacer las lecturas.
 
-    int current_plane; // Número de plano en el que se encuentra el archivo.
-    // plane --> {0..1}
-    int current_block; // Número de bloque en el que se encuentra el archivo.
-    // block --> {0..1023}
-    // cada pag tiene 2048 celdas
-    // cada celda son 16b
+    char mode[2]; // r -> ReadOnly || w-> WriteOnly || {rw,wr,r+} -> ReadWrite || N -> Null
 
     long int length; // Largo en bytes del archivo
 
-    int current_page; // Página actual
-    // page --> {0..256}
-    int current_pos; // Posición actual dentro de la página actual
-    // pos --> {0..4096}
-    int index_block; // numero de bloque index
-    // entre 4 y 
-
-    unsigned char* loaded_page; //página cargada en memoria
-    bool has_page_loaded; // Si una página está cargada o no en heap
-
-    // NOTE: esto no es propio de un archivo como tal, pero no se me ocurría cómo más pasarlo
-    //  si no era por medio de este atributo.
-    unsigned char* loaded_data; //datos de una página cargados en memoria
-    bool has_data_loaded; // Si tiene datos cargados
-
-    // De uso temporal por lectura
-    // Cantidad de bytes leídos. Debe resetearse cada vez que se lee.
-    int bytes_loaded_count;
+    int index_block; // Puntero al inicio del bloque indice
 
 } osFile;
 
 // ----- Setup -----
 /// Crea una nueva instancia de la representación de un archivo y retorna su
-/// ubicación en memoria
-osFile* osFile_new(char* name, char* disk_pointer);
+osFile* osFile_new(char* filename, char mode);
 
 /// Settea el modo de operación (read/write)
-void osFile_set_mode(osFile* self, char mode[2]);
+void osFile_set_mode(osFile* self, char mode);
 
 /// Settea la ubicación del puntero y largo del archivo
 void osFile_set_location(osFile* self, char* filename);
