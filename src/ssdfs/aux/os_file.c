@@ -26,15 +26,20 @@ osFile* osFile_new(char* filename, char mode) {
     
     osFile* instance_pointer = malloc(sizeof(osFile)); // Reservo memoria
 
-    instance_pointer->filename = filename; // filename
-
-    instance_pointer->disk = global_diskname; // Guardo el "disco" (como puntero)
-
+    instance_pointer->filename = filename;
     osFile_set_mode(instance_pointer, mode); // Inicializo con valores por defecto.
 
-    osFile_set_location(instance_pointer, filename);
-
-    return instance_pointer; // Retorno el puntero a la representación del archivo
+    if (strcmp(instance_pointer->mode, "w")) {
+        // put_on_disk(instance_pointer, filename); //TODO: Falta agregar el osFile NUEVO al sistema
+        read_from_disk(instance_pointer, filename);
+        return instance_pointer;
+    } 
+    else if (strcmp(instance_pointer->mode, "r")) {
+        read_from_disk(instance_pointer, filename);
+        return instance_pointer;
+    } else {
+        return NULL;
+    }
 }
 
 /// Settea el modo de operación (read/write)
@@ -46,21 +51,39 @@ void osFile_set_mode(osFile* self, char mode) {
 }
 
 /// Settea la ubicación del puntero y largo del archivo
-void osFile_set_location(osFile* self, char* filename) {
+void read_from_disk(osFile* self, char* filename) {
     // asignar atributos
-    self->index_block = get_index_pointer_and_length(filename); 
+    self->block_index_number = get_index_pointer_and_length(filename); 
     FILE* opened_file = fopen(global_diskname, "rb");
-    fseek(opened_file, self->index_block * BLOCK_SIZE, SEEK_SET);
+    fseek(opened_file, self->block_index_number * BLOCK_SIZE, SEEK_SET);
 
-    //encontrar length
+    // leer todo el bloque indice
     unsigned char buffer[4056]; // Buffer para guardar los bytes de bloque indice
     fread(buffer, sizeof(buffer), 1, opened_file); // Leo una entrada
-    long int *puntero;
-    puntero = &buffer[0];
-    self->length = *puntero;
+    
+    //encontrar length
+    long int *length;
+    length = &buffer[0];
+    self->length = *length;
 
-    printf("Largo archivo: %ld\n", self->length);
-    printf("Directorio: %d\n", self->index_block);
+    // puntero al a bloque de datos
+    self->index_pointer = &buffer[8];
+
+    self->current_index = self->block_index_number; // numero de bloque index
+    self->current_plane = *self->index_pointer/1024 + 1; // Número de plano en el que se encuentra el archivo.
+    self->current_block = *self->index_pointer; // Número de bloque en el que se encuentra el archivo.
+    self->current_page = 0; // Página actual
+    self->current_pos = 0; // Posición actual dentro de la página actual
+    
+    self->bytes_loaded_count = 0; // Cantidad de bytes leídos. Debe resetearse cada vez que se lee.
+    self->remaining_bytes = self->length; // Bytes restantes que quedan por leer 
+
+    printf("Largo de Archivo: %ld\n", self->length);
+    printf("Numero de Bloque Index: %ld\n", self->current_index);
+    printf("Numero de Plano: %d\n", self->current_plane);
+    printf("Numero del Primer Bloque de Datos: %d\n", self->current_block);
+    printf("Numero de la Primera Pagina: %d\n", self->current_page);
+    printf("Numero de Bloque Index: %d\n", self->current_pos);
 
     fclose(opened_file);
 }

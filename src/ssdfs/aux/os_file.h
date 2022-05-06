@@ -25,15 +25,32 @@
 
 /// Representación de archivos abiertos mediate struct
 typedef struct osFile {
+    
     char* filename;  // Nombre del archivo
-
-    char* disk; // Puntero al disco para hacer las lecturas.
-
-    char mode[2]; // r -> ReadOnly || w-> WriteOnly || {rw,wr,r+} -> ReadWrite || N -> Null
-
+    int* index_pointer; // Puntero al inicio del bloque indice
+    int block_index_number; // Puntero al inicio del bloque indice
+    char mode[2]; // r -> ReadOnly || w-> WriteOnly
     long int length; // Largo en bytes del archivo
 
-    int index_block; // Puntero al inicio del bloque indice
+    // TODO: Verificar correctitud de los intervalos
+    int current_index; // numero de bloque index
+    // entre 1 y 1012 y 
+    int current_plane; // Número de plano en el que se encuentra el archivo.
+    // entre 1 y 2
+    int current_block; // Número de bloque en el que se encuentra el archivo.
+    // entre 1 y 1024
+    int current_page; // Página actual
+    // page entre 1 y 256
+    int current_pos; // Posición actual dentro de la página actual
+    // pos entre 1 y 4096
+
+    unsigned char* loaded_page; //página cargada en memoria
+    int has_page_loaded; // Si una página está cargada o no en heap
+    unsigned char* loaded_data; //datos de una página cargados en memoria
+    int has_data_loaded; // Si tiene datos cargados
+    
+    int bytes_loaded_count; // Cantidad de bytes leídos. Debe resetearse cada vez que se lee.
+    long int remaining_bytes; // Bytes restantes que quedan por leer 
 
 } osFile;
 
@@ -45,7 +62,10 @@ osFile* osFile_new(char* filename, char mode);
 void osFile_set_mode(osFile* self, char mode);
 
 /// Settea la ubicación del puntero y largo del archivo
-void osFile_set_location(osFile* self, char* filename);
+void read_from_disk(osFile* self, char* filename);
+
+/// Settea el archivo en el disco
+void put_on_disk(osFile* self, char* filename);
 
 // ----- File pointer -----
 /// Desplazo el puntero n espacios

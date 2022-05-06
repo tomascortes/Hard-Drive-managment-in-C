@@ -262,7 +262,7 @@ osFile* os_open(char* filename, char mode) {  // NOTE: En proceso
     if (mode =='r') {
         if (os_exists(filename)) {
             printf("(Lectura) Encuentra archivo. return osFile.\n");
-            osFile* os_file = osFile_new(filename, global_diskname);
+            osFile* os_file = osFile_new(filename, mode);
             return os_file;
         } else {
             printf("(Lectura) No encuentra archivo. return NULL.\n");
@@ -303,13 +303,8 @@ osFile* os_open(char* filename, char mode) {  // NOTE: En proceso
             
             if(dir_exists(pathto)){
                 printf("(Escritura) No encuentra archivo y existe directorio. return osFile.\n");
-                // TODO: Debe crear el nuevo archivo crear bloque indice sin ningún archivo (vacio).
-                // TODO: Deberia retornar el osFile o en su defecto el puntero al bloque indice que tiene los punteros
-                // TODO: de los bloques de datos.
-                // osFile* os_file = osFile_new(filename, global_diskname);
-                // osFile_set_mode(os_file, &mode);
-                // osFile_set_location(os_file, plane, block, length_bytes);
-                return NULL;
+                osFile* os_file = osFile_new(filename, mode);
+                return os_file;
             }else{
                 printf("(Escritura) No encuentra archivo y no existe directorio. return NULL.\n");
                 return NULL;
@@ -423,18 +418,18 @@ int os_read(osFile* file_desc, void* buffer, int nbytes) {  // REVIEW
  * (incluso 0). Esta función aumenta en 1 el contador P/E en el lifemap asociado a cada
  * página que se escriba. */
 int os_write(osFile* file_desc, void* buffer, int nbytes) {  // NOTE: En proceso
-    if (strcmp(file_desc->mode, "w") != 0) {
-        printf("Error: El archivo debe estar en modo write.\n");
-        exit(-1);
-    }
+    // if (strcmp(file_desc->mode, "w") != 0) {
+    //     printf("Error: El archivo debe estar en modo write.\n");
+    //     exit(-1);
+    // }
 
-    // Numero de bytes en un bloque, no se puede escribir entre bloques
-    long int max_size = BLOCK_SIZE;
+    // // Numero de bytes en un bloque, no se puede escribir entre bloques
+    // long int max_size = BLOCK_SIZE;
 
-    if (nbytes > max_size) {
-        printf("Error: no se puede escribir un archivo tan grande.\n");
-        exit(-1);
-    }
+    // if (nbytes > max_size) {
+    //     printf("Error: no se puede escribir un archivo tan grande.\n");
+    //     exit(-1);
+    // }
 
     return 0;
 }

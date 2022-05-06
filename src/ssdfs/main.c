@@ -59,8 +59,8 @@ int main (int argc, char* const argv[]) {
     // Abre el archivo
     osFile* os_file = os_open("/dir1ta/amogus.mp4", 'r');
 
-    // TODO: Malo
-    osFile_destroy(os_file);
+    // Cierra el archivo
+    os_close(os_file);
 
     return 0;
 }
