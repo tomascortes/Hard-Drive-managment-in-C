@@ -99,11 +99,37 @@ void osFile_reset_bytes_count(osFile* self) {
     self->bytes_loaded_count = 0;
 }
 
-/// Carga la página en la que se encuentra el puntero de lectura a memoria
-void osFile_load_pointer_page(osFile* self, int* rotten_array_pointer) {
-    self->current_pos;
+/// Calcula la página del bloque en la que se encuentra el puntero
+int osFile_get_current_page(osFile* self, const int* rotten_array_pointer) {
+    int current_page_num = 0;
+    int number_of_pages_with_data;
 
     self->bytes_loaded_count += PAGE_SIZE;
+
+    if (self->current_pos == 0) {
+        number_of_pages_with_data = self->current_pos / PAGE_SIZE + 1;
+
+    } else {
+        number_of_pages_with_data = (self->current_pos - 1) / PAGE_SIZE + 1;
+    }
+
+    while (number_of_pages_with_data - 1 > 0 || current_page_num >= PAGES_PER_BLOCK - 1) {
+        // REVIEW: Checkear que no sea loop infinito
+        // Si la página no está podrida
+        if (rotten_array_pointer[current_page_num] == 0) {
+            // Avanza una página de datos
+            number_of_pages_with_data--;
+        }
+
+        current_page_num++;
+    }
+
+    return current_page_num;
+}
+
+/// Carga la página en la que se encuentra el puntero de lectura a memoria
+void osFile_load_pointer_page(osFile* self, int* rotten_array_pointer) {
+
 }
 
 /// Cargo la página "n_page" del bloque en la dirección de memoria self->loaded_page
