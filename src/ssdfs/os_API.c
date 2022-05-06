@@ -382,9 +382,9 @@ int os_read(osFile* file_desc, void* buffer, int nbytes) {  // NOTE: Trabajando 
             //  "Incomplete type 'void' is not assignable"
             //  La siguiente línea representa la idea de lo que quiero hacer.
             buffer[buffer_counter] = file_desc->loaded_data[byte];
+            buffer_counter++;
         }
     }
-
 
     // MEM leak := feo
     // :(
@@ -394,8 +394,8 @@ int os_read(osFile* file_desc, void* buffer, int nbytes) {  // NOTE: Trabajando 
     //  esto es: (páginas * tamaño página);
     //  o bytes leidos de archivo: (mín(nbytes, largo restante)).
     //  Por ahora dejo las páginas, pero puede estar malo.
-
-    return bytes_read;
+    //  Igual hay que aclararlo en el README como supuesto indep de lo que se haga.
+    return file_desc->bytes_loaded_count;
 }
 
 /* Esta función permite escribir un archivo. Escribe en el archivo descrito por file desc
