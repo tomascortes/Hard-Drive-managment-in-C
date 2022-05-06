@@ -213,9 +213,6 @@ void os_tree(){
 /* Permite revisar si un archivo existe o no. Retorna 1 en caso de que exista, 0 de caso
  * contrario. */
 int os_exists(char* filename) {
-    //// NOTE: Moví directreen a ./aux/directree.*:aux_directreen    - Luis
-    // printf("Filename: %s\n", filename);  // TODO: Sacar línea
-
     // Abro el archivo
     FILE *f = fopen(global_diskname, "rb");
 
@@ -259,9 +256,7 @@ int os_exists(char* filename) {
 
             strcat(path, "/");
             int puntero = buffer[1]; // Pesco los bytes 1-4
-
-            // Función recursiva para leer
-            if (aux_directreen(puntero, filename, path, global_diskname)) {
+            if (find_file(puntero, filename, path)){// Función recursiva para leer
                 fclose(f); // Evitamos leaks
                 return 1;
             }
@@ -279,6 +274,9 @@ osFile* os_open(char* filename, char mode) {  // NOTE: En proceso
     if (mode =='r') {
         if (os_exists(filename)) {
             printf("(Lectura) Encuentra archivo. return osFile.\n");
+            // TODO: Debe crear el buscar el archivo.
+            // TODO: Deberia retornar el osFile o en su defecto el puntero al bloque indice que tiene los punteros
+            // TODO: de los bloques de datos.
             // osFile* os_file = osFile_new(filename, global_diskname);
             // osFile_set_mode(os_file, &mode);
             // osFile_set_location(os_file, plane, block, length_bytes);
@@ -293,8 +291,46 @@ osFile* os_open(char* filename, char mode) {  // NOTE: En proceso
             printf("(Escritura) Encuentra archivo. return NULL.\n");
             return NULL;
         } else {
-            printf("(Escritura) No encuentra archivo. return osFile.\n");
-            // osFile_new(filename, global_diskname);
+            /// PATH DIR
+            char** splitpath = calloc(2, sizeof(char*));
+            int index = 0;
+
+            int pathleng = strlen(filename);
+            char path[pathleng+1];
+            strcpy(path, filename);
+            char pathto[pathleng]; strcpy(pathto, path);
+
+            char* token = strtok(path, "/");
+            while(token != NULL)
+            {
+                splitpath[index] = calloc(4096, sizeof(char));
+                strcpy(splitpath[index++], token);
+                token = strtok(NULL, "/");
+            }
+            
+            char* filename2 = splitpath[index-1];
+            int leng = strlen(filename2);
+            pathto[pathleng-leng] = '\0';
+
+            for(int i=0;i<index;i++){
+                free(splitpath[i]);
+            }
+            free(splitpath);
+            /// PATH DIR
+            
+            if(dir_exists(pathto)){
+                printf("(Escritura) No encuentra archivo y existe directorio. return osFile.\n");
+                // TODO: Debe crear el nuevo archivo crear bloque indice sin ningún archivo (vacio).
+                // TODO: Deberia retornar el osFile o en su defecto el puntero al bloque indice que tiene los punteros
+                // TODO: de los bloques de datos.
+                // osFile* os_file = osFile_new(filename, global_diskname);
+                // osFile_set_mode(os_file, &mode);
+                // osFile_set_location(os_file, plane, block, length_bytes);
+                return NULL;
+            }else{
+                printf("(Escritura) No encuentra archivo y no existe directorio. return NULL.\n");
+                return NULL;
+            }
             return NULL;
         }
     }
