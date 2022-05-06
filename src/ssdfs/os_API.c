@@ -318,6 +318,11 @@ int os_read(osFile* file_desc, void* buffer, int nbytes) {  // REVIEW
 
     int buffer_counter = 0;
 
+    if (strcmp(file_desc->mode, "r") != 0) {
+        printf("Archivo no está abierto en modo lectura");
+        return 0;
+    }
+
     // Caso borde: nbytes = 0 ==> No se lee ningún byte
     if (nbytes == 0) {
         return 0;
@@ -378,6 +383,7 @@ int os_read(osFile* file_desc, void* buffer, int nbytes) {  // REVIEW
             // BUG: No sé cómo copiar un byte de heap (unsigened char*) a buffer (void*)
             //  "Incomplete type 'void' is not assignable"
             //  La siguiente línea representa la idea de lo que quiero hacer.
+            //  void* buffer?!?!?!!?
             buffer[buffer_counter] = file_desc->loaded_data[byte];
             buffer_counter++;
         }
@@ -392,6 +398,7 @@ int os_read(osFile* file_desc, void* buffer, int nbytes) {  // REVIEW
     //  o bytes leidos de archivo: (mín(nbytes, largo restante)).
     //  Por ahora dejo las páginas, pero puede estar malo.
     //  Igual hay que aclararlo en el README como supuesto indep de lo que se haga.
+    // return file_desc->bytes_loaded_count;
     return file_desc->bytes_loaded_count;
 }
 

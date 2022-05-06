@@ -112,7 +112,6 @@ int osFile_get_current_page(osFile* self, const int* rotten_array_pointer) {
     }
 
     while (number_of_pages_with_data - 1 > 0 || current_page_num >= PAGES_PER_BLOCK - 1) {
-        // REVIEW: Checkear que no sea loop infinito
         // Si la página no está podrida
         if (rotten_array_pointer[current_page_num] == 0) {
             // Avanza una página de datos
