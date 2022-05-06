@@ -355,7 +355,11 @@ void directree(int directory_block, int depth, char* global_diskname) {
                 printf("| ");
             }
             for (int j = 5; j < DIR_ENTRY_SIZE; j++) { // Printear nombre del archivo
-                printf("%c", buffer[j]);
+                if (buffer[j] == 0){
+                    break;
+                } else {
+                    printf("%c", buffer[j]);
+                }
             }
             printf("\n");
         }

@@ -61,25 +61,25 @@ int main (int argc, char* const argv[]) {
     //os_bitmap(0);
 
     // Ver todos los archivos y directorios
-    // os_tree();
+    os_tree();
 
     // Abre el archivo
     // osFile* os_file = os_open("/dir1ta/amogus.mp4", 'r');
-    printf("Segundo archivo\n");
-    osFile* os_file2 = os_open("/dir1ta/quiero_lorrar.a", 'w');
-    char buffer[3] = "AAA";
-    os_write(os_file2, buffer, 24);
+    //printf("Segundo archivo\n");
+    //osFile* os_file2 = os_open("/dir1ta/quiero_lorrar.a", 'w');
+    //char buffer[3] = "AAA";
+    //os_write(os_file2, buffer, 24);
 
 
     // Cierra los archivos
     // os_close(os_file);
-    os_close(os_file2);
+    //os_close(os_file2);
 
     // TODO: Malo
     //osFile_destroy(os_file);
 
     // Cierra el archivo
-    os_close(os_file);
+    //os_close(os_file);
 
     /*char path[] = "~/carpeta/SuenosyEsperanzas";
     print_debug("Prueba os_mkdir");
