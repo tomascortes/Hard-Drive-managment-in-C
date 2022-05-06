@@ -52,8 +52,9 @@ void aux_directree(int directory_block, int depth, char* global_diskname) {
 
             printf("\n");
             depth++; // Subo la profundidad en 1
-            int puntero = buffer[1];
-            aux_directree(puntero, depth, global_diskname); // Llamada recursiva
+            int *puntero;
+            puntero = &buffer[1];
+            aux_directree(*puntero, depth, global_diskname); // Llamada recursiva
             depth--; // Vuelvo a la profundidad anterior
         }
     }

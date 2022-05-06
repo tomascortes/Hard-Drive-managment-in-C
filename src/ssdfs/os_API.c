@@ -185,12 +185,13 @@ void os_tree(){
             }
 
             printf("\n");
-            int puntero = buffer[1]; // Pesco los bytes 1-4
+            int *puntero;
+            puntero = &buffer[1];
             depth++; // Subo la profundidad en 1
 
             // Función recursiva para leer
             // dentro del directorio
-            aux_directree(puntero, depth, global_diskname);
+            aux_directree(*puntero, depth, global_diskname);
             depth--; // Vuelvo a la profundidad anterior
         } 
         
@@ -274,12 +275,9 @@ osFile* os_open(char* filename, char mode) {  // NOTE: En proceso
     if (mode =='r') {
         if (os_exists(filename)) {
             printf("(Lectura) Encuentra archivo. return osFile.\n");
-            // TODO: Debe crear el buscar el archivo.
-            // TODO: Deberia retornar el osFile o en su defecto el puntero al bloque indice que tiene los punteros
-            // TODO: de los bloques de datos.
-            // osFile* os_file = osFile_new(filename, global_diskname);
+            osFile* os_file = osFile_new(filename, global_diskname);
             // osFile_set_mode(os_file, &mode);
-            // osFile_set_location(os_file, plane, block, length_bytes);
+            osFile_set_location(os_file, filename);
             return NULL;
         } else {
             printf("(Lectura) No encuentra archivo. return NULL.\n");

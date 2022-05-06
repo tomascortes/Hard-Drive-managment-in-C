@@ -49,18 +49,31 @@ void osFile_set_mode(osFile* self, char* mode) {
             sizeof(self->mode));  // Máximo espacio (Para evitar stack overflow)
 }
 
+
 /// Settea la ubicación del puntero y largo del archivo
-void osFile_set_location(osFile* self,
-                         int plane,
-                         int block,
-                         int length_bytes) {
-    self->current_plane = plane;
-    self->current_block = block;
+void osFile_set_location(osFile* self, char* filename) {
+    // encontrar bloque indice, y largo
 
-    self->length = length_bytes;
+    
+    // asignar atributos
+    self->index_block = get_index_pointer_and_length(filename); 
+    FILE* opened_file = fopen(global_diskname, "rb");
+    fseek(opened_file, self->index_block * BLOCK_SIZE, SEEK_SET);
 
-    self->current_page = 0;
-    self->current_pos = 0;
+    //encontrar length
+    char buffer[8]; // Buffer para guardar los bytes de una entrada
+    fread(buffer, sizeof(buffer), 1, opened_file); // Leo una entrada
+    self->length = buffer;
+    printf("AAAAAAAAAAAA\n");
+    printf("Largo archivo: %d\n", self->length);
+    printf("BBBBBBBB\n");
+    printf("Directorio: %d\n", self->index_block);
+
+    self->current_plane = 0;
+    self->current_block = 0;
+    self->current_page = 0;// usado para read
+    self->current_pos = 0;// usado para read
+    fclose(opened_file);
 }
 
 //void mark_rotten_pages(osFile* self, int*) {
@@ -164,7 +177,7 @@ void osFile_copy_page_data(osFile* self, long int offset) {
     //  'You should use "rb" if you're opening non-text files, because in this case,
     //  the translations are not appropriate.'
     // Abro un stream para el disco
-    file = fopen(self->disk, "rb");
+    file = fopen(global_diskname, "rb");
 
     // Desplazo el puntero al inicio de la pág.
     fseek(file, offset, SEEK_SET);
@@ -228,7 +241,7 @@ void osFile_write_page(osFile* self, int n_page) {
 
     // ---- I/O ----
     // Abro un stream para el disco
-    file = fopen(self->disk, "wb");
+    file = fopen(global_diskname, "wb");
 
     // Desplazo el puntero al inicio de la pág.
     fseek(file, page_offset, SEEK_SET);
@@ -285,20 +298,28 @@ void osFile_release_data_if_loaded(osFile* self) {
     }
 }
 
+// Dado un indice de osFile [b0, b1, b2, b3, b4]
+// retorno el puntero del bloque correspondiente
+// osFile_get_block_pointer(3) -> numero debloque
+int osFile_get_block_pointer(osFile* self, int bloque){
+    
+    return 0;
+}
+// =======================--- Clean ---========================
+
 /// Libero la memoria de la página
 void osFile_release_data(osFile* self) {
     free(self->loaded_data);
     self->has_data_loaded = false;
 }
 
-// =======================--- Clean ---========================
 /// Libera la memoria de todo lo asociado al struct. Luego libera la memoria del struct mismo.
 void osFile_destroy(osFile* self) {
     // Libero memoria puntero nombre
     free(self->name);
     osFile_release_page_if_loaded(self);
     osFile_release_data_if_loaded(self);
-    free(self->disk); // REVIEW: Hay que dejarlo???
+    free(global_diskname); // REVIEW: Hay que dejarlo???
     free(self);
 }
 
@@ -306,24 +327,24 @@ void osFile_destroy(osFile* self) {
 
 // TODO: Sacar si no la uso.
 //  La deje de usar por ahora, pero no la quiero borrar por si la vuelvo a necesitar
-int interpret_mode(char* mode) {
-    if (strcmp(mode, "r") != 0 ||
-            strcmp(mode, "R") != 0) {
-        return 0;  // ReadOnly
+// int interpret_mode(char* mode) {
+//     if (strcmp(mode, "r") != 0 ||
+//             strcmp(mode, "R") != 0) {
+//         return 0;  // ReadOnly
 
-    } else if (strcmp(mode, "w") != 0 ||
-            strcmp(mode, "W") != 0) {
-        return 1;  // WriteOnly
+//     } else if (strcmp(mode, "w") != 0 ||
+//             strcmp(mode, "W") != 0) {
+//         return 1;  // WriteOnly
 
-    } else if (strcmp(mode, "wr") != 0 ||
-            strcmp(mode, "WR") != 0 ||
-            strcmp(mode, "rw") != 0 ||
-            strcmp(mode, "RW") != 0 ||
-            strcmp(mode, "r+") != 0 ||
-            strcmp(mode, "R+") != 0) {
-        return 2; //Read-Write
+//     } else if (strcmp(mode, "wr") != 0 ||
+//             strcmp(mode, "WR") != 0 ||
+//             strcmp(mode, "rw") != 0 ||
+//             strcmp(mode, "RW") != 0 ||
+//             strcmp(mode, "r+") != 0 ||
+//             strcmp(mode, "R+") != 0) {
+//         return 2; //Read-Write
 
-    } else {
-        return -1;  // Null
-    }
-}
+//     } else {
+//         return -1;  // Null
+//     }
+// }
