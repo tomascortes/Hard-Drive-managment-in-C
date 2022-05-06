@@ -18,6 +18,10 @@
 
 #pragma once
 
+#include <string.h>
+#include <stdio.h>
+#include <stdlib.h>
+
 #define PLANES_PER_DISK 2
 #define BLOCKS_PER_PLANE 1024
 #define PAGES_PER_BLOCK 256
@@ -36,8 +40,23 @@
 #define PAGES_PER_DISK (PLANES_PER_DISK * BLOCKS_PER_PLANE * PAGES_PER_BLOCK)  // 524288 pgs
 #define DIR_ENTRIES_PER_BLOCK 32768  // No puse la división por miedo a que cambie el tipo de variable
 
+char global_diskname[1023];
+int global_P_E;
+int unactualized_change;
+
 long int calc_offset(int plane, // Número de planos
                      int block, // Número de bloques
                      int page, // Número de páginas
                      int cell, // Número de celdas
                      int bytes); // Número de bytes
+
+int dir_exists(char* dirname);
+
+int find_file(int directory_block,
+              char* filename,
+              char* path);
+
+int find_dir(int directory_block,
+             char* filename,
+             char* path);
+

@@ -19,10 +19,6 @@
 
 #include "./aux/os_file.h"  // NOTE: Trabajando en esto
 
-char global_diskname[1023];
-int global_P_E;
-int unactualized_change;
-
 // Funciones generales
 void os_mount(char* diskname, unsigned life);
 void os_bitmap(unsigned num);
