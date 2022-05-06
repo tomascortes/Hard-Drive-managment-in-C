@@ -273,6 +273,9 @@ void osFile_load_data(osFile* self, int start, int end) {
         // REVIEW: Favor revisar que haga bien la copia
         self->loaded_data[bytes_copied] = self->loaded_page[start + bytes_copied];
     }
+
+    // Muevo el puntero
+    self->current_pos += bytes_amount;
 }
 
 /// Si hay una página cargada, la libera
