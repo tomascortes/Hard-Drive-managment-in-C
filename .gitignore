@@ -8,6 +8,7 @@
 *.bak
 *.bk
 *.pdf
+*.bin
 .directory
 .hidden
 
@@ -45,6 +46,7 @@ venv/
 ## Discos...
 simdiskfilled.bin
 simdiskempty.bin
+simdiskempty2.bin
 
 ## Cosa compilador
 obj/

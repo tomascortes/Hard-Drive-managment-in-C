@@ -51,6 +51,54 @@ int is_page_rotten(int page, char* diskname) {
     }
 }
 
+/* Esta función recibe un path que ya sé que existe y me tira el bloque
+   en el que está ubicado el directorio */
+// 1° llamada -> bloque_final = 3
+// 1° llamada -> path_parcial = '~/' de largo 100
+int pathfinder(char* path, int bloque_final, char* path_parcial){
+    printf("llamada a la función\t");
+    // Abro el archivo
+    FILE *f = fopen(global_diskname, "rb");
+
+    // Me muevo 3 MiB, para llegar al bloque N°3, de directorio.
+    fseek(f, BLOCK_SIZE * bloque_final, SEEK_SET);
+
+    // Son 32768 entradas en un bloque de directorio
+    for (int i = 0; i < DIR_ENTRIES_PER_BLOCK; i++) {
+        unsigned char buffer[DIR_ENTRY_SIZE];
+        
+        // Buffer para guardar los bytes de una entrada
+        fread(buffer, sizeof(buffer), 1, f); // Leo una entrada
+
+        if (buffer[0] == 1){ // archivo o directorio:
+            char aux[2]; // variable para concatenar char
+            for (int j = 5; j < DIR_ENTRY_SIZE; j++){
+                aux[1] = '\0';
+                aux[0] = buffer[j];
+                strcat(path_parcial, aux); // Concatenar char
+            } // Debuggear acá
+            int bloque_final = *(int*) buffer + 1;
+            printf("Path parcial: %s\n", path_parcial);
+            if (strcmp(path_parcial, path) == 0){
+                fclose(f); // Evitamos leaks
+                return bloque_final; 
+            }
+            strcat(path_parcial, "/");
+            // Recursión
+            fclose(f); // Què pasarà si saco esto?
+            bloque_final = pathfinder(path, bloque_final, path_parcial);
+            if (bloque_final){
+                fclose(f);
+                return bloque_final; 
+            }
+        }
+    }
+    fclose(f); // Evitamos leaks
+    return 0; // 0 es que no se encontró
+}
+
+    
+
 // Defino la verión recursiva de la función acá adentro
 // para cumplir con las reglas de no ofrecer más funciones en la API
 int find_file(int directory_block, char* filename, char* path) {
@@ -87,9 +135,8 @@ int find_file(int directory_block, char* filename, char* path) {
                 strcat(path2, aux); // Concatenar char
             }
             strcat(path, "/"); // Concatenar nuevo directorio
-            int *puntero;
-            puntero = &buffer[1];
-            if (find_file(*puntero, filename, path2)){// Función recursiva para leer
+            int puntero = *(int*) buffer + 1;
+            if (find_file(puntero, filename, path2)){// Función recursiva para leer
                 fclose(f2); // Evitamos leaks
                 return 1;
             };
@@ -297,10 +344,9 @@ void directree(int directory_block, int depth, char* global_diskname) {
                 printf("%c", buffer[j]);
             }
             printf("\n");
-            int *puntero;
-            puntero = &buffer[1];
+            int puntero = *(int*) buffer + 1;
             depth++; // Subo la profundidad en 1
-            directree(*puntero, depth, global_diskname); // Llamada recursiva
+            directree(puntero, depth, global_diskname); // Llamada recursiva
             depth--; // Vuelvo a la profundidad anterior
         }
 

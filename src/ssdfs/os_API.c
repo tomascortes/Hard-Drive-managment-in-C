@@ -470,10 +470,72 @@ int os_rm(char* filename) {  // TODO: Pendiente
     return 0;
 }
 
-/* Esta función crea un directorio con el nombre indicado. Esto incrementa en 1 el
- * contador P/E de las páginas que sea necesario actualizar para crear las referencias
- * a este directorio. */
+/* Esta función crea un directorio con el nombre indicado. Esto incrementa en 1
+   el contador P/E de las páginas que sea necesario actualizar 
+   para crear las referencias a este directorio. */
 int os_mkdir(char* path) {  // TODO: Pendiente
+    // Función auxiliar que busca el primer bloque vacío
+    int blocksearch(){
+        // Cargo el bitmap
+        FILE *f = fopen(global_diskname, "rb");
+        unsigned char buffer[256];
+        fread(buffer, sizeof(buffer), 1, f);
+        int bloque = 0;
+        for(int i = 0; i < 256; i++){
+            for (int j = 7; j >= 0; j--){
+                // Shift left para sacar el bit
+                int bit = (buffer[i] & (1 << j)) >> j;
+                // Si el bit es 1 sigo buscando, si no, retorno
+                if(bit){
+                    bloque++;
+                } else {
+                    fclose(f);
+                    return bloque;
+                } 
+            }
+        }
+        fclose(f);
+        return 0; // Si no hay bloques disponibles
+    }
+
+    int bloquel = blocksearch();
+    printf("El primer bloque disponible es: %i\n", bloquel);
+
+    char** splitpath = calloc(2, sizeof(char*));
+    int index = 0;
+
+    int pathleng = strlen(path);
+    char pathto[pathleng]; strcpy(pathto, path);
+
+    ///// PATHSEARCH START
+    char* token = strtok(path, "/");
+    while(token != NULL)
+    {
+        splitpath[index] = calloc(4096, sizeof(char));
+        strcpy(splitpath[index++], token);
+        token = strtok(NULL, "/");
+    }
+    // Remove dangling Windows (\r) and Unix (\n) newlines
+    int len = strlen(splitpath[index - 1]);
+    if (len > 1 && splitpath[index - 1][len - 2] == '\r')
+        splitpath[index - 1][len - 2] = '\0';
+    else if (len && splitpath[index - 1][len - 1] == '\n')
+        splitpath[index - 1][len - 1] = '\0';
+    ///// PATHSEARCH END
+
+    char* filename = splitpath[index-1];
+    int leng = strlen(filename);
+    pathto[pathleng-leng] = '\0'; 
+
+    printf("El path es: %s\n", pathto);
+    printf("El nombre es: %s\n", filename);
+
+    //writeblock = os_find(pathto); // Se asume que esto funciona
+    FILE *f = fopen(global_diskname, "rb");
+    //fseek(f2, writeblock * 1048576, SEEK_SET);
+    //char* texto = "AAA"; // Lo que voy a escribir
+    fclose(f);
+    
     return 0;
 }
 

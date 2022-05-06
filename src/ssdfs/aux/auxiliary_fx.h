@@ -60,6 +60,8 @@ int find_file(int directory_block,
               char* filename,
               char* path);
 
+int pathfinder(char* path, int bloque_final, char* path_parcial);
+
 int find_dir(int directory_block,
              char* filename,
              char* path);
