@@ -21,6 +21,8 @@
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdbool.h>
+
 
 #define PLANES_PER_DISK 2
 #define BLOCKS_PER_PLANE 1024
@@ -67,3 +69,5 @@ int get_index_file(int directory_block, char* filename, char* path);
 int get_index_pointer_and_length(char* filenamem);
 
 void directree(int directory_block, int depth, char* global_diskname);
+bool is_block_rotten(int block);
+bool is_block_available(unsigned num);

@@ -418,19 +418,38 @@ int os_read(osFile* file_desc, void* buffer, int nbytes) {  // REVIEW
  * (incluso 0). Esta función aumenta en 1 el contador P/E en el lifemap asociado a cada
  * página que se escriba. */
 int os_write(osFile* file_desc, void* buffer, int nbytes) {  // NOTE: En proceso
-    // if (strcmp(file_desc->mode, "w") != 0) {
-    //     printf("Error: El archivo debe estar en modo write.\n");
-    //     exit(-1);
-    // }
+    if (strcmp(file_desc->mode, "w") != 0) {
+        printf("Error: El archivo debe estar en modo write.\n");
+        return 0;
+    }
 
-    // // Numero de bytes en un bloque, no se puede escribir entre bloques
-    // long int max_size = BLOCK_SIZE;
 
-    // if (nbytes > max_size) {
-    //     printf("Error: no se puede escribir un archivo tan grande.\n");
-    //     exit(-1);
-    // }
+    // verificar si quedan suficientes bloques TODO
 
+    // Encontrar primer bloque desocupado para usarlo de indice
+    for (int i = 1; i < 2048; i++) {
+        // fread(&buffer, sizeof(int), 1, opened_file); // Leo una entrada de un int
+
+        int index_block; // see leen ints de 4 bytes
+        if (is_block_available(i)  && is_block_rotten(i) == false){
+            printf("Bloque util %d\n", i);
+            index_block = i;
+        }
+    }
+    //comenzamos a escribir el directorio del nuevo archivo
+    // FILE *opened_file = fopen(global_diskname, "rb");
+    // fseek(opened_file , BLOCK_SIZE*4, SEEK_SET); // Inicio punteros
+
+    // escribimos en el bloque, si hay un rotten, retornamos lo que se escribió hasta ese momento
+    // continuamos hasta que nbytes = 0 o no queden paginas
+
+    // Actualizamos el bitmap
+    // Actualizamos el  lifemap
+    // actualizar el directorio
+
+    
+
+    // fclose(opened_file);
     return 0;
 }
 

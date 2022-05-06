@@ -19,15 +19,16 @@
 
 ### Principales decisiones de diseño para construir el programa
 
-- ¿?
-- ¿?
+- Si se abre un archivo con write y ya existe, se retorna NULL
+- Si se está escribiendo y la escritura causará un rotten, se detiene el proceso ya que se debería haber manejado con os_trim y esto no debería pasar
+- Para abrir un nuevo disco se tienen que haber cerrado todos los archivos
+
 
 ---
 
 ### Supuestos adicionales ocupados
 
-- Para abrir un nuevo disco se tienen que haber cerrado todos los archivos
-- ¿?
+- El bloque 4 correspondiente al directorio, dice 0 en empty, pero no puede ser escrito porque es el bloque de directorio
 
 ---
 
