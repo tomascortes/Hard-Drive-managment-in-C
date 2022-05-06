@@ -57,8 +57,8 @@ int main (int argc, char* const argv[]) {
 
     //Prueba bitmap
     os_bitmap(0);
-    mark_as_used(7);
-    os_bitmap(0);
+    //mark_as_used(7); Funciona!
+    //os_bitmap(0);
 
     // Ver todos los archivos y directorios
     os_tree();
