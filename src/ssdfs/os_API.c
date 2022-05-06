@@ -314,6 +314,10 @@ int os_read(osFile* file_desc, void* buffer, int nbytes) {  // NOTE: Trabajando 
     int page_offset;
     int* rotten_pages;
 
+    int starting_page_byte;
+    int end_page_byte;
+    int reading_delta;
+
     // Caso borde: nbytes = 0 ==> No se lee ningún byte
     if (nbytes == 0) {
         return 0;
@@ -333,10 +337,35 @@ int os_read(osFile* file_desc, void* buffer, int nbytes) {  // NOTE: Trabajando 
     // Reseteo cuenta de bytes leídos para hacer la comparación
     osFile_reset_bytes_count(file_desc);
 
-    // (nbytes - 1 // page_size) + 1 = Páginas por leer
-    // Usa la función piso/división parte entera, por eso el +-1
-    // Y como solo se pueden leer páginas como número entero...
-    osFile_load_pointer_page(file_desc, rotten_pages);
+    // Mientras que me queden bytes por leer debo seguir avanzando loopeand
+    while (nbytes > 0) {
+        // (nbytes - 1 // page_size) + 1 = Páginas por leer
+        // Usa la función piso/división parte entera, por eso el +-1
+        // Y como solo se pueden leer páginas como número entero...
+        osFile_load_pointer_page(file_desc, rotten_pages);
+
+        // Inicio y fin de lectura de la página
+        starting_page_byte = file_desc->current_pos % PAGE_SIZE;
+
+        if (nbytes >= PAGE_SIZE) {
+            end_page_byte = PAGE_SIZE;
+
+        } else {
+            end_page_byte = nbytes;
+        }
+
+        // Cant. de bytes leídos
+        reading_delta = end_page_byte - starting_page_byte + 1;
+
+        // Sustraigo bytes efectivamente leídos
+        nbytes -= reading_delta;
+
+        // Cargo bytes a buffer
+        osFile_load_data(file_desc, starting_page_byte, end_page_byte);
+
+        for (int byte = 0; byte < reading_delta; byte++)
+    }
+
 
 
 
