@@ -420,7 +420,7 @@ int os_read(osFile* file_desc, void* buffer, int nbytes) {  // REVIEW
             //  "Incomplete type 'void' is not assignable"
             //  La siguiente línea representa la idea de lo que quiero hacer.
             //  void* buffer?!?!?!!?
-            buffer[buffer_counter] = file_desc->loaded_data[byte];
+            // buffer[buffer_counter] = file_desc->loaded_data[byte];
             buffer_counter++;
         }
     }

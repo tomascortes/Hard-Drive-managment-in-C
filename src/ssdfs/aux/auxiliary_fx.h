@@ -18,14 +18,9 @@
 
 #pragma once
 
-<<<<<<< HEAD
-#include <stdbool.h>
-#include <stdio.h>
-=======
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
->>>>>>> feature/matias
 
 #define PLANES_PER_DISK 2
 #define BLOCKS_PER_PLANE 1024
@@ -55,7 +50,8 @@ long int calc_offset(int plane, // Número de planos
                      int cell, // Número de celdas
                      int bytes); // Número de bytes
 
-bool is_page_rotten(int page, char* diskname);
+int is_page_rotten(int page, char* diskname);
+
 int dir_exists(char* dirname);
 
 int find_file(int directory_block,

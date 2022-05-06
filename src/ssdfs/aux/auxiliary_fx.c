@@ -33,7 +33,7 @@ long int calc_offset(int plane, int block, int page, int cell, int bytes) {
     return offset;
 }
 
-bool is_page_rotten(int page, char* diskname) {
+int is_page_rotten(int page, char* diskname) {
     // Abro el archivo
     FILE* file = fopen(diskname, "rb");
     int buffer;
@@ -44,11 +44,13 @@ bool is_page_rotten(int page, char* diskname) {
     fread(&buffer, sizeof(int), 1, file);
 
     if (buffer == -1) {
-        return true;
+        return 0;
 
     } else {
-        return false;
+        return 1;
     }
+}
+
 // Defino la verión recursiva de la función acá adentro
 // para cumplir con las reglas de no ofrecer más funciones en la API
 int find_file(int directory_block, char* filename, char* path) {
