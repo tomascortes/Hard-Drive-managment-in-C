@@ -363,3 +363,52 @@ void directree(int directory_block, int depth, char* global_diskname) {
 
     fclose(f2); // Evitamos leaks
 }
+
+
+bool is_block_rotten(int block){
+    FILE *f = fopen(global_diskname, "rb");
+
+    fseek(f, 1 * BLOCK_SIZE, SEEK_SET);
+
+    if (block > 2048 || block < 0 ) {
+        printf("Error de input para usefull_lifemap\n");
+        return true;
+    }
+
+    int buffer; // see leen ints de 4 bytes
+    for (int i = 256*block; i < 256*(block + 1); i++) {
+        fread(&buffer, sizeof(int), 1, f); // Leo una entrada de un int
+        if (buffer == -1) {
+            return true;
+        }
+    }
+    fclose(f); // Evitamos leaks
+    return false;
+}
+
+bool is_block_available(unsigned num) {
+    // Abro el archivo
+    FILE *f = fopen(global_diskname, "rb");
+
+    // El disco tiene 2048 bloques, por lo que para el bitmap necesitamos
+    // 2048 bits = 256 bytes
+    unsigned char buffer[256]; // Buffer para guardar los bytes
+    fread(buffer, sizeof(buffer), 1, f);
+
+    if (num > 0 && num < 2048) {
+        // num / 8 es el byte donde se encuentra el bit deseado
+        // num % 8 es el offset del bit dentro de ese byte
+        if (1 == (buffer[num / 8] & 1 << (7 - num % 8)) >> (7 - num % 8)){
+            return false;
+        }
+        else{
+            return true;
+        }
+
+    } else {
+        printf("\nBitmap Bloque N°%d\n", num);
+        printf("%s\n", "SEGFAULT uwu");
+    }
+
+    fclose(f); // Evitamos leaks
+}
