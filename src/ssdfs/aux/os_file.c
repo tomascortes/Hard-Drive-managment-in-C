@@ -62,9 +62,9 @@ void osFile_set_location(osFile* self,
     self->current_pos = 0;
 }
 
-void mark_rotten_pages(osFile* self, int*) {
-
-}
+//void mark_rotten_pages(osFile* self, int*) {
+//
+//}
 
 
 // ====================--- File pointer ---====================
