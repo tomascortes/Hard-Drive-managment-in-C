@@ -79,7 +79,7 @@ void read_from_disk(osFile* self, char* filename) {
     self->remaining_bytes = self->length; // Bytes restantes que quedan por leer 
 
     printf("Largo de Archivo: %ld\n", self->length);
-    printf("Numero de Bloque Index: %ld\n", self->current_index);
+    printf("Numero de Bloque Index: %ld\n", self->block_index_number);
     printf("Numero de Plano: %d\n", self->current_plane);
     printf("Numero del Primer Bloque de Datos: %d\n", self->current_block);
     printf("Numero de la Primera Pagina: %d\n", self->current_page);

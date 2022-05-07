@@ -73,3 +73,4 @@ int get_index_pointer_and_length(char* filenamem);
 void directree(int directory_block, int depth, char* global_diskname);
 bool is_block_rotten(int block);
 bool is_block_available(unsigned num);
+void mark_as_used(int bloque);

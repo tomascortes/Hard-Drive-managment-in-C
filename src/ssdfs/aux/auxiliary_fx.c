@@ -387,7 +387,7 @@ bool is_block_rotten(int block){
 }
 
 bool is_block_available(unsigned num) {
-    // Abro el archivo
+    // Revisa bitmap
     FILE *f = fopen(global_diskname, "rb");
 
     // El disco tiene 2048 bloques, por lo que para el bitmap necesitamos
@@ -411,4 +411,51 @@ bool is_block_available(unsigned num) {
     }
 
     fclose(f); // Evitamos leaks
+}
+
+int get_usable_block(){
+    for (int i = 1; i < 2048; i++) {
+        int index_block; // see leen ints de 4 bytes
+        if (is_block_available(i)  && is_block_rotten(i) == false){
+            return i;
+        }
+    }
+    return -1;
+}
+
+
+// Busca en el bitmap el bit correspondiente al bloque
+// y lo marca como usado (lo pone en 1)
+void mark_as_used(int bloque) {
+    // El bit que corresponda al bloque va a estar en el byte:
+    int byte = bloque / 8;
+    int offset = 7 - bloque % 8;
+
+    // Abro el archivo
+    FILE* f = fopen(global_diskname, "rb");
+
+    unsigned char buffer[256]; // Buffer con los bytes del bitmap
+    fread(buffer, sizeof(buffer), 1, f);
+
+    unsigned char data = buffer[byte]; // Saco el byte que me sirve
+    fclose(f);
+
+    // Convierto el bit que me interesa en 1
+    data = data | (1 << offset);
+
+    // Puntero al byte de datos a escribir
+    unsigned char* point_data = &data;
+    f = fopen(global_diskname, "rb+");
+
+    fseek(f, byte, SEEK_SET);
+    fwrite(point_data, 1, 1, f);
+
+    fclose(f);
+}
+
+int min(int a1, int a2){
+    if (a1 < a2){
+        return a1;
+    }
+    return a2;
 }

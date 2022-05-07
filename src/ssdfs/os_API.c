@@ -274,41 +274,63 @@ osFile* os_open(char* filename, char mode) {  // NOTE: En proceso
             printf("(Escritura) Encuentra archivo. return NULL.\n");
             return NULL;
         } else {
+            printf("DEBUGEANDO filename %s\n", filename);
             /// PATH DIR
             char** splitpath = calloc(2, sizeof(char*));
             int index = 0;
 
-            int pathleng = strlen(filename);
-            char path[pathleng+1];
-            strcpy(path, filename);
-            char pathto[pathleng]; strcpy(pathto, path);
 
-            char* token = strtok(path, "/");
-            while(token != NULL)
-            {
-                splitpath[index] = calloc(4096, sizeof(char));
-                strcpy(splitpath[index++], token);
-                token = strtok(NULL, "/");
-            }
-            
-            char* filename2 = splitpath[index-1];
-            int leng = strlen(filename2);
-            pathto[pathleng-leng] = '\0';
+            osFile* os_file = osFile_new(filename, "w");
 
-            for(int i=0;i<index;i++){
-                free(splitpath[i]);
-            }
-            free(splitpath);
-            /// PATH DIR
+            // Encontrar primer bloque desocupado para usarlo de indice
+            int index_block = get_usable_block();
+            mark_as_used(index_block); // marcamos como usado el nuevo indice
+            os_file ->block_index_number = index_block;
+            printf("Nuevo bloque de directorio %d\n", os_file ->block_index_number);
+            os_file-> filename = filename; // BUG: esto está mal uwu pero lo veré despues
+
+            // int pathleng = strlen(filename);
+            // printf("DEBUGEANDO pathleng %d\n", pathleng);
+            // char path[pathleng+1];
+            // strcpy(path, filename);
+            // printf("DEBUGEANDO path %s\n", path);
+            // Debería  guardar el archivo en directorio
+            // crear su bloque indice actualizar bitmap
+            // y finalmente retornarlo
+            os_file->length=NULL; // Archivo no escrito
+            return os_file;
+
+
+            // char pathto[pathleng]; 
+            // strcpy(pathto, path);
+            // printf("DEBUGEANDO pathto %s\n", pathto);
+
+            // char* token = strtok(path, "/");
+            // while(token != NULL)
+            // {
+            //     splitpath[index] = calloc(4096, sizeof(char));
+            //     strcpy(splitpath[index++], token);
+            //     token = strtok(NULL, "/");
+            // }
             
-            if(dir_exists(pathto)){
-                printf("(Escritura) No encuentra archivo y existe directorio. return osFile.\n");
-                osFile* os_file = osFile_new(filename, mode);
-                return os_file;
-            }else{
-                printf("(Escritura) No encuentra archivo y no existe directorio. return NULL.\n");
-                return NULL;
-            }
+            // char* filename2 = splitpath[index-1];
+            // int leng = strlen(filename2);
+            // pathto[pathleng-leng] = '\0';
+
+            // for(int i=0;i<index;i++){
+            //     free(splitpath[i]);
+            // }
+            // free(splitpath);
+            // /// PATH DIR
+            
+            // if(dir_exists(pathto)){
+            //     printf("(Escritura) No encuentra archivo y existe directorio. return osFile.\n");
+            //     osFile* os_file = osFile_new(filename, mode);
+            //     return os_file;
+            // }else{
+            //     printf("(Escritura) No encuentra archivo y no existe directorio. return NULL.\n");
+            //     return NULL;
+            // }
             return NULL;
         }
     }
@@ -422,34 +444,65 @@ int os_write(osFile* file_desc, void* buffer, int nbytes) {  // NOTE: En proceso
         printf("Error: El archivo debe estar en modo write.\n");
         return 0;
     }
+    
 
+    
+    
+    // definimos cual será el primer bloque a utilizar y lo marcamos como usado
+    int data_block = get_usable_block();
+    mark_as_used(data_block); 
 
-    // verificar si quedan suficientes bloques TODO
+    // Abrimos el disco
+    FILE *opened_file = fopen(global_diskname, "rb");
+    // Guardamos en el indice el numero de bloque a utilizar. 
+    // El largo del archivo se actualiza alfinal (debido a que quiza no alcanzemos a escribir todo)
+    fseek(opened_file , BLOCK_SIZE*data_block + 8, SEEK_SET);
+    fwrite(data_block, 1,1,opened_file);
+    printf("El primer bloque debería ser : %d", data_block);
 
-    // Encontrar primer bloque desocupado para usarlo de indice
-    for (int i = 1; i < 2048; i++) {
-        // fread(&buffer, sizeof(int), 1, opened_file); // Leo una entrada de un int
-
-        int index_block; // see leen ints de 4 bytes
-        if (is_block_available(i)  && is_block_rotten(i) == false){
-            printf("Bloque util %d\n", i);
-            index_block = i;
-        }
+    //
+    if (nbytes % 2){
+        // Creo que esto no debería pasar por enunciado
+        printf("No es par aaaaaaaa");
+        nbytes ++; //????
+        
     }
-    //comenzamos a escribir el directorio del nuevo archivo
-    // FILE *opened_file = fopen(global_diskname, "rb");
-    // fseek(opened_file , BLOCK_SIZE*4, SEEK_SET); // Inicio punteros
+    // Cuantos bloques necesitamos escribir
+    int bloques_necesarios = nbytes/BLOCK_SIZE;
+    if (nbytes%BLOCK_SIZE != 0){
+        bloques_necesarios ++;
+    }
 
-    // escribimos en el bloque, si hay un rotten, retornamos lo que se escribió hasta ese momento
-    // continuamos hasta que nbytes = 0 o no queden paginas
 
-    // Actualizamos el bitmap
-    // Actualizamos el  lifemap
-    // actualizar el directorio
+    // Recorremos todos los bloques en los que vamos a escribir
+    int puntero_buffer = 0;
+    for (int bloque = 0; bloque < bloques_necesarios; bloque ++){
+        if (data_block == -1){
+            break;
+            //TODO: Asumiré por mientras que esto no pasa
+        }
+        fseek(opened_file , BLOCK_SIZE*data_block, SEEK_SET); 
+        // Escribimos los bytes corerspndientes a casa página
+        for (int i=0; i < min(256, nbytes-puntero_buffer); i++ ){
+            char *puntero;
+            puntero = &buffer[puntero_buffer];
+            fwrite(*puntero, 1, 1, opened_file);
+            puntero_buffer ++;
+            // TODO: Actualizar lifemap
+        }
+        if (puntero_buffer >= nbytes){
+            break;
+        }
+        data_block = get_usable_block();
+        mark_as_used(data_block); 
+    }
+    // Continuamos hasta que nbytes = 0 o no queden paginas
+
+    // Actualizar el directorio
 
     
 
-    // fclose(opened_file);
+    fclose(opened_file);
     return 0;
 }
 

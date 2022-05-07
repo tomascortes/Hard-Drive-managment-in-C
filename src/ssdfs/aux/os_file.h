@@ -28,7 +28,7 @@ typedef struct osFile {
     
     char* filename;  // Nombre del archivo
     int* index_pointer; // Puntero al inicio del bloque indice
-    int block_index_number; // Puntero al inicio del bloque indice
+    int block_index_number; // Numero del bloque que corresponde con indice
     char mode[2]; // r -> ReadOnly || w-> WriteOnly
     long int length; // Largo en bytes del archivo
 

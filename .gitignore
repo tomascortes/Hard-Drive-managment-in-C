@@ -11,6 +11,7 @@
 *.bin
 .directory
 .hidden
+empty_disk_creator.py
 
 # Pruebas
 **/tests/
