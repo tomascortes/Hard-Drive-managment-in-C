@@ -1,0 +1,70 @@
+!.gitignore
+
+# Archivos random
+*.tmp
+*.temp
+*.old
+*.sav
+*.bak
+*.bk
+*.pdf
+*.bin
+.directory
+.hidden
+
+# Pruebas
+**/tests/
+**/tests/*
+tests/
+tests/*
+TESTS/
+TESTS/*
+
+# IDE/Editores
+.idea/
+.idea/*
+.code/
+.code/*
+.vscode/
+.vscode/*
+*.vscode
+*.kate-swp
+*.save
+*.swp
+cmake-build-debug/
+cmake-build-debug/*
+
+## Otros
+*.zip
+*.tar.gz
+*.rar
+*.paq
+*.7z
+/CMakeLists.txt
+venv/
+
+## Discos...
+simdiskfilled.bin
+simdiskempty.bin
+simdiskempty2.bin
+
+## Cosa compilador
+obj/
+obj/*
+core/
+core/*
+core
+vgcore.*
+
+## Binarios
+# NOTE: Antes de comentar la siguiente línea, para qué se excluye la carpeta 'ssdfs'??
+ssdfs
+!/src/ssdfs/
+!/src/ssdfs/*
+
+# Symlinks que uso en mi pc - Luis
+# No son lo mismo que los archivos de /scr/ssdfd/*
+/main.c
+/os_API.c
+/os_API.h
+/tmp.txt
