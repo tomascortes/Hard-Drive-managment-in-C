@@ -452,6 +452,34 @@ void mark_as_used(int bloque) {
 
     fclose(f);
 }
+// Busca en el bitmap el bit correspondiente al bloque
+// y lo marca como usado (lo pone en 1)
+void unmark_as_used(int bloque) {
+    // El bit que corresponda al bloque va a estar en el byte:
+    int byte = bloque / 8;
+    int offset = 7 - bloque % 8;
+
+    // Abro el archivo
+    FILE* f = fopen(global_diskname, "rb");
+
+    unsigned char buffer[256]; // Buffer con los bytes del bitmap
+    fread(buffer, sizeof(buffer), 1, f);
+
+    unsigned char data = buffer[byte]; // Saco el byte que me sirve
+    fclose(f);
+
+    // Convierto el bit que me interesa en 1
+    data = (data ^ (0 << offset));
+
+    // Puntero al byte de datos a escribir
+    unsigned char* point_data = &data;
+    f = fopen(global_diskname, "rb+");
+
+    fseek(f, byte, SEEK_SET);
+    fwrite(point_data, 1, 1, f);
+
+    fclose(f);
+}
 
 int min(int a1, int a2){
     if (a1 < a2){

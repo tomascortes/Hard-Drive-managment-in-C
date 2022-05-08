@@ -29,12 +29,21 @@ osFile* osFile_new(char* filename, char mode) {
     instance_pointer->filename = filename;
     osFile_set_mode(instance_pointer, mode); // Inicializo con valores por defecto.
 
-    if (strcmp(instance_pointer->mode, "w")) {
-        // put_on_disk(instance_pointer, filename); //TODO: Falta agregar el osFile NUEVO al sistema
-        read_from_disk(instance_pointer, filename);
+
+    if (strcmp(instance_pointer->mode, "w") == 0) {
+        // put_on_disk(instance_pointer, filename); 
+        //TODO: Falta agregar el osFile NUEVO al direcotrio del disco
+         // Encontrar primer bloque desocupado para usarlo de indice
+        int index_block = get_usable_block();
+        mark_as_used(index_block); // marcamos como usado el nuevo indice
+        instance_pointer ->block_index_number = index_block;
+        printf("Nuevo bloque de directorio %d\n", instance_pointer ->block_index_number);
+        instance_pointer-> filename = filename; // BUG: esto está mal uwu pero lo veré despues
+        instance_pointer->amount_of_blocks = 0; // atributo utilizado solo en write
         return instance_pointer;
     } 
-    else if (strcmp(instance_pointer->mode, "r")) {
+    else if (strcmp(instance_pointer->mode, "r") == 0) {
+        //READING
         read_from_disk(instance_pointer, filename);
         return instance_pointer;
     } else {
@@ -86,6 +95,26 @@ void read_from_disk(osFile* self, char* filename) {
     printf("Numero de Bloque Index: %d\n", self->current_pos);
 
     fclose(opened_file);
+}
+
+void add_block_to_index(osFile* self, int new_block){
+    FILE *file = fopen(global_diskname, "rb");
+    fseek(file , BLOCK_SIZE*(self->block_index_number) + 4*self->amount_of_blocks, SEEK_SET);
+    fwrite(new_block, 1,1,file);
+    fclose(file);
+}
+
+void print_index_block(osFile* self){
+    FILE *file = fopen(global_diskname, "rb");
+    fseek(file , BLOCK_SIZE*(self->block_index_number), SEEK_SET);
+    printf("\nImprimiendo bloque indice: %d\n",self->block_index_number);
+    for (int i = 0; i < 256*2; i++) {
+        int buffer; // see leen ints de 4 bytes
+        fread(&buffer, sizeof(int), 1, file); // Leo una entrada de un int
+        printf(" %d", buffer);
+    }
+    printf("\n");
+    fclose(file);
 }
 
 
@@ -311,6 +340,8 @@ void read_from_disk(osFile* self, char* filename) {
     
 //     return 0;
 // }
+
+
 // // =======================--- Clean ---========================
 
 // /// Libero la memoria de la página

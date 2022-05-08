@@ -276,18 +276,11 @@ osFile* os_open(char* filename, char mode) {  // NOTE: En proceso
         } else {
             printf("DEBUGEANDO filename %s\n", filename);
             /// PATH DIR
-            char** splitpath = calloc(2, sizeof(char*));
-            int index = 0;
+            // char** splitpath = calloc(2, sizeof(char*));
+            // int index = 0;
+            osFile* os_file = osFile_new(filename, mode);
 
-
-            osFile* os_file = osFile_new(filename, "w");
-
-            // Encontrar primer bloque desocupado para usarlo de indice
-            int index_block = get_usable_block();
-            mark_as_used(index_block); // marcamos como usado el nuevo indice
-            os_file ->block_index_number = index_block;
-            printf("Nuevo bloque de directorio %d\n", os_file ->block_index_number);
-            os_file-> filename = filename; // BUG: esto está mal uwu pero lo veré despues
+           
 
             // int pathleng = strlen(filename);
             // printf("DEBUGEANDO pathleng %d\n", pathleng);
@@ -297,7 +290,8 @@ osFile* os_open(char* filename, char mode) {  // NOTE: En proceso
             // Debería  guardar el archivo en directorio
             // crear su bloque indice actualizar bitmap
             // y finalmente retornarlo
-            os_file->length=NULL; // Archivo no escrito
+            os_file->length=-1; // Archivo no escrito
+            // free(splitpath);
             return os_file;
 
 
@@ -443,44 +437,40 @@ int os_write(osFile* file_desc, void* buffer, int nbytes) {  // NOTE: En proceso
     if (strcmp(file_desc->mode, "w") != 0) {
         printf("Error: El archivo debe estar en modo write.\n");
         return 0;
-    }
-    
+    } 
 
-    
-    
-    // definimos cual será el primer bloque a utilizar y lo marcamos como usado
-    int data_block = get_usable_block();
-    mark_as_used(data_block); 
-
-    // Abrimos el disco
-    FILE *opened_file = fopen(global_diskname, "rb");
-    // Guardamos en el indice el numero de bloque a utilizar. 
-    // El largo del archivo se actualiza alfinal (debido a que quiza no alcanzemos a escribir todo)
-    fseek(opened_file , BLOCK_SIZE*data_block + 8, SEEK_SET);
-    fwrite(data_block, 1,1,opened_file);
-    printf("El primer bloque debería ser : %d", data_block);
-
-    //
     if (nbytes % 2){
-        // Creo que esto no debería pasar por enunciado
         printf("No es par aaaaaaaa");
-        nbytes ++; //????
-        
+        nbytes ++; //????    
     }
-    // Cuantos bloques necesitamos escribir
     int bloques_necesarios = nbytes/BLOCK_SIZE;
     if (nbytes%BLOCK_SIZE != 0){
         bloques_necesarios ++;
     }
 
-
-    // Recorremos todos los bloques en los que vamos a escribir
+    // Abrimos el disco
+    FILE *opened_file = fopen(global_diskname, "rb");
+    int data_block;
     int puntero_buffer = 0;
+    int writed_bytes = 0;
+    printf("Comienzo de  for\n");
     for (int bloque = 0; bloque < bloques_necesarios; bloque ++){
+        
+        data_block = get_usable_block();
         if (data_block == -1){
             break;
             //TODO: Asumiré por mientras que esto no pasa
         }
+        
+        // todos los cachos de añadir un nuevo bloque al archivo
+        mark_as_used(data_block); //bitmap
+        int direccion = BLOCK_SIZE*file_desc->block_index_number + 8 + file_desc ->amount_of_blocks*4; // 
+        fseek(opened_file , direccion, SEEK_SET); 
+        fwrite(data_block, 1,1,opened_file); // escribimos el numero de bloque en el indice
+        printf("Añadido nuevo bloque al indice es el numero: %d  en la posición: %d", data_block);
+        file_desc ->amount_of_blocks ++; // añado 1 al contador de bloques
+                
+
         fseek(opened_file , BLOCK_SIZE*data_block, SEEK_SET); 
         // Escribimos los bytes corerspndientes a casa página
         for (int i=0; i < min(256, nbytes-puntero_buffer); i++ ){
@@ -488,6 +478,7 @@ int os_write(osFile* file_desc, void* buffer, int nbytes) {  // NOTE: En proceso
             puntero = &buffer[puntero_buffer];
             fwrite(*puntero, 1, 1, opened_file);
             puntero_buffer ++;
+            writed_bytes ++;
             // TODO: Actualizar lifemap
         }
         if (puntero_buffer >= nbytes){
@@ -496,9 +487,15 @@ int os_write(osFile* file_desc, void* buffer, int nbytes) {  // NOTE: En proceso
         data_block = get_usable_block();
         mark_as_used(data_block); 
     }
-    // Continuamos hasta que nbytes = 0 o no queden paginas
-
+    // imprimimos para chequear
     // Actualizar el directorio
+    // Actualizamos el length
+    fseek(opened_file , BLOCK_SIZE*file_desc->block_index_number, SEEK_SET); 
+    file_desc->length = writed_bytes;
+    fwrite(25, sizeof(int), 1, opened_file);
+
+    print_index_block(file_desc);
+
 
     
 

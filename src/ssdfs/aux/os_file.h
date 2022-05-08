@@ -52,6 +52,8 @@ typedef struct osFile {
     int bytes_loaded_count; // Cantidad de bytes leídos. Debe resetearse cada vez que se lee.
     long int remaining_bytes; // Bytes restantes que quedan por leer 
 
+    int amount_of_blocks;
+
 } osFile;
 
 // ----- Setup -----
@@ -123,3 +125,6 @@ void osFile_release_data(osFile* self);
 // ----- Clean -----
 /// Libera la memoria de todo lo asociado al struct. Luego libera la memoria del struct mismo.
 void osFile_destroy(osFile* self);
+
+void add_block_to_index(osFile* self, int new_block);
+void print_index_block(osFile* self);
