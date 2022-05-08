@@ -20,7 +20,7 @@
 ### Principales decisiones de diseño para construir el programa
 
 - Si se abre un archivo con write y ya existe, se retorna NULL
-- Si se está escribiendo y la escritura causará un rotten, se detiene el proceso ya que se debería haber manejado con os_trim y esto no debería pasar
+- Si se está escribiendo y la escritura causará un rotten, se detiene el proceso ya que se debería haber manejado con os_trim y esto no debería pasar, o cuando comienze pasar debería cambiarse el disco ya que todos los bloques comenzarán a fallar.
 - Para abrir un nuevo disco se tienen que haber cerrado todos los archivos
 
 

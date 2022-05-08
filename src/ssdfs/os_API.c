@@ -424,14 +424,15 @@ int os_read(osFile* file_desc, void* buffer, int nbytes) {  // REVIEW
  * (incluso 0). Esta función aumenta en 1 el contador P/E en el lifemap asociado a cada
  * página que se escriba. */
 int os_write(osFile* file_desc, void* buffer, int nbytes) {  // NOTE: En proceso
-    if (file_desc->mode ==  'w') {
-        printf("Error: El archivo debe estar en modo write.\n");
-        return 0;
-    } 
+    // if (file_desc->mode ==  'w') {
+    //     printf("Error: El archivo debe estar en modo write.\n");
+    //     return 0;
+    // } 
 
     if (nbytes % 2){
         printf("No es par aaaaaaaa");
-        nbytes ++; //????    
+        nbytes ++; //???? uwu 
+        // TODO: añadir byte 0 a buffer   
     }
     int bloques_necesarios = nbytes/BLOCK_SIZE;
     if (nbytes%BLOCK_SIZE != 0){
@@ -446,8 +447,9 @@ int os_write(osFile* file_desc, void* buffer, int nbytes) {  // NOTE: En proceso
     printf("Comienzo de  for\n");
     for (int bloque = 0; bloque < bloques_necesarios; bloque ++){
         
-        data_block = get_usable_block();
+        data_block = get_usable_block(); //retorna bloque no rotten ni vacio
         if (data_block == -1){
+            // Significa que no quedan bloques en el disco
             break;
             //TODO: Asumiré por mientras que esto no pasa
         }

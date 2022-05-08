@@ -38,7 +38,6 @@ osFile* osFile_new(char* filename, char mode) {
         mark_as_used(index_block); // marcamos como usado el nuevo indice
         instance_pointer ->block_index_number = index_block;
         printf("Nuevo bloque de directorio %d\n", instance_pointer ->block_index_number);
-        instance_pointer-> filename = filename; // BUG: esto está mal uwu pero lo veré despues
         instance_pointer->amount_of_blocks = 0; // atributo utilizado solo en write
         instance_pointer->length=-1; // Archivo no escrito
 
