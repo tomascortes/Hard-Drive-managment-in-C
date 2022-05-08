@@ -148,10 +148,13 @@ int find_file(int directory_block, char* filename, char* path) {
 }
 
 int dir_exists(char* dirname) {
-    // Abro el archivo
     FILE *f = fopen(global_diskname, "rb");
     char dir[100];
     strcpy(dir, dirname);
+    // Abro el archivo
+    if (strcmp(dir, "/") == 0 ){
+        return 1;
+    };
 
     // Me muevo 3 MiB, para llegar al bloque N°3, de directorio.
     fseek(f, BLOCK_SIZE * 3, SEEK_SET);
