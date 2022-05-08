@@ -29,12 +29,12 @@ osFile* osFile_new(char* filename, char mode) {
     instance_pointer->filename = filename;
     osFile_set_mode(instance_pointer, mode); // Inicializo con valores por defecto.
 
-    if (strcmp(instance_pointer->mode, "w")) {
+    if (strcmp(instance_pointer->mode, "w") != 0) {
         // put_on_disk(instance_pointer, filename); //TODO: Falta agregar el osFile NUEVO al sistema
         read_from_disk(instance_pointer, filename);
         return instance_pointer;
     } 
-    else if (strcmp(instance_pointer->mode, "r")) {
+    else if (strcmp(instance_pointer->mode, "r") != 0) {
         read_from_disk(instance_pointer, filename);
         return instance_pointer;
     } else {
@@ -79,7 +79,7 @@ void read_from_disk(osFile* self, char* filename) {
     self->remaining_bytes = self->length; // Bytes restantes que quedan por leer 
 
     printf("Largo de Archivo: %ld\n", self->length);
-    printf("Numero de Bloque Index: %ld\n", self->current_index);
+    printf("Numero de Bloque Index: %d\n", self->current_index);
     printf("Numero de Plano: %d\n", self->current_plane);
     printf("Numero del Primer Bloque de Datos: %d\n", self->current_block);
     printf("Numero de la Primera Pagina: %d\n", self->current_page);
