@@ -466,7 +466,7 @@ int os_write(osFile* file_desc, void* buffer, int nbytes) {  // NOTE: En proceso
         mark_as_used(data_block); //bitmap
         int direccion = BLOCK_SIZE*file_desc->block_index_number + 8 + file_desc ->amount_of_blocks*4; // 
         fseek(opened_file , direccion, SEEK_SET); 
-        fwrite(data_block, 1,1,opened_file); // escribimos el numero de bloque en el indice
+        fwrite(data_block, 4, 1, opened_file); // escribimos el numero de bloque en el indice //BUG: Esta linea no hace lo que debería
         printf("Añadido nuevo bloque al indice es el numero: %d  en la posición: %d", data_block);
         file_desc ->amount_of_blocks ++; // añado 1 al contador de bloques
                 
@@ -476,7 +476,7 @@ int os_write(osFile* file_desc, void* buffer, int nbytes) {  // NOTE: En proceso
         for (int i=0; i < min(256, nbytes-puntero_buffer); i++ ){
             char *puntero;
             puntero = &buffer[puntero_buffer];
-            fwrite(*puntero, 1, 1, opened_file);
+            fwrite(*puntero, 1, 1, opened_file); //BUG: Asunmo que esta no esta haciendo lo que deberia
             puntero_buffer ++;
             writed_bytes ++;
             // TODO: Actualizar lifemap
@@ -492,7 +492,7 @@ int os_write(osFile* file_desc, void* buffer, int nbytes) {  // NOTE: En proceso
     // Actualizamos el length
     fseek(opened_file , BLOCK_SIZE*file_desc->block_index_number, SEEK_SET); 
     file_desc->length = writed_bytes;
-    fwrite(25, sizeof(int), 1, opened_file);
+    fwrite(25, sizeof(int), 1, opened_file); //BUG: Esta linea no hace lo que debería
 
     print_index_block(file_desc);
 
