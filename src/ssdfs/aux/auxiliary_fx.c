@@ -440,8 +440,11 @@ void mark_as_used(int bloque) {
     unsigned char data = buffer[byte]; // Saco el byte que me sirve
     fclose(f);
 
-    // Convierto el bit que me interesa en 1
     data = data | (1 << offset);
+    // Convierto el bit que me interesa en 1
+    // if (bloque == 0){
+    //     data = 1;
+    // }
 
     // Puntero al byte de datos a escribir
     unsigned char* point_data = &data;
@@ -469,7 +472,7 @@ void unmark_as_used(int bloque) {
     fclose(f);
 
     // Convierto el bit que me interesa en 1
-    data = (data ^ (0 << offset));
+    data = !(data | (1 << offset));
 
     // Puntero al byte de datos a escribir
     unsigned char* point_data = &data;

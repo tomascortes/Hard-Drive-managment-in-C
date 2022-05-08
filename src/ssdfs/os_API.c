@@ -274,58 +274,48 @@ osFile* os_open(char* filename, char mode) {  // NOTE: En proceso
             printf("(Escritura) Encuentra archivo. return NULL.\n");
             return NULL;
         } else {
-            printf("DEBUGEANDO filename %s\n", filename);
             /// PATH DIR
-            // char** splitpath = calloc(2, sizeof(char*));
-            // int index = 0;
-            osFile* os_file = osFile_new(filename, mode);
+            char** splitpath = calloc(2, sizeof(char*));
+            int index = 0;
 
-           
+            int pathleng = strlen(filename);
+            char path[pathleng+1];
+            strcpy(path, filename);
+            printf("pathleng: %d\n\n\n", pathleng);
+            char pathto[pathleng + 1]; 
+            printf("path: %s\n", path);
+            strcpy(pathto, path);
+            printf("pathto: %s\n\n\n", pathto);
 
-            // int pathleng = strlen(filename);
-            // printf("DEBUGEANDO pathleng %d\n", pathleng);
-            // char path[pathleng+1];
-            // strcpy(path, filename);
-            // printf("DEBUGEANDO path %s\n", path);
-            // Debería  guardar el archivo en directorio
-            // crear su bloque indice actualizar bitmap
-            // y finalmente retornarlo
-            os_file->length=-1; // Archivo no escrito
-            // free(splitpath);
-            return os_file;
-
-
-            // char pathto[pathleng]; 
-            // strcpy(pathto, path);
-            // printf("DEBUGEANDO pathto %s\n", pathto);
-
-            // char* token = strtok(path, "/");
-            // while(token != NULL)
-            // {
-            //     splitpath[index] = calloc(4096, sizeof(char));
-            //     strcpy(splitpath[index++], token);
-            //     token = strtok(NULL, "/");
-            // }
+            char* token = strtok(path, "/");
+            while(token != NULL)
+            {
+                splitpath[index] = calloc(4096, sizeof(char));
+                strcpy(splitpath[index++], token);
+                token = strtok(NULL, "/");
+            }
             
-            // char* filename2 = splitpath[index-1];
-            // int leng = strlen(filename2);
-            // pathto[pathleng-leng] = '\0';
+            char* filename2 = splitpath[index-1];
+            int leng = strlen(filename2);
+            pathto[pathleng-leng] = '\0';
 
-            // for(int i=0;i<index;i++){
-            //     free(splitpath[i]);
-            // }
-            // free(splitpath);
-            // /// PATH DIR
+            for(int i=0;i<index;i++){
+                free(splitpath[i]);
+            }
+            free(splitpath);
+            /// PATH DIR
             
-            // if(dir_exists(pathto)){
-            //     printf("(Escritura) No encuentra archivo y existe directorio. return osFile.\n");
-            //     osFile* os_file = osFile_new(filename, mode);
-            //     return os_file;
-            // }else{
-            //     printf("(Escritura) No encuentra archivo y no existe directorio. return NULL.\n");
-            //     return NULL;
-            // }
+            if(dir_exists(pathto)){
+                printf("(Escritura) No encuentra archivo y existe directorio. return osFile.\n");
+                osFile* os_file = osFile_new(filename, mode);
+                return os_file;
+            }else{
+                printf("(Escritura) No encuentra archivo y no existe directorio. return NULL.\n");
+                return NULL;
+            }
             return NULL;
+
+
         }
     }
     return NULL;
@@ -434,7 +424,7 @@ int os_read(osFile* file_desc, void* buffer, int nbytes) {  // REVIEW
  * (incluso 0). Esta función aumenta en 1 el contador P/E en el lifemap asociado a cada
  * página que se escriba. */
 int os_write(osFile* file_desc, void* buffer, int nbytes) {  // NOTE: En proceso
-    if (strcmp(file_desc->mode, "w") != 0) {
+    if (file_desc->mode ==  'w') {
         printf("Error: El archivo debe estar en modo write.\n");
         return 0;
     } 
@@ -470,20 +460,23 @@ int os_write(osFile* file_desc, void* buffer, int nbytes) {  // NOTE: En proceso
         printf("Añadido nuevo bloque al indice es el numero: %d  en la posición: %d", data_block);
         file_desc ->amount_of_blocks ++; // añado 1 al contador de bloques
                 
-
         fseek(opened_file , BLOCK_SIZE*data_block, SEEK_SET); 
         // Escribimos los bytes corerspndientes a casa página
-        for (int i=0; i < min(256, nbytes-puntero_buffer); i++ ){
+        int dif = nbytes-puntero_buffer;
+        for (int i=0; i < min(256, dif); i++ ){
             char *puntero;
             puntero = &buffer[puntero_buffer];
-            fwrite(*puntero, 1, 1, opened_file); //BUG: Asunmo que esta no esta haciendo lo que deberia
+            fwrite(*puntero, 4, 1, opened_file); //BUG: Asunmo que esta no esta haciendo lo que deberia
             puntero_buffer ++;
             writed_bytes ++;
-            // TODO: Actualizar lifemap
+            // TODO: Actualizar lifema
         }
         if (puntero_buffer >= nbytes){
             break;
         }
+        printf("Quedan bytes\n");
+        printf("puntero_buffer: %d\n", puntero_buffer);
+        printf("nbytes: %d\n", nbytes);
         data_block = get_usable_block();
         mark_as_used(data_block); 
     }
@@ -492,7 +485,11 @@ int os_write(osFile* file_desc, void* buffer, int nbytes) {  // NOTE: En proceso
     // Actualizamos el length
     fseek(opened_file , BLOCK_SIZE*file_desc->block_index_number, SEEK_SET); 
     file_desc->length = writed_bytes;
+    // fwrite(25, sizeof(int), 1, opened_file); //BUG: Esta linea no hace lo que debería
+    // fseek(opened_file , BLOCK_SIZE*file_desc->block_index_number - 1, SEEK_SET); 
     fwrite(25, sizeof(int), 1, opened_file); //BUG: Esta linea no hace lo que debería
+    // fseek(opened_file , BLOCK_SIZE*file_desc->block_index_number + 1, SEEK_SET); 
+    // fwrite(25, sizeof(int), 1, opened_file); //BUG: Esta linea no hace lo que debería
 
     print_index_block(file_desc);
 
