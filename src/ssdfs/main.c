@@ -53,7 +53,7 @@ int main (int argc, char* const argv[]) {
     print_debug("Fin prueba os_mkdir\n");*/
 
 
-    char path_to_find[] = "~/dir1";
+    char path_to_find[] = "~/";
     print_debug("Prueba pathfinder");
     printf("El archivo/directorio está en el bloque %i\n",
         pathfinder(path_to_find));
