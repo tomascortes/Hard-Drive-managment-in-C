@@ -368,6 +368,8 @@ osFile* os_open(char* filename, char mode) {  // NOTE: En proceso
 /// \return Bytes efectivamente leídos
 int os_read(osFile* file_desc, void* buffer, int nbytes) {
     // Sorry por esto, preferí separarlo del resto. El código está algo largo y me enreda
+    int max_lectura;
+
     delayed_debug_print("Revisando modo (R/W)", 350);
 
     if (!fxExtra_revisar_modo(file_desc)) {
@@ -376,7 +378,24 @@ int os_read(osFile* file_desc, void* buffer, int nbytes) {
         return 0;
     }
 
-    delayed_debug_print("Archivo en modo lectura, se prosigue...", 350)
+    delayed_debug_print("Archivo en modo lectura, se prosigue...", 350);
+    delayed_debug_print("Hacer el setup del archivo", 350);
+    fxExtra_hacer_el_setup(file_desc);
+
+    delayed_debug_print("Calculo lo que puedo leer --> min{nbytes, bytes_restantes}", 350);
+    max_lectura = fxExtra_calc_max_bytes_lectura(file_desc, nbytes);
+
+    delayed_debug_print("Reservo memoria para guardar los bytes leidos", 350);
+    char* donde_guardo_lo_leido = fxExtra_reservar_mem(max_lectura);
+
+    delayed_debug_print("Reservo memoria para guardar la página mientras la leo", 350);
+    char* donde_meto_la_pagina_por_mientras = fxExtra_reservar_mem(PAGE_SIZE);
+
+    delayed_debug_print("Anoto la siguiente pagina que tengo que leer", 350);
+    int pagina_actual = fxExtra_nro_pagina_que_tengo_que_leer(file_desc);
+
+
+
 
 
     return 0;
