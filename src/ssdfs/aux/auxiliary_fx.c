@@ -125,9 +125,16 @@ int find_file(int directory_block, char* filename, char* path) {
             char aux[2]; // variable para concatenar char
             strcpy(path2, path); // Copiar strings
             for (int j = 5; j < DIR_ENTRY_SIZE; j++) { // Printear nombre del archivo
-                aux[1] = '\0';
-                aux[0] = buffer[j];
-                strcat(path2, aux); // Concatenar char
+                if (buffer[j] == 0){
+                    aux[1] = '\0';
+                    aux[0] = '\0';
+                    strcat(path2, aux); // Concatenar char
+                    break;
+                } else {
+                    aux[1] = '\0';
+                    aux[0] = buffer[j];
+                    strcat(path2, aux); // Concatenar char
+                }
             }
             if (strcmp(path2, filename) == 0) { // compara con filename
                 fclose(f2); // Evitamos leaks
@@ -139,9 +146,16 @@ int find_file(int directory_block, char* filename, char* path) {
             char aux[2]; // variable para concatenar char
             strcpy(path2, path); // Copiar strings
             for (int j = 5; j < DIR_ENTRY_SIZE; j++) { // Printear nombre del directorio
-                aux[1] = '\0';
-                aux[0] = buffer[j];
-                strcat(path2, aux); // Concatenar char
+            if (buffer[j] == 0){
+                    aux[1] = '\0';
+                    aux[0] = '\0';
+                    strcat(path2, aux); // Concatenar char
+                    break;
+                } else {
+                    aux[1] = '\0';
+                    aux[0] = buffer[j];
+                    strcat(path2, aux); // Concatenar char
+                }
             }
             strcat(path, "/"); // Concatenar nuevo directorio
             int puntero = *(int*) buffer + 1;
@@ -157,10 +171,13 @@ int find_file(int directory_block, char* filename, char* path) {
 }
 
 int dir_exists(char* dirname) {
-    // Abro el archivo
     FILE *f = fopen(global_diskname, "rb");
     char dir[100];
     strcpy(dir, dirname);
+    // Abro el archivo
+    if (strcmp(dir, "/") == 0 ){
+        return 1;
+    };
 
     // Me muevo 3 MiB, para llegar al bloque N°3, de directorio.
     fseek(f, BLOCK_SIZE * 3, SEEK_SET);
@@ -174,9 +191,16 @@ int dir_exists(char* dirname) {
             char path[100] = "/"; // path inicial
             char aux[2]; // variable para concatenar char
             for (int j = 5; j < DIR_ENTRY_SIZE; j++) { // Printear nombre del directorio
-                aux[1] = '\0';
-                aux[0] = buffer[j];
-                strcat(path, aux); // Concatenar char
+                if (buffer[j] == 0){
+                    aux[1] = '\0';
+                    aux[0] = '\0';
+                    strcat(path, aux); // Concatenar char
+                    break;
+                } else {
+                    aux[1] = '\0';
+                    aux[0] = buffer[j];
+                    strcat(path, aux); // Concatenar char
+                }
             }
             strcat(path, "/");
             int *puntero;
@@ -212,9 +236,16 @@ int find_dir(int directory_block, char* dirname, char* path) {
             char aux[2]; // variable para concatenar char
             strcpy(path2, path); // Copiar strings
             for (int j = 5; j < DIR_ENTRY_SIZE; j++) { // Printear nombre del directorio
-                aux[1] = '\0';
-                aux[0] = buffer[j];
-                strcat(path2, aux); // Concatenar char
+            if (buffer[j] == 0){
+                    aux[1] = '\0';
+                    aux[0] = '\0';
+                    strcat(path2, aux); // Concatenar char
+                    break;
+                } else {
+                    aux[1] = '\0';
+                    aux[0] = buffer[j];
+                    strcat(path2, aux); // Concatenar char
+                }
             }
             strcat(path2, "/"); // Concatenar nuevo directorio
             int *puntero;
@@ -249,9 +280,16 @@ int get_index_file(int directory_block, char* filename, char* path) {
             char aux[2]; // variable para concatenar char
             strcpy(path2, path); // Copiar strings
             for (int j = 5; j < DIR_ENTRY_SIZE; j++) { // Printear nombre del archivo
-                aux[1] = '\0';
-                aux[0] = buffer[j];
-                strcat(path2, aux); // Concatenar char
+                if (buffer[j] == 0){
+                    aux[1] = '\0';
+                    aux[0] = '\0';
+                    strcat(path2, aux); // Concatenar char
+                    break;
+                } else {
+                    aux[1] = '\0';
+                    aux[0] = buffer[j];
+                    strcat(path2, aux); // Concatenar char
+                }
             }
             if (strcmp(path2, filename) == 0) { // compara con filename
                 fclose(f2); // Evitamos leaks
@@ -265,16 +303,24 @@ int get_index_file(int directory_block, char* filename, char* path) {
             char aux[2]; // variable para concatenar char
             strcpy(path2, path); // Copiar strings
             for (int j = 5; j < DIR_ENTRY_SIZE; j++) { // Printear nombre del directorio
-                aux[1] = '\0';
-                aux[0] = buffer[j];
-                strcat(path2, aux); // Concatenar char
+                if (buffer[j] == 0){
+                    aux[1] = '\0';
+                    aux[0] = '\0';
+                    strcat(path2, aux); // Concatenar char
+                    break;
+                } else {
+                    aux[1] = '\0';
+                    aux[0] = buffer[j];
+                    strcat(path2, aux); // Concatenar char
+                }
             }
-            strcat(path, "/"); // Concatenar nuevo directorio
+            strcat(path2, "/"); // Concatenar nuevo directorio
             int *puntero;
             puntero = &buffer[1];
-            if (get_index_file(*puntero, filename, path2)){// Función recursiva para leer
+            int puntero_index =  get_index_file(*puntero, filename, path);
+            if (puntero_index){// Función recursiva para leer
                 fclose(f2); // Evitamos leaks
-                return 1;
+                return puntero_index;
             };
         }
     }
@@ -283,7 +329,7 @@ int get_index_file(int directory_block, char* filename, char* path) {
     return 0;
 }
 
-int get_index_pointer_and_length(char* filename) {
+int get_index_pointer(char* filename) {
     // Abro el archivo
     FILE *f = fopen(global_diskname, "rb");
 
@@ -293,15 +339,25 @@ int get_index_pointer_and_length(char* filename) {
     // Son 32768 entradas en un bloque de directorio
     for (int i = 0; i < DIR_ENTRIES_PER_BLOCK; i++) {
         unsigned char buffer[DIR_ENTRY_SIZE];
+
         // Buffer para guardar los bytes de una entrada
         fread(buffer, sizeof(buffer), 1, f); // Leo una entrada
+
         if(buffer[0] == 3){ // archivo:
             char path[100] = "/"; // path inicial
             char aux[2]; // variable para concatenar char
+
             for (int j = 5; j < DIR_ENTRY_SIZE; j++) { // Printear nombre del archivo
-                aux[1] = '\0';
-                aux[0] = buffer[j];
-                strcat(path, aux); // Concatenar char
+                if (buffer[j] == 0){
+                    aux[1] = '\0';
+                    aux[0] = '\0';
+                    strcat(path, aux); // Concatenar char
+                    break;
+                } else {
+                    aux[1] = '\0';
+                    aux[0] = buffer[j];
+                    strcat(path, aux); // Concatenar char
+                }
             }
             if (strcmp(path, filename) == 0) { // compara con filename
                 fclose(f); // Evitamos leaks
@@ -310,17 +366,25 @@ int get_index_pointer_and_length(char* filename) {
                 return *puntero_indice; // Retorno puntero al bloque indice del archivo
             }
         }
+
         else if (buffer[0] == 1) { // directorio:
             char path[100] = "/"; // path inicial
             char aux[2]; // variable para concatenar char
             for (int j = 5; j < DIR_ENTRY_SIZE; j++) { // Printear nombre del directorio
-                aux[1] = '\0';
-                aux[0] = buffer[j];
-                strcat(path, aux); // Concatenar char
+                if (buffer[j] == 0){
+                    aux[1] = '\0';
+                    aux[0] = '\0';
+                    strcat(path, aux); // Concatenar char
+                    break;
+                } else {
+                    aux[1] = '\0';
+                    aux[0] = buffer[j];
+                    strcat(path, aux); // Concatenar char
+                }
             }
             strcat(path, "/");
-            int puntero = buffer[1]; // Pesco los bytes 1-4
-            int puntero_index =  get_index_file(puntero, filename, path);
+            int* puntero = &buffer[1]; // Pesco los bytes 1-4
+            int puntero_index =  get_index_file(*puntero, filename, path);
             if (puntero_index){// Función recursiva para leer
                 fclose(f); // Evitamos leaks
                 return puntero_index;
@@ -400,7 +464,7 @@ bool is_block_rotten(int block){
 }
 
 bool is_block_available(unsigned num) {
-    // Abro el archivo
+    // Revisa bitmap
     FILE *f = fopen(global_diskname, "rb");
 
     // El disco tiene 2048 bloques, por lo que para el bitmap necesitamos
@@ -425,6 +489,85 @@ bool is_block_available(unsigned num) {
 
     fclose(f); // Evitamos leaks
 }
+
+int get_usable_block(){
+    for (int i = 1; i < 2048; i++) {
+        int index_block; // see leen ints de 4 bytes
+        if (is_block_available(i)  && is_block_rotten(i) == false){
+            return i;
+        }
+    }
+    return -1;
+}
+
+
+// Busca en el bitmap el bit correspondiente al bloque
+// y lo marca como usado (lo pone en 1)
+void mark_as_used(int bloque) {
+    // El bit que corresponda al bloque va a estar en el byte:
+    int byte = bloque / 8;
+    int offset = 7 - bloque % 8;
+
+    // Abro el archivo
+    FILE* f = fopen(global_diskname, "rb");
+
+    unsigned char buffer[256]; // Buffer con los bytes del bitmap
+    fread(buffer, sizeof(buffer), 1, f);
+
+    unsigned char data = buffer[byte]; // Saco el byte que me sirve
+    fclose(f);
+
+    data = data | (1 << offset);
+    // Convierto el bit que me interesa en 1
+    // if (bloque == 0){
+    //     data = 1;
+    // }
+
+    // Puntero al byte de datos a escribir
+    unsigned char* point_data = &data;
+    f = fopen(global_diskname, "rb+");
+
+    fseek(f, byte, SEEK_SET);
+    fwrite(point_data, 1, 1, f);
+
+    fclose(f);
+}
+// Busca en el bitmap el bit correspondiente al bloque
+// y lo marca como usado (lo pone en 1)
+void unmark_as_used(int bloque) {
+    // El bit que corresponda al bloque va a estar en el byte:
+    int byte = bloque / 8;
+    int offset = 7 - bloque % 8;
+
+    // Abro el archivo
+    FILE* f = fopen(global_diskname, "rb");
+
+    unsigned char buffer[256]; // Buffer con los bytes del bitmap
+    fread(buffer, sizeof(buffer), 1, f);
+
+    unsigned char data = buffer[byte]; // Saco el byte que me sirve
+    fclose(f);
+
+    // Convierto el bit que me interesa en 1
+    data = !(data | (1 << offset));
+
+    // Puntero al byte de datos a escribir
+    unsigned char* point_data = &data;
+    f = fopen(global_diskname, "rb+");
+
+    fseek(f, byte, SEEK_SET);
+    fwrite(point_data, 1, 1, f);
+
+    fclose(f);
+}
+
+int min(int a1, int a2){
+    if (a1 < a2){
+        return a1;
+    }
+    return a2;
+}
+
 
 // Función auxiliar que busca el primer bloque vacío
 int blocksearch(){

@@ -8,7 +8,7 @@ if [[ $1 == "" ]]; then
     ARG1="./simdiskfilled.bin"
 
 else
-    ARG1=$1
+    ARG1="./simdiskempty.bin"
 
 fi
 
