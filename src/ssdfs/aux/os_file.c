@@ -193,9 +193,11 @@ bool quedan_bytes_por_leer(osFile* file) {
 void copiar_byte(osFile* file, char* desde, void* hacia, int en_donde_voy) {
 
 }
+
 void avanzar_contador_archivo_y_actualizar_pos(osFile* file) {
 
 }
+
 void reducir_bytes_restantes(osFile* file) {
 
 }
