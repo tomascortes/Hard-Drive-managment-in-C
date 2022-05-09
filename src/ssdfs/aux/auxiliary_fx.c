@@ -486,7 +486,7 @@ bool is_block_available(unsigned num) {
         if (1 == (buffer[num / 8] & 1 << (7 - num % 8)) >> (7 - num % 8)) {
             return false;
 
-        } else{
+        } else {
             return true;
         }
 
