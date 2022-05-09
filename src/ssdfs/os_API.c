@@ -226,7 +226,7 @@ int os_exists(char* filename) {
         fread(buffer, sizeof(buffer), 1, f); // Leo una entrada
 
         if(buffer[0] == 3){ // archivo:
-            char path[100] = "/"; // path inicial
+            char path[100] = "~/"; // path inicial
             char aux[2]; // variable para concatenar char
 
             for (int j = 5; j < DIR_ENTRY_SIZE; j++) { // Printear nombre del archivo
@@ -248,7 +248,7 @@ int os_exists(char* filename) {
         }
 
         else if (buffer[0] == 1) { // directorio:
-            char path[100] = "/"; // path inicial
+            char path[100] = "~/"; // path inicial
             char aux[2]; // variable para concatenar char
             for (int j = 5; j < DIR_ENTRY_SIZE; j++) { // Printear nombre del directorio
                 if (buffer[j] == 0){
@@ -301,11 +301,6 @@ osFile* os_open(char* filename, char mode) {  // NOTE: En proceso
         int index = 0;
 
         int pathleng = strlen(filename);
-        if (pathleng >= 28){
-            printf("El nombre del archivo es muy largo idiota retornamos NULL\n");
-            return NULL;
-        }
-
         char path[pathleng+1];
         strcpy(path, filename);
 
@@ -327,40 +322,37 @@ osFile* os_open(char* filename, char mode) {  // NOTE: En proceso
         free(splitpath);
         /// PATH DIR
         
+        printf("filename: %s\n", filename);
         printf("path: %s\n", path);
         // printf("filename2: %s\n", filename2);
+        printf("resultado %d\n", pathfinder(filename));
         if(dir_exists(path)){
             printf("(Escritura) No encuentra archivo y existe directorio. return osFile.\n");
             osFile* os_file = osFile_new(filename, mode);
-            return os_file;
-
-            printf("CHECKPOIHNT A\n");
+            printf("nombre archivo: %s\n", os_file ->filename);
 
             // Obtenemos el bloque directorio
             int bloque_dir = pathfinder(filename);
+            printf("Directorio: %d\n", bloque_dir);
 
             // Comienza codigo reutilizado de Felipe
-            FILE *open_file = fopen(global_diskname, "rb");
-            printf("CHECKPOIHNT B\n");
+            FILE *open_file = fopen(global_diskname, "rb+");
             // Me muevo 3 MiB, para llegar al bloque N°3, de directorio.
             fseek(open_file, 3 * BLOCK_SIZE, SEEK_SET);
             bool finded = false;
 
-            printf("CHECKPOIHNT B\n");
             // Son 32768 entradas en un bloque de directorio
             for (int i = 0; i < DIR_ENTRIES_PER_BLOCK; i++) {
-                printf("CHECKPOIHNT\n");
+                printf("Ronda numero %d", i);
                 unsigned char buffer[DIR_ENTRY_SIZE];
                 // Buffer para guardar los bytes de una entrada
                 fread(buffer, sizeof(buffer), 1, open_file); // Leo una entrada
-                printf("a%c\n", buffer[0]);
                 if (buffer[0] == 0) {
                     finded = true;
-                    printf("asdfasd\n\n\n\n");
                     fseek(open_file, 3 * BLOCK_SIZE + DIR_ENTRY_SIZE * i, SEEK_SET);
-                    char *estado;
-                    *estado = 3;
-                    fwrite(estado, 1, 1, open_file); // SI ALGO FALLA REVISA ESTO
+                    int estado;
+                    estado = 3;
+                    fwrite(&estado, 1, 1, open_file); // SI ALGO FALLA REVISA ESTO
                     int *puntero;
                     *puntero = os_file->block_index_number;
                     fwrite(puntero, sizeof(int), 1, open_file);
@@ -371,8 +363,8 @@ osFile* os_open(char* filename, char mode) {  // NOTE: En proceso
                             fwrite(&zero, 1,1,open_file);
                             break;
                         } else {
-                            printf("%c", path[j]);
-                            fwrite(path[j], 1,1,open_file);
+                            printf("%c", filename2[j]);
+                            fwrite(filename2[j], 1,1,open_file);
                         }
                     }
                     printf("\n");

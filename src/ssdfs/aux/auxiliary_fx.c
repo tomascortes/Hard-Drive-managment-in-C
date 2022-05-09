@@ -52,8 +52,8 @@ int is_page_rotten(int page, char* diskname) {
 }
 
 // Esta es para llamar a la otra con los parámetros iniciales
-int z(char* path){
-    if (strcmp(path, "~")){
+int pathfinder(char* path){
+    if (strcmp(path, "~")==0){
         return 3;
     } else {
         return pathfinder_internal(path, 3, "~/");
@@ -183,9 +183,10 @@ int dir_exists(char* dirname) {
     char dir[100];
     strcpy(dir, dirname);
     // Abro el archivo
-    if (strcmp(dir, "/") == 0 ){
+    if (strcmp(dir, "~/") == 0 ){
         return 1;
-    };
+    }
+    
 
     // Me muevo 3 MiB, para llegar al bloque N°3, de directorio.
     fseek(f, BLOCK_SIZE * 3, SEEK_SET);
@@ -196,7 +197,7 @@ int dir_exists(char* dirname) {
         // Buffer para guardar los bytes de una entrada
         fread(buffer, sizeof(buffer), 1, f); // Leo una entrada
         if(buffer[0] == 1) { // directorio:
-            char path[100] = "/"; // path inicial
+            char path[100] = "~/"; // path inicial
             char aux[2]; // variable para concatenar char
             for (int j = 5; j < DIR_ENTRY_SIZE; j++) { // Printear nombre del directorio
                 if (buffer[j] == 0){
@@ -352,7 +353,7 @@ int get_index_pointer(char* filename) {
         fread(buffer, sizeof(buffer), 1, f); // Leo una entrada
 
         if(buffer[0] == 3){ // archivo:
-            char path[100] = "/"; // path inicial
+            char path[100] = "~/"; // path inicial
             char aux[2]; // variable para concatenar char
 
             for (int j = 5; j < DIR_ENTRY_SIZE; j++) { // Printear nombre del archivo
@@ -376,7 +377,7 @@ int get_index_pointer(char* filename) {
         }
 
         else if (buffer[0] == 1) { // directorio:
-            char path[100] = "/"; // path inicial
+            char path[100] = "~/"; // path inicial
             char aux[2]; // variable para concatenar char
             for (int j = 5; j < DIR_ENTRY_SIZE; j++) { // Printear nombre del directorio
                 if (buffer[j] == 0){

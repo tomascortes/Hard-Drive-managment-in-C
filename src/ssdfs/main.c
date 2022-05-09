@@ -38,7 +38,7 @@ int main (int argc, char* const argv[]) {
     // Crear archivo nuevo
     os_tree();
     printf("Comienza open\n");
-    osFile* os_file = os_open("/quiero_llorar.a", 'w');
+    osFile* os_file = os_open("~/asafasd/quiero_llorar.a", 'w');
     char buffer[10] = "AAABBBCCCD";
     
     os_lifemap(6*PAGES_PER_BLOCK, 7*PAGES_PER_BLOCK);
