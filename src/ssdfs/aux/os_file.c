@@ -179,15 +179,33 @@ void fxExtra_liberar_mem_void(void* en_donde) {
 }
 
 int fxExtra_nro_pagina_que_tengo_que_leer(osFile* file) {
-    // TODO
+    // TODO:
+    //  [ ] Ver dónde estoy parado
+    //  [ ] Calcular página según longitud
+    //  [ ] Meterme al índice y armar un array de bloques
+    //  [ ] Armar un array de página involucradas
+    //  [ ] Recorrer página por página y agregarla a un nuevo array si no está rotten
+    //  [ ] Mandar nro de página absoluta, incluyendo rotten
 }
 
 void fxExtra_cargar_pagina_en_mem(osFile* file, char* dir_pagina, int nro_pag) {
-
+    // TODO:
+    //  [ ] Ver dónde estoy parado
+    //  [ ] Calcular página según longitud
+    //  [ ] Meterme al índice y armar un array de bloques
+    //  [ ] Armar un array de página involucradas
+    //  [ ] Recorrer página por página y agregarla a un nuevo array si no está rotten
+    //  [ ] Avanzar pág por pág hasta la que necesito
+    //  [ ] Cargar la que necesito en memoria
 }
 
 bool quedan_bytes_por_leer(osFile* file) {
+    if (file->remaining_bytes <= 0) {
+        return false;
 
+    } else {
+        return true;
+    }
 }
 
 void copiar_byte(osFile* file, char* desde, void* hacia, int en_donde_voy) {
