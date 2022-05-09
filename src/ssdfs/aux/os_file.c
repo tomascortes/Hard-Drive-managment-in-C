@@ -189,10 +189,9 @@ int fxExtra_nro_pagina_que_tengo_que_leer(osFile* file) {
 
     long int tamanio = file->length;
     int donde_voy_leyendo = file->bytes_loaded_count;
+    int mi_paginita = donde_voy_leyendo / PAGE_SIZE;
 
-    int
-
-    return 0;
+    return mi_paginita;
 }
 
 void fxExtra_cargar_pagina_en_mem(osFile* file, char* dir_pagina, int nro_pag) {
