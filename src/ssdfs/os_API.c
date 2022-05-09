@@ -386,9 +386,8 @@ int os_read(osFile* file_desc, void* buffer, int nbytes) {
     max_lectura = fxExtra_calc_max_bytes_lectura(file_desc, nbytes);
 
     delayed_debug_print("Reservo memoria para guardar los bytes leidos", 350);
-    char* donde_guardo_lo_leido = fxExtra_reservar_mem(max_lectura);
     // REVIEW: No se si tiene que ser void* o char*
-    char* buffer_temporal = fxExtra_reservar_mem(max_lectura);
+    char* donde_guardo_lo_leido = fxExtra_reservar_mem(max_lectura);
 
     delayed_debug_print("Reservo memoria para guardar la página mientras la leo", 350);
     char* donde_meto_la_pagina_por_mientras = fxExtra_reservar_mem(PAGE_SIZE);
@@ -397,14 +396,17 @@ int os_read(osFile* file_desc, void* buffer, int nbytes) {
     int pagina_actual = fxExtra_nro_pagina_que_tengo_que_leer(file_desc);
 
     delayed_debug_print("Cargo la página en mem", 350);
-    fxExtra_cargar_pagina_en_mem(file_desc, donde_meto_la_pagina_por_mientras, pagina_actual)
+    fxExtra_cargar_pagina_en_mem(file_desc, donde_meto_la_pagina_por_mientras, pagina_actual);
+
+    int iteraciones_debug = 10;
 
     delayed_debug_print("Mientras que queden bytes por leer...", 350);
-    delayed_debug_print("Copio un byte de página a  array temp buffer", 100);
+    delayed_debug_print("Copio un byte de página a array temp buffer", 100);
     delayed_debug_print("Avanzo el contador del archivo", 100);
     delayed_debug_print("Reduzco los bytes restantes", 100);
     delayed_debug_print("Aumento cuenta de bytes leidos", 100);
-    delayed_debug_print("", 100);
+    delayed_debug_print("Repito hasta que no queden más bytes", 100);
+
 
 
     return 0;
