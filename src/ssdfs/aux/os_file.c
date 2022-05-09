@@ -199,6 +199,7 @@ void fxExtra_cargar_pagina_en_mem(osFile* file, char* dir_pagina, int nro_pag) {
     // TODO:
     //  [X] Ver dónde estoy parado
     //  [X] Calcular página según longitud
+    //  [ ] Calcular nro de bloques que tiene
     //  [-] Meterme al índice y armar un array de bloques
     //  [ ] Armar un array de página involucradas
     //  [ ] Recorrer página por página y agregarla a un nuevo array si no está rotten
