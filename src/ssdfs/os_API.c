@@ -319,19 +319,16 @@ osFile* os_open(char* filename, char mode) {  // NOTE: En proceso
         for(int i=0;i<index;i++){
             free(splitpath[i]);
         }
+        strcat(path, "/");
         free(splitpath);
         /// PATH DIR
-        char aux[2];
-        aux[0] = '\0';
-        // strcat(filename2, aux);
-        printf("dir_exists(filename): %d\n",dir_exists(filename));
-        if(dir_exists(filename)){
+        if(dir_exists(path)){
             printf("(Escritura) No encuentra archivo y existe directorio. return osFile.\n");
             osFile* os_file = osFile_new(filename, mode);
             printf("nombre archivo: %s\n", os_file ->filename);
 
             // Obtenemos el bloque directorio
-            int bloque_dir = pathfinder(filename);
+            int bloque_dir = pathfinder(path);
             printf("Directorio: %d\n", bloque_dir);
 
             // Comienza codigo reutilizado de Felipe
