@@ -42,7 +42,8 @@ int main (int argc, char* const argv[]) {
     // osFile* os_file = os_open("/dir1ta/amogus.mp4", 'r');
 
     // Crear archivo nuevo
-    osFile* os_file = os_open("/quiero_llorar.a", 'w');
+    os_tree();
+    osFile* os_file = os_open("/cats/quiero_llorar.a", 'w');
     char buffer[10] = "AAABBBCCCD";
     
     os_lifemap(6*PAGES_PER_BLOCK, 7*PAGES_PER_BLOCK);

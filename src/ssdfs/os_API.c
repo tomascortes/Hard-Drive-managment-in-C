@@ -294,52 +294,96 @@ osFile* os_open(char* filename, char mode) {  // NOTE: En proceso
         if (os_exists(filename)) {
             printf("(Escritura) Encuentra archivo. return NULL.\n");
             return NULL;
-        } else {
-            /// PATH DIR
-            char** splitpath = calloc(2, sizeof(char*));
-            int index = 0;
+        } 
+        else {
+        /// PATH DIR
+        char** splitpath = calloc(2, sizeof(char*));
+        int index = 0;
 
-            int pathleng = strlen(filename);
-            char path[pathleng+1];
-            strcpy(path, filename);
+        int pathleng = strlen(filename);
+        if (pathleng >= 28){
+            printf("El nombre del archivo es muy largo idiota retornamos NULL\n");
+            return NULL;
+        }
 
-            char* token = strtok(path, "/");
-            while(token != NULL)
-            {
-                splitpath[index] = calloc(4096, sizeof(char));
-                strcpy(splitpath[index++], token);
-                token = strtok(NULL, "/");
-            }
-            
-            char* filename2 = splitpath[index-1];
-            int leng = strlen(filename2);
-            path[pathleng-leng] = '\0';
+        char path[pathleng+1];
+        strcpy(path, filename);
 
-            for(int i=0;i<index;i++){
-                free(splitpath[i]);
-            }
-            free(splitpath);
-            /// PATH DIR
-            
-            printf("path: %s\n", path);
-            if(dir_exists(path)){
-                printf("(Escritura) No encuentra archivo y existe directorio. return osFile.\n");
-                if (path == "/\n"){
-                    printf("Caso facil\n");
+        char* token = strtok(path, "/");
+        while(token != NULL)
+        {
+            splitpath[index] = calloc(4096, sizeof(char));
+            strcpy(splitpath[index++], token);
+            token = strtok(NULL, "/");
+        }
+        
+        char* filename2 = splitpath[index-1];
+        int leng = strlen(filename2);
+        path[pathleng-leng] = '\0';
+
+        for(int i=0;i<index;i++){
+            free(splitpath[i]);
+        }
+        free(splitpath);
+        /// PATH DIR
+        
+        printf("path: %s\n", path);
+        // printf("filename2: %s\n", filename2);
+        if(dir_exists(path)){
+            printf("(Escritura) No encuentra archivo y existe directorio. return osFile.\n");
+            osFile* os_file = osFile_new(filename, mode);
+            return os_file;
+
+
+            // Obtenemos el bloque directorio
+            int bloque_dir = pathfinder(filename);
+
+            // Comienza codigo reutilizado de Felipe
+            FILE *open_file = fopen(global_diskname, "rb");
+            // Me muevo 3 MiB, para llegar al bloque N°3, de directorio.
+            fseek(open_file, 3 * BLOCK_SIZE, SEEK_SET);
+            bool finded = false;
+
+            // Son 32768 entradas en un bloque de directorio
+            for (int i = 0; i < DIR_ENTRIES_PER_BLOCK; i++) {
+                unsigned char buffer[DIR_ENTRY_SIZE];
+                // Buffer para guardar los bytes de una entrada
+                fread(buffer, sizeof(buffer), 1, open_file); // Leo una entrada
+                if (buffer[0] == 0) {
+                    finded = true;
+                        
+                    fseek(open_file, 3 * BLOCK_SIZE + DIR_ENTRY_SIZE * i, SEEK_SET);
+                    char *estado;
+                    *estado = 3;
+                    fwrite(estado, 1, 1, open_file); // SI ALGO FALLA REVISA ESTO
+                    int *puntero;
+                    *puntero = os_file->block_index_number;
+                    fwrite(puntero, sizeof(int), 1, open_file);
+
+                    for (int j = 0; j < 27; j++) {
+                        if (j >= pathleng){
+                            int zero=0;
+                            fwrite(&zero, 1,1,open_file);
+                            break;
+                        } else {
+                            printf("%c", path[j]);
+                            fwrite(path[j], 1,1,open_file);
+                        }
+                    }
+                    printf("\n");
+                    if(finded){
+                        break;
+                    }
                 } 
-                else{
-                    printf("Caso no facil\n");
-
-                }
-                osFile* os_file = osFile_new(filename, mode);
-                return os_file;
-            }else{
+            }
+            fclose(open_file); // Evitamos leaks
+            return os_file;
+            }
+            else{
                 printf("(Escritura) No encuentra archivo y no existe directorio. return NULL.\n");
                 return NULL;
             }
             return NULL;
-
-
         }
     }
     return NULL;
