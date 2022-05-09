@@ -199,7 +199,8 @@ void fxExtra_cargar_pagina_en_mem(osFile* file, char* dir_pagina, int nro_pag) {
     // TODO:
     //  [X] Ver dónde estoy parado
     //  [X] Calcular página según longitud
-    //  [.] Calcular nro de bloques que tiene
+    //  [X] Calcular nro de bloques que tiene
+    //  [X] Calcular nro de bloque en el que voy
     //  [-] Meterme al índice y armar un array de bloques
     //  [ ] Armar un array de página involucradas
     //  [ ] Recorrer página por página y agregarla a un nuevo array si no está rotten
@@ -223,11 +224,11 @@ void fxExtra_cargar_pagina_en_mem(osFile* file, char* dir_pagina, int nro_pag) {
 
     // Bajo el supuesto de que por bloque no hay p´áginas rotten en el archivo porque no se puede escribir en un bloque on p´áginas rotten...
     long int largo_del_archivo = (long int) file->length;
-    long int tamanio_bloque = (long int) BLOCK_SIZE;
     long int pre_cantidad_de_bloques_del_archivo = largo_del_archivo / BLOCK_SIZE;
     int cantidad_de_bloques_del_archivo = (int) pre_cantidad_de_bloques_del_archivo;
 
-
+    long int pre_cantidad_de_bloques_del_archivo = file->by / BLOCK_SIZE;
+    int bloque_en_el_que_voy_leyendo =
 
 
 
