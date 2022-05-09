@@ -34,6 +34,7 @@
 
 ### Información adicional para facilitar la corrección
 
-- ¿?
-- ¿?
-- ¿?
+- Se crea el módulo `src/ssdfs/debug/debug.h` para printear mensajes y añadir pausas.
+  - No es la idea, pero se puede cambiar el parámetro `DEBUG_MODE` de `false` a `true` para mostrar mensajes adicionales (si es que aún siguen en la versión de entrega).
+  - En caso de que `DEBUG_MODE` sea `true`, el parámetro `SIMULATE_WAIT` indica que los mensajes de debug con pausa harán la pausa efectivamente.
+  - Obviamente requiere recompilar el programa.

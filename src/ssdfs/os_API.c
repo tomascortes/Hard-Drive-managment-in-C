@@ -176,7 +176,11 @@ void os_tree(){
                 printf("| ");
             }
             for (int j = 5; j < DIR_ENTRY_SIZE; j++) { // Printear nombre del directorio
-                printf("%c", buffer[j]);
+                if (buffer[j] == 0){
+                    break;
+                } else {
+                    printf("%c", buffer[j]);
+                }
             }
             printf("\n");
             int *puntero;
@@ -191,7 +195,11 @@ void os_tree(){
                 printf("| ");
             }
             for (int j = 5; j < DIR_ENTRY_SIZE; j++) { // Printear nombre del archivo
-                printf("%c", buffer[j]);
+                if (buffer[j] == 0){
+                    break;
+                } else {
+                    printf("%c", buffer[j]);
+                }
             }
             printf("\n");
         }

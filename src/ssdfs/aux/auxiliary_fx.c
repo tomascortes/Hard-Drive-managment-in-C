@@ -54,7 +54,7 @@ int is_page_rotten(int page, char* diskname) {
 /* Esta función recibe un path que ya sé que existe y me tira el bloque
    en el que está ubicado el directorio */
 // 1° llamada -> bloque_final = 3
-// 1° llamada -> path_parcial = '~/' de largo 100
+// 1° llamada -> path_parcial = "~/" de largo 100
 int pathfinder(char* path, int bloque_final, char* path_parcial){
     printf("llamada a la función\t");
     // Abro el archivo
@@ -69,27 +69,36 @@ int pathfinder(char* path, int bloque_final, char* path_parcial){
         
         // Buffer para guardar los bytes de una entrada
         fread(buffer, sizeof(buffer), 1, f); // Leo una entrada
-
+        char path_parcial_r[100];
+        strcpy(path_parcial_r, path_parcial);
         if (buffer[0] == 1){ // archivo o directorio:
             char aux[2]; // variable para concatenar char
             for (int j = 5; j < DIR_ENTRY_SIZE; j++){
                 aux[1] = '\0';
                 aux[0] = buffer[j];
-                strcat(path_parcial, aux); // Concatenar char
+                strcat(path_parcial_r, aux); // Concatenar char
             } // Debuggear acá
-            int bloque_final = *(int*) buffer + 1;
-            printf("Path parcial: %s\n", path_parcial);
-            if (strcmp(path_parcial, path) == 0){
+            
+            printf("Bloque final antes: %i\t", bloque_final);
+            int bloque_final = *(int*) (buffer + 1);
+            printf("Bloque final después: %i\t", bloque_final);
+            printf("Path parcial: %s\n", path_parcial_r);
+            if (strcmp(path_parcial_r, path) == 0){
                 fclose(f); // Evitamos leaks
                 return bloque_final; 
             }
-            strcat(path_parcial, "/");
+            strcat(path_parcial_r, "/");
+            printf("Path parcial hasta acá: %s\n", path_parcial);
             // Recursión
             fclose(f); // Què pasarà si saco esto?
-            bloque_final = pathfinder(path, bloque_final, path_parcial);
-            if (bloque_final){
+            printf("%s, %i, %s\n", path, bloque_final, path_parcial_r);
+            
+            if(strstr(path, path_parcial_r)){ // Solo si es substr
+                bloque_final = pathfinder(path, bloque_final, path_parcial_r);
+                if (bloque_final){
                 fclose(f);
                 return bloque_final; 
+                }
             }
         }
     }
@@ -358,7 +367,11 @@ void directree(int directory_block, int depth, char* global_diskname) {
                 printf("| ");
             }
             for (int j = 5; j < DIR_ENTRY_SIZE; j++) { // Printear nombre del archivo
-                printf("%c", buffer[j]);
+                if (buffer[j] == 0){
+                    break;
+                } else {
+                    printf("%c", buffer[j]);
+                }
             }
             printf("\n");
         }
