@@ -201,17 +201,6 @@ int fxExtra_nro_pagina_que_tengo_que_leer(osFile* file) {
 }
 
 void fxExtra_cargar_pagina_en_mem(osFile* file, char* dir_pagina, int nro_pag) {
-    // TODO:
-    //  [ ] Ver dónde estoy parado
-    //  [ ] Calcular página según longitud
-    //  [ ] Calcular nro de bloques que tiene
-    //  [ ] Calcular nro de bloque en el que voy
-    //  [ ] Meterme al índice y armar un array de bloques
-    //  [ ] Armar un array de página involucradas
-    //  [ ] Recorrer página por página y agregarla a un nuevo array si no está rotten
-    //  [ ] Avanzar pág por pág hasta la que necesito
-    //  [ ] Cargar la que necesito en memoria
-
     int nro_bloque_en_el_que_estoy = largo_archivo / BLOCK_SIZE;
     int direccion_del_bloque_en_el_que_estoy = preguntar_por_direccion_del_bloque_n(nro_bloque_en_el_que_estoy);
     int nro_de_pagina_dentro_del_bloque = nro_pag % PAGES_PER_BLOCK;
