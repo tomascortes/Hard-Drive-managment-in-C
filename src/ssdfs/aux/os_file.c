@@ -225,15 +225,17 @@ void copiar_byte(osFile* file, char* desde, void* hacia, int en_donde_voy) {
 void avanzar_contador_archivo_y_actualizar_pos(osFile* file) {
     // TODO:
     //  [X] Actualizar cuenta de bytes leidos
-    //  [ ] Ir al índice y ver bloques
-    //  [ ] Cargar array de bloques desde el índice
-    //  [ ] Armar array de nro páginas absolutas
-    //  [ ] Armar array de igual largo al anterior
-    //  [ ] Definir contador = nro páginas en array
-    //  [ ] Copiar nros páginas buenas y restar cant de rotten en el contador
-    //  [ ] Calcular plano, bloque, página, celda y byte donde voy en relación a bytes_loaded_count
-    //  [ ] Actualizar valores en obj.
+    //  [-] Ir al índice y ver bloques
+    //  [F] Cargar array de bloques desde el índice
+    //  [F] Armar array de nro páginas absolutas
+    //  [F] Armar array de igual largo al anterior
+    //  [F] Definir contador = nro páginas en array
+    //  [F] Copiar nros páginas buenas y restar cant de rotten en el contador
+    //  [F] Calcular plano, bloque, página, celda y byte donde voy en relación a bytes_loaded_count
+    //  [F] Actualizar valores en obj.
 
+
+    // Misterios y magia negra. No actualizo los valores de las posiciones
     file->bytes_loaded_count++;
 
 }
@@ -246,7 +248,7 @@ void reducir_bytes_restantes(osFile* file) {
 int preguntar_por_direccion_del_bloque_n(osFile* file, int numero_de_bloque) {
     osFile* self = file;
 
-    self->block_index_number = get_index_pointer(filename);
+    self->block_index_number = get_index_pointer(self->filename);
     FILE* opened_file = fopen(global_diskname, "rb");
     fseek(opened_file, self->block_index_number * BLOCK_SIZE, SEEK_SET);
     fread(self->index_pointer, sizeof(self->index_pointer), 1, opened_file);
