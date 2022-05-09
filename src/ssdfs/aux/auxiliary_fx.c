@@ -569,7 +569,7 @@ void unmark_as_used(int bloque) {
     fclose(f);
 }
 
-int min(int a1, int a2){
+int min(int a1, int a2) {
     if (a1 < a2){
         return a1;
     }
