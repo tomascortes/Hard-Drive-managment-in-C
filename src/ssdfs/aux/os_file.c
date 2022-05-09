@@ -166,7 +166,8 @@ char* fxExtra_reservar_mem_char(int cantidad) {
 }
 
 void* fxExtra_reservar_mem_void(int cantidad) {
-
+    void* memoria = malloc(cantidad);
+    return memoria;
 }
 
 void fxExtra_liberar_mem_char(char* en_donde) {
