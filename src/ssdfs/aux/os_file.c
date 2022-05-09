@@ -179,7 +179,7 @@ void fxExtra_liberar_mem_void(void* en_donde) {
 }
 
 int fxExtra_nro_pagina_que_tengo_que_leer(osFile* file) {
-
+    // TODO
 }
 
 void fxExtra_cargar_pagina_en_mem(osFile* file, char* dir_pagina, int nro_pag) {
