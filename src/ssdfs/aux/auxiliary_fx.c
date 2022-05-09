@@ -56,7 +56,6 @@ int is_page_rotten(int page, char* diskname) {
 // 1° llamada -> bloque_final = 3
 // 1° llamada -> path_parcial = "~/" de largo 100
 int pathfinder(char* path, int bloque_final, char* path_parcial){
-    printf("llamada a la función\t");
     // Abro el archivo
     FILE *f = fopen(global_diskname, "rb");
 
@@ -69,9 +68,9 @@ int pathfinder(char* path, int bloque_final, char* path_parcial){
         
         // Buffer para guardar los bytes de una entrada
         fread(buffer, sizeof(buffer), 1, f); // Leo una entrada
-        char path_parcial_r[100];
+        char path_parcial_r[100]; // Para no modificar el path parcial
         strcpy(path_parcial_r, path_parcial);
-        if (buffer[0] == 1){ // archivo o directorio:
+        if (buffer[0]){ // archivo o directorio:
             char aux[2]; // variable para concatenar char
             for (int j = 5; j < DIR_ENTRY_SIZE; j++){
                 aux[1] = '\0';
@@ -79,21 +78,18 @@ int pathfinder(char* path, int bloque_final, char* path_parcial){
                 strcat(path_parcial_r, aux); // Concatenar char
             } // Debuggear acá
             
-            printf("Bloque final antes: %i\t", bloque_final);
             int bloque_final = *(int*) (buffer + 1);
-            printf("Bloque final después: %i\t", bloque_final);
-            printf("Path parcial: %s\n", path_parcial_r);
+
+            // Condición de término
             if (strcmp(path_parcial_r, path) == 0){
                 fclose(f); // Evitamos leaks
-                return bloque_final; 
+                return bloque_final;
             }
-            strcat(path_parcial_r, "/");
-            printf("Path parcial hasta acá: %s\n", path_parcial);
-            // Recursión
-            fclose(f); // Què pasarà si saco esto?
-            printf("%s, %i, %s\n", path, bloque_final, path_parcial_r);
             
+            // Recursión no testeada
             if(strstr(path, path_parcial_r)){ // Solo si es substr
+                fclose(f); // Què pasarà si saco esto?
+                printf("El strstr pasa\n");
                 bloque_final = pathfinder(path, bloque_final, path_parcial_r);
                 if (bloque_final){
                 fclose(f);

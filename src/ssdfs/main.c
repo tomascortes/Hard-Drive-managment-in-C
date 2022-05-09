@@ -87,15 +87,14 @@ int main (int argc, char* const argv[]) {
     print_debug("Fin prueba os_mkdir\n");*/
 
 
-    /*char path_to_find[] = "~/carpeta";
+    char path_to_find[] = "~/filerotten.wav";
     char path_inicial_test[100];
     int testint = 3;
     strcpy(path_inicial_test, "~/");
     print_debug("Prueba pathfinder");
-    printf("El directorio está en el bloque %i\n", 
+    printf("El directorio está en el bloque %i\n",
         pathfinder(path_to_find, testint, path_inicial_test));
-    print_debug("Fin prueba os_mkdir\n");*/
-    
+    print_debug("Fin prueba os_mkdir\n");
 
     return 0;
 }
