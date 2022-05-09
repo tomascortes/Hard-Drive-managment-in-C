@@ -370,6 +370,8 @@ int os_read(osFile* file_desc, void* buffer, int nbytes) {
     // Sorry por esto, preferí separarlo del resto. El código está algo largo y me enreda
     int max_lectura;
     int cuenta_bytes_leidos = 0;
+    int pagina_actual;
+    int iteraciones_debug = 10;
 
     delayed_debug_print("Revisando modo (R/W)", 350);
 
@@ -394,14 +396,12 @@ int os_read(osFile* file_desc, void* buffer, int nbytes) {
     char* donde_meto_la_pagina_por_mientras = fxExtra_reservar_mem(PAGE_SIZE);
 
     delayed_debug_print("Anoto la siguiente pagina que tengo que leer", 350);
-    int pagina_actual = fxExtra_nro_pagina_que_tengo_que_leer(file_desc);
+    pagina_actual = fxExtra_nro_pagina_que_tengo_que_leer(file_desc);
 
     delayed_debug_print("Cargo la página en mem", 10);
     delayed_debug_print("La fx debe calcular cuánto es lo que tiene que desplazar el puntero", 10);
     delayed_debug_print("...y meterse al índice", 350);
     fxExtra_cargar_pagina_en_mem(file_desc, donde_meto_la_pagina_por_mientras, pagina_actual);
-
-    int iteraciones_debug = 10;
 
     while (quedan_bytes_por_leer) {
         if (iteraciones_debug > 0) {
