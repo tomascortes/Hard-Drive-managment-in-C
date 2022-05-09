@@ -81,7 +81,7 @@ void setup_from_disk(osFile* self, char* filename) {
 
     // puntero al pimer bloque de datos
     self->current_index = 2; // Indice Actual
-    self->current_block = *(int*)(self->index_pointer + 4*self->current_index); // Número de bloque en el que se encuentra el archivo
+    self->current_block = *(int*) (self->index_pointer + 4*self->current_index); // Número de bloque en el que se encuentra el archivo
     self->current_page = 0; // Página actual
     self->current_cell = 0; // celda actual
     self->current_byte = 0; // byte actual
@@ -197,48 +197,17 @@ int fxExtra_nro_pagina_que_tengo_que_leer(osFile* file) {
 
 void fxExtra_cargar_pagina_en_mem(osFile* file, char* dir_pagina, int nro_pag) {
     // TODO:
-    //  [X] Ver dónde estoy parado
-    //  [X] Calcular página según longitud
-    //  [X] Calcular nro de bloques que tiene
-    //  [X] Calcular nro de bloque en el que voy
-    //  [-] Meterme al índice y armar un array de bloques
+    //  [ ] Ver dónde estoy parado
+    //  [ ] Calcular página según longitud
+    //  [ ] Calcular nro de bloques que tiene
+    //  [ ] Calcular nro de bloque en el que voy
+    //  [ ] Meterme al índice y armar un array de bloques
     //  [ ] Armar un array de página involucradas
     //  [ ] Recorrer página por página y agregarla a un nuevo array si no está rotten
     //  [ ] Avanzar pág por pág hasta la que necesito
     //  [ ] Cargar la que necesito en memoria
 
-    long int tamanio = file->length;
-    int donde_voy_leyendo = file->bytes_loaded_count;
-    int mi_paginita = nro_pag;
 
-    FILE* disco = fopen(global_diskname, "rb");
-
-    int tamanio_de_tamanio = sizeof(long int);
-    int offset = (file->block_index_number * BLOCK_SIZE) + tamanio_de_tamanio;
-
-    fseek(disco, offset, SEEK_SET);
-
-    // leer todo el bloque indice
-    fread(file->index_pointer, sizeof(file->index_pointer), 1, disco); // Leo una entrada
-
-
-    // Bajo el supuesto de que por bloque no hay p´áginas rotten en el archivo porque no se puede escribir en un bloque on p´áginas rotten...
-    long int largo_del_archivo = (long int) file->length;
-    long int pre_cantidad_de_bloques_del_archivo = largo_del_archivo / BLOCK_SIZE;
-    int cantidad_de_bloques_del_archivo = (int) pre_cantidad_de_bloques_del_archivo;
-
-    long int pre_cantidad_de_bloques_avanzado_en_archivo = file->by / BLOCK_SIZE;
-    int bloque_en_el_que_voy_leyendo = (int) pre_cantidad_de_bloques_avanzado_en_archivo;
-
-    long int* memoria_para_los_bloques = calloc(cantidad_de_bloques_del_archivo, sizeof(long int));
-
-    for (int cuenta_bloque = 0; cuenta_bloque < cantidad_de_bloques_del_archivo; cuenta_bloque++) {
-        a
-    }
-
-
-
-    free(memoria_para_los_bloques);
 
 
 }
