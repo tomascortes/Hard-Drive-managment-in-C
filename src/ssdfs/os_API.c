@@ -371,69 +371,74 @@ int os_read(osFile* file_desc, void* buffer, int nbytes) {
     int max_lectura;
     int cuenta_bytes_leidos = 0;
     int pagina_actual;
-    int iteraciones_debug = 10;
+    int iteraciones_debug = 3;
 
-    delayed_debug_print("Revisando modo (R/W)", 350);
+    int tiempito_debug = 100;
+    int tiempito_debug_corto = 10;
+
+    delayed_debug_print("Revisando modo (R/W)", tiempito_debug);
 
     if (!fxExtra_revisar_modo(file_desc)) {
-        delayed_debug_print("F. No es modo lectura", 1350);
+        delayed_debug_print("F. No es modo lectura", tiempito_debug);
         printf("Archivo no se encuentra en modo lectura.\nNo se efectúa lectura de contenido");
         return cuenta_bytes_leidos;
     }
 
-    delayed_debug_print("Archivo en modo lectura, se prosigue...", 350);
-    delayed_debug_print("Hacer el setup del archivo", 350);
+    delayed_debug_print("Archivo en modo lectura, se prosigue...", tiempito_debug);
+    delayed_debug_print("Hacer el setup del archivo", tiempito_debug);
     fxExtra_hacer_el_setup(file_desc);
 
-    delayed_debug_print("Calculo lo que puedo leer --> min{nbytes, bytes_restantes}", 350);
+    delayed_debug_print("Calculo lo que puedo leer --> min{nbytes, bytes_restantes}", tiempito_debug);
     max_lectura = fxExtra_calc_max_bytes_lectura(file_desc, nbytes);
 
-    delayed_debug_print("Reservo memoria para guardar los bytes leidos", 350);
+    delayed_debug_print("Reservo memoria para guardar los bytes leidos", tiempito_debug);
     // REVIEW: No se si tiene que ser void* o char*
     void* donde_guardo_lo_leido = fxExtra_reservar_mem_void(max_lectura);
 
-    delayed_debug_print("Reservo memoria para guardar la página mientras la leo", 350);
+    delayed_debug_print("Reservo memoria para guardar la página mientras la leo", tiempito_debug);
     char* donde_meto_la_pagina_por_mientras = fxExtra_reservar_mem_char(PAGE_SIZE);
 
-    delayed_debug_print("Anoto la siguiente pagina que tengo que leer", 350);
+    delayed_debug_print("Anoto la siguiente pagina que tengo que leer", tiempito_debug);
     pagina_actual = fxExtra_nro_pagina_que_tengo_que_leer(file_desc);
 
-    delayed_debug_print("Cargo la página en mem", 10);
-    delayed_debug_print("La fx debe calcular cuánto es lo que tiene que desplazar el puntero", 10);
-    delayed_debug_print("...y meterse al índice", 350);
+    delayed_debug_print("Cargo la página en mem", tiempito_debug_corto);
+    delayed_debug_print("La fx debe calcular cuánto es lo que tiene que desplazar el puntero", tiempito_debug_corto);
+    delayed_debug_print("...y meterse al índice", tiempito_debug);
     fxExtra_cargar_pagina_en_mem(file_desc, donde_meto_la_pagina_por_mientras, pagina_actual);
+
+    print_debug("");
 
     while (quedan_bytes_por_leer(file_desc)) {
         if (iteraciones_debug > 0) {
-            delayed_debug_print("Mientras que queden bytes por leer...", 350);
+            delayed_debug_print("Mientras que queden bytes por leer...", tiempito_debug);
         }
 
         if (iteraciones_debug > 0) {
-            delayed_debug_print("Copio un byte de página a array temp buffer", 100);
+            delayed_debug_print("Copio un byte de página a array temp buffer", tiempito_debug_corto);
         }
         copiar_byte(file_desc, donde_meto_la_pagina_por_mientras, donde_guardo_lo_leido, cuenta_bytes_leidos);
 
         if (iteraciones_debug > 0) {
-            delayed_debug_print("Avanzo el contador del archivo", 100);
+            delayed_debug_print("Avanzo el contador del archivo", tiempito_debug_corto);
         }
         avanzar_contador_archivo_y_actualizar_pos(file_desc);
 
         if (iteraciones_debug > 0) {
-            delayed_debug_print("Reduzco los bytes restantes", 100);
+            delayed_debug_print("Reduzco los bytes restantes", tiempito_debug_corto);
         }
         reducir_bytes_restantes(file_desc);
 
         if (iteraciones_debug > 0) {
-            delayed_debug_print("Aumento cuenta de bytes leidos", 100);
+            delayed_debug_print("Aumento cuenta de bytes leidos", tiempito_debug_corto);
         }
         cuenta_bytes_leidos++;
 
         if (iteraciones_debug > 0) {
-            delayed_debug_print("Repito hasta que no queden más bytes", 100);
+            delayed_debug_print("Repito hasta que no queden más bytes", tiempito_debug_corto);
         }
 
         if (iteraciones_debug > 0) {
-            delayed_debug_print("Resto nro de iteraciones", 100);
+            delayed_debug_print("Resto nro de iteraciones\n", tiempito_debug_corto);
             iteraciones_debug--;
         }
     }

@@ -67,7 +67,7 @@ int main (int argc, char* const argv[]) {
     void* buffer;
 
     // int a = 10;
-    // void buffer2[sideof(int)] = a;
+    // void buffer2[sizeof(int)] = a;
 
     os_read(os_file, &buffer, 4);
     os_read(os_file, &buffer, 10);
@@ -75,6 +75,11 @@ int main (int argc, char* const argv[]) {
     os_read(os_file, &buffer, 2);
     printf("\nTermino de lectura  del archivo\n");
     os_close(os_file);
+
+
+    osFile* my_file = os_open("/message.txt", 'r');
+    os_read(my_file, &buffer, 4);
+    os_close(my_file);
 
     return 0;
 }
