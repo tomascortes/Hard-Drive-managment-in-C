@@ -123,3 +123,5 @@ void osFile_destroy(osFile* self);
 
 void add_block_to_index(osFile* self, int new_block);
 void print_index_block(osFile* self);
+
+
