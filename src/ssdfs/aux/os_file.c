@@ -186,6 +186,7 @@ int fxExtra_nro_pagina_que_tengo_que_leer(osFile* file) {
     //  [ ] Armar un array de página involucradas
     //  [ ] Recorrer página por página y agregarla a un nuevo array si no está rotten
     //  [ ] Mandar nro de página absoluta, incluyendo rotten
+    return 0
 }
 
 void fxExtra_cargar_pagina_en_mem(osFile* file, char* dir_pagina, int nro_pag) {
@@ -209,13 +210,26 @@ bool quedan_bytes_por_leer(osFile* file) {
 }
 
 void copiar_byte(osFile* file, char* desde, void* hacia, int en_donde_voy) {
-
+    // TODO:
+    //  [ ] Mover la posición en_donde_voy desde desde hacia hacia
 }
 
 void avanzar_contador_archivo_y_actualizar_pos(osFile* file) {
+    // TODO:
+    //  [X] Actualizar cuenta de bytes leidos
+    //  [ ] Ir al índice y ver bloques
+    //  [ ] Cargar array de bloques desde el índice
+    //  [ ] Armar array de nro páginas absolutas
+    //  [ ] Armar array de igual largo al anterior
+    //  [ ] Definir contador = nro páginas en array
+    //  [ ] Copiar nros páginas buenas y restar cant de rotten en el contador
+    //  [ ] Calcular plano, bloque, página, celda y byte donde voy en relación a bytes_loaded_count
+    //  [ ] Actualizar valores en obj.
+
+    file->bytes_loaded_count++;
 
 }
 
 void reducir_bytes_restantes(osFile* file) {
-
+    file->remaining_bytes--;
 }
