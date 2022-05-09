@@ -214,6 +214,7 @@ void fxExtra_cargar_pagina_en_mem(osFile* file, char* dir_pagina, int nro_pag) {
 
     int nro_bloque_en_el_que_estoy = largo_archivo / BLOCK_SIZE;
 
+    int direccion_del_bloque_en_el_que_estoy = preguntar_por_direccion_del_bloque_n(nro_bloque_en_el_que_estoy)
 
 
 }
