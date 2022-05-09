@@ -141,6 +141,7 @@ void fxExtra_hacer_el_setup(osFile* file) {
 int fxExtra_calc_max_bytes_lectura(osFile* file, int nbytes) {
 
 }
+
 char* fxExtra_reservar_mem_char(int cantidad) {
 
 }
