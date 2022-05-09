@@ -530,6 +530,50 @@ int os_rm(char* filename) {  // TODO: Pendiente
         fseek(open_file, 3*BLOCK_SIZE, SEEK_SET);
         fclose(open_file);
     }
+
+    // ---------------------------------------------------------------
+    // removerlo dir
+    // Abro el archivo
+    FILE *f = fopen(global_diskname, "rb+");
+
+    // Me muevo 3 MiB, para llegar al bloque N°3, de directorio.
+    fseek(f, BLOCK_SIZE * 3, SEEK_SET);
+
+    // Son 32768 entradas en un bloque de directorio
+    for (int i = 0; i < DIR_ENTRIES_PER_BLOCK; i++) {
+        unsigned char buffer[DIR_ENTRY_SIZE];
+        
+        // Buffer para guardar los bytes de una entrada
+        fread(buffer, sizeof(buffer), 1, f); // Leo una entrada
+
+        if(buffer[0] == 3){ // archivo:
+            char path[100] = "~/"; // path inicial
+            char aux[2]; // variable para concatenar char
+
+            for (int j = 5; j < DIR_ENTRY_SIZE; j++) { // Printear nombre del archivo
+                if (buffer[j] == 0){
+                    aux[1] = '\0';
+                    aux[0] = '\0';
+                    strcat(path, aux); // Concatenar char
+                    break;
+                } else {
+                    aux[1] = '\0';
+                    aux[0] = buffer[j];
+                    strcat(path, aux); // Concatenar char   
+                }
+            }
+            int zero=0;
+            if (strcmp(path, filename) == 0) { // compara con filename
+                fseek(f, 3*BLOCK_SIZE +  i*sizeof(DIR_ENTRY_SIZE), SEEK_SET);
+                fwrite(&zero, sizeof(int), 8, f);
+                fclose(f); // Evitamos leaks
+                return 1;
+            }
+        }
+
+    }
+
+    fclose(f); // Evitamos leaks
     return 0; 
 }
 

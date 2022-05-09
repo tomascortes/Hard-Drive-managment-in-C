@@ -48,7 +48,8 @@ int main (int argc, char* const argv[]) {
     os_tree(0);
 
     os_rm("~/drums.mp4");
-    printf("\nTermino de lectura  del archivo\n");
+    os_tree(0);
+    return 0;
     // os_close(os_file);
 
     //Test
