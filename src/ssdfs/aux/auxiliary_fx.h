@@ -77,3 +77,6 @@ bool is_block_rotten(int block);
 bool is_block_available(unsigned num);
 void mark_as_used(int bloque);
 void unmark_as_used(int bloque);
+
+int min(int a1, int a2);
+int get_usable_block();

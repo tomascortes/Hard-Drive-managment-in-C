@@ -22,7 +22,7 @@
 #include <stdbool.h>
 
 // Constante
-#define DEBUG_MODE false
+#define DEBUG_MODE true
 #define SIMULATE_WAIT true
 #define WAITING_TIME 250  // ms
 #define WAITING_TIME2 1000  // ms
@@ -57,3 +57,5 @@ void dprint_float(float input);
 void dprint_txt_float(float input);
 
 void print_debug(char *input);
+
+void delayed_debug_print(char* input, int time_ms);

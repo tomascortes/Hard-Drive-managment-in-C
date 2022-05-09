@@ -127,3 +127,11 @@ void osFile_destroy(osFile* self) {
     // Libero memoria puntero nombre
     free(self);
 }
+
+/// ------------------------------------------
+/// Cosas que fui necesitando en el camino
+/// ------------------------------------------
+
+bool fxExtra_revisar_modo(osFile* file) {
+    return true;
+}

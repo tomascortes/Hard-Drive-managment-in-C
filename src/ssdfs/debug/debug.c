@@ -194,9 +194,15 @@ void dprint_txt_float(float input) {
     }
 }
 
-
 void print_debug(char *input) {
     if (DEBUG_MODE) {
         dprint_txt_char_x(input);
+    }
+}
+
+void delayed_debug_print(char* input, int time_ms) {
+    if (DEBUG_MODE) {
+        dprint_txt_char_x(input);
+        wait_debug(time_ms);
     }
 }
