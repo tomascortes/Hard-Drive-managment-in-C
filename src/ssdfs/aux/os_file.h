@@ -133,3 +133,6 @@ void fxExtra_hacer_el_setup(file_desc);
 int fxExtra_calc_max_bytes_lectura(file_desc, nbytes);
 char* fxExtra_reservar_mem(cantidad);
 void fxExtra_liberar_mem(en_donde);
+int fxExtra_nro_pagina_que_tengo_que_leer(file_desc);
+void fxExtra_cargar_pagina_en_mem(file_desc, donde_meto_la_pagina_por_mientras, pagina_actual);
+bool quedan_bytes_por_leer(file_desc);

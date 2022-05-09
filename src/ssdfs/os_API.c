@@ -403,7 +403,7 @@ int os_read(osFile* file_desc, void* buffer, int nbytes) {
     delayed_debug_print("...y meterse al índice", 350);
     fxExtra_cargar_pagina_en_mem(file_desc, donde_meto_la_pagina_por_mientras, pagina_actual);
 
-    while (quedan_bytes_por_leer) {
+    while (quedan_bytes_por_leer(file_desc)) {
         if (iteraciones_debug > 0) {
             delayed_debug_print("Mientras que queden bytes por leer...", 350);
         }
