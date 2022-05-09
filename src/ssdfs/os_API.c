@@ -329,9 +329,6 @@ osFile* os_open(char* filename, char mode) {  // NOTE: En proceso
                 printf("(Escritura) No encuentra archivo y no existe directorio. return NULL.\n");
                 return NULL;
             }
-            return NULL;
-
-
         }
     }
     return NULL;
@@ -344,7 +341,9 @@ osFile* os_open(char* filename, char mode) {  // NOTE: En proceso
  * archivo contenga páginas rotten. La lectura de read se efectúa desde la posición del
  * archivo inmediatamente posterior a la última posición leı́da por un llamado a read. */
 int os_read(osFile* file_desc, void* buffer, int nbytes) {  // REVIEW
-    
+
+
+
     return 0;
 }
 
@@ -558,5 +557,5 @@ void print_names() {
         }
     }
 
-    fclose(f); // Evitamos leaks
+    fclose(f);
 }
