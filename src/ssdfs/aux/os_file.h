@@ -136,3 +136,6 @@ void fxExtra_liberar_mem(en_donde);
 int fxExtra_nro_pagina_que_tengo_que_leer(file_desc);
 void fxExtra_cargar_pagina_en_mem(file_desc, donde_meto_la_pagina_por_mientras, pagina_actual);
 bool quedan_bytes_por_leer(file_desc);
+void copiar_byte(file_desc, donde_meto_la_pagina_por_mientras, donde_guardo_lo_leido);
+void avanzar_contador_archivo_y_actualizar_pos(file_desc);
+void reducir_bytes_restantes(file_desc);
