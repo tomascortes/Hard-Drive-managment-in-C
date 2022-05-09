@@ -369,11 +369,14 @@ osFile* os_open(char* filename, char mode) {  // NOTE: En proceso
 int os_read(osFile* file_desc, void* buffer, int nbytes) {
     // Sorry por esto, preferí separarlo del resto. El código está algo largo y me enreda
     delayed_debug_print("Revisando modo (R/W)", 350);
+
     if (!fxExtra_revisar_modo(file_desc)) {
-        delayed_debug_print("F. No es modo lectura", 350);
+        delayed_debug_print("F. No es modo lectura", 1350);
         printf("Archivo no se encuentra en modo lectura.\nNo se efectúa lectura de contenido");
         return 0;
     }
+
+    delayed_debug_print("Archivo en modo lectura, se prosigue...", 350)
 
 
     return 0;
