@@ -361,8 +361,19 @@ osFile* os_open(char* filename, char mode) {  // NOTE: En proceso
  * nbytes es mayor a la cantidad de Bytes restantes en el archivo o en el caso que el
  * archivo contenga páginas rotten. La lectura de read se efectúa desde la posición del
  * archivo inmediatamente posterior a la última posición leı́da por un llamado a read. */
-int os_read(osFile* file_desc, void* buffer, int nbytes) {  // REVIEW
-
+/// Lee archivos y desplaza el puntero de lectura.
+/// \param file_desc: Archivo a leer
+/// \param buffer: Dirección donde se guardan los bytes leídos
+/// \param nbytes: Bytes a leer
+/// \return Bytes efectivamente leídos
+int os_read(osFile* file_desc, void* buffer, int nbytes) {
+    // Sorry por esto, preferí separarlo del resto. El código está algo largo y me enreda
+    delayed_debug_print("Revisando modo (R/W)", 350);
+    if (!fxExtra_revisar_modo(file_desc)) {
+        delayed_debug_print("F. No es modo lectura", 350);
+        printf("Archivo no se encuentra en modo lectura.\nNo se efectúa lectura de contenido");
+        return 0;
+    }
 
 
     return 0;

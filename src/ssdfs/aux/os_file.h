@@ -128,5 +128,5 @@ void print_index_block(osFile* self);
 /// Cosas que fui necesitando en el camino
 /// ------------------------------------------
 
-
+bool fxExtra_revisar_modo(osFile* file);
 
