@@ -80,7 +80,7 @@ int main (int argc, char* const argv[]) {
 
     osFile* my_file = os_open("/message.txt", 'r');
 //    os_read(my_file, &buffer, 4);
-    os_read(my_file, &buffer, 64);
+    os_read(my_file, &buffer, 12);
 
     delayed_debug_print("====== BUFFER ======", 1000);
     char* buffer2;
