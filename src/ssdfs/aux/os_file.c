@@ -199,7 +199,7 @@ void fxExtra_cargar_pagina_en_mem(osFile* file, char* dir_pagina, int nro_pag) {
     // TODO:
     //  [X] Ver dónde estoy parado
     //  [X] Calcular página según longitud
-    //  [ ] Meterme al índice y armar un array de bloques
+    //  [-] Meterme al índice y armar un array de bloques
     //  [ ] Armar un array de página involucradas
     //  [ ] Recorrer página por página y agregarla a un nuevo array si no está rotten
     //  [ ] Avanzar pág por pág hasta la que necesito
@@ -210,14 +210,14 @@ void fxExtra_cargar_pagina_en_mem(osFile* file, char* dir_pagina, int nro_pag) {
     int mi_paginita = nro_pag;
 
     FILE* disco = fopen(global_diskname, "rb");
-    fseek(disco, file->block_index_number * BLOCK_SIZE, SEEK_SET);
 
-    
+    int tamanio_de_tamanio = sizeof(long int);
+    int offset = (file->block_index_number * BLOCK_SIZE) + tamanio_de_tamanio;
 
-
+    fseek(disco, offset, SEEK_SET);
 
     // leer todo el bloque indice
-    fread(self->index_pointer, sizeof(self->index_pointer), 1, opened_file); // Leo una entrada
+    fread(file->index_pointer, sizeof(file->index_pointer), 1, disco); // Leo una entrada
 
     //encontrar length
     // Si quiero acceder a los primeros 8 Byte es self->pointer
