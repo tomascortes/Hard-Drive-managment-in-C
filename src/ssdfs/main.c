@@ -25,7 +25,6 @@
 
 int main (int argc, char* const argv[]) {
    
-    // Montar el disco pasado por consola con life = 5000
     os_mount(argv[1], 5000);
     mark_as_used(0);
     mark_as_used(1);
@@ -58,12 +57,13 @@ int main (int argc, char* const argv[]) {
 
     // Cierra los archivos
     // os_close(os_file);
+    //os_close(os_file2);
 
     // TODO: Malo
     //osFile_destroy(os_file);
 
     // Cierra el archivo
-    // os_close(os_file);
+    //os_close(os_file);
 
     /*char path[] = "~/carpeta/SuenosyEsperanzas";
     print_debug("Prueba os_mkdir");
@@ -71,15 +71,26 @@ int main (int argc, char* const argv[]) {
     print_debug("Fin prueba os_mkdir\n");*/
 
 
-    // char path_to_find[] = "~/rottendir";
-    // char path_inicial_test[100];
-    // int testint = 3;
-    // strcpy(path_inicial_test, "~/");
-    // print_debug("Prueba pathfinder");
-    // printf("El directorio está en el bloque %i\n", 
-    //         pathfinder(path_to_find, testint, path_inicial_test));
-    // print_debug("Fin prueba os_mkdir\n");
-    
+    char path_to_find[] = "~/dir1";
+    print_debug("Prueba pathfinder");
+    printf("El archivo/directorio está en el bloque %i\n",
+        pathfinder(path_to_find));
+    print_debug("Fin prueba os_mkdir\n");
+
+    /*
+    printf("\Inicio de apertura del archivo\n");
+    osFile* os_file = os_open("/redes/dino.jpg", 'r');
+    printf("\nTermino de apertura del archivo\n");
+    printf("\Inicio de lectura  del archivo\n");
+    void* buffer;
+    // int a = 10;
+    // void buffer2[sideof(int)] = a;
+    os_read(os_file, &buffer, 4);
+    os_read(os_file, &buffer, 10);
+    os_read(os_file, &buffer, 3);
+    os_read(os_file, &buffer, 2);
+    printf("\nTermino de lectura  del archivo\n");
+    os_close(os_file);  */
 
     return 0;
 }

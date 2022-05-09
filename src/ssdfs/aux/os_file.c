@@ -29,7 +29,6 @@ osFile* osFile_new(char* filename, char mode) {
     instance_pointer->filename = filename;
     osFile_set_mode(instance_pointer, mode); // Inicializo con valores por defecto.
 
-
     if (strcmp(instance_pointer->mode, "w") == 0) {
         //TODO: Falta agregar el osFile NUEVO al direcotrio del disco
         // Caso en que está en root
@@ -48,8 +47,7 @@ osFile* osFile_new(char* filename, char mode) {
         return instance_pointer;
     } 
     else if (strcmp(instance_pointer->mode, "r") == 0) {
-        //READING
-        read_from_disk(instance_pointer, filename);
+        setup_from_disk(instance_pointer, filename);
         return instance_pointer;
     } else {
         return NULL;
@@ -64,10 +62,10 @@ void osFile_set_mode(osFile* self, char mode) {
     strcpy(self->mode, aux);  // Máximo espacio (Para evitar stack overflow)
 }
 
-/// Settea la ubicación del puntero y largo del archivo
-void read_from_disk(osFile* self, char* filename) {
+// Settea la ubicación del puntero, largo del archivo y otras variables necesarias para la lectura.
+void setup_from_disk(osFile* self, char* filename) {
     // asignar atributos
-    self->block_index_number = get_index_pointer_and_length(filename); 
+    self->block_index_number = get_index_pointer(filename); 
     FILE* opened_file = fopen(global_diskname, "rb");
     fseek(opened_file, self->block_index_number * BLOCK_SIZE, SEEK_SET);
 
@@ -80,11 +78,10 @@ void read_from_disk(osFile* self, char* filename) {
     length = &buffer[0];
     self->length = *length;
 
-    // puntero al a bloque de datos
+    // puntero al pimer bloque de datos
     self->index_pointer = &buffer[8];
 
     self->current_index = self->block_index_number; // numero de bloque index
-    self->current_plane = *self->index_pointer/1024 + 1; // Número de plano en el que se encuentra el archivo.
     self->current_block = *self->index_pointer; // Número de bloque en el que se encuentra el archivo.
     self->current_page = 0; // Página actual
     self->current_pos = 0; // Posición actual dentro de la página actual
@@ -94,10 +91,9 @@ void read_from_disk(osFile* self, char* filename) {
 
     printf("Largo de Archivo: %ld\n", self->length);
     printf("Numero de Bloque Index: %ld\n", self->block_index_number);
-    printf("Numero de Plano: %d\n", self->current_plane);
     printf("Numero del Primer Bloque de Datos: %d\n", self->current_block);
     printf("Numero de la Primera Pagina: %d\n", self->current_page);
-    printf("Numero de Bloque Index: %d\n", self->current_pos);
+    printf("Numero de la posicion en la pagina: %d\n", self->current_pos);
 
     fclose(opened_file);
 }
