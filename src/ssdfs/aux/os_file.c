@@ -171,11 +171,11 @@ void* fxExtra_reservar_mem_void(int cantidad) {
 }
 
 void fxExtra_liberar_mem_char(char* en_donde) {
-
+    free(en_donde);
 }
 
 void fxExtra_liberar_mem_void(void* en_donde) {
-
+    free(en_donde);
 }
 
 int fxExtra_nro_pagina_que_tengo_que_leer(osFile* file) {
