@@ -51,11 +51,15 @@ int is_page_rotten(int page, char* diskname) {
     }
 }
 
+int pathfinder(char* path){
+    return pathfinder_internal(path, 3, "~/");
+}
+
 /* Esta función recibe un path que ya sé que existe y me tira el bloque
    en el que está ubicado el directorio */
 // 1° llamada -> bloque_final = 3
 // 1° llamada -> path_parcial = "~/" de largo 100
-int pathfinder(char* path, int bloque_final, char* path_parcial){
+int pathfinder_internal(char* path, int bloque_final, char* path_parcial){
     // Abro el archivo
     FILE *f = fopen(global_diskname, "rb");
 
@@ -90,7 +94,7 @@ int pathfinder(char* path, int bloque_final, char* path_parcial){
             if(strstr(path, path_parcial_r)){ // Solo si es substr
                 fclose(f); // Què pasarà si saco esto?
                 printf("El strstr pasa\n");
-                bloque_final = pathfinder(path, bloque_final, path_parcial_r);
+                bloque_final = pathfinder_internal(path, bloque_final, path_parcial_r);
                 if (bloque_final){
                 fclose(f);
                 return bloque_final; 
