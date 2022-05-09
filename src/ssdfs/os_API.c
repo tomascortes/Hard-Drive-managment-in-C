@@ -312,7 +312,6 @@ osFile* os_open(char* filename, char mode) {  // NOTE: En proceso
             token = strtok(NULL, "/");
         }
         
-        strcpy(path, filename);
         char* filename2 = splitpath[index-1];
         int leng = strlen(filename2);
         path[pathleng-leng] = '\0';
@@ -322,8 +321,11 @@ osFile* os_open(char* filename, char mode) {  // NOTE: En proceso
         }
         free(splitpath);
         /// PATH DIR
-        
-        if(dir_exists(path)){
+        char aux[2];
+        aux[0] = '\0';
+        // strcat(filename2, aux);
+        printf("dir_exists(filename): %d\n",dir_exists(filename));
+        if(dir_exists(filename)){
             printf("(Escritura) No encuentra archivo y existe directorio. return osFile.\n");
             osFile* os_file = osFile_new(filename, mode);
             printf("nombre archivo: %s\n", os_file ->filename);
@@ -340,28 +342,29 @@ osFile* os_open(char* filename, char mode) {  // NOTE: En proceso
 
             // Son 32768 entradas en un bloque de directorio
             for (int i = 0; i < DIR_ENTRIES_PER_BLOCK; i++) {
-                printf("Ronda numero %d", i);
+                printf("Ronda numero %d\n", i);
                 unsigned char buffer[DIR_ENTRY_SIZE];
                 // Buffer para guardar los bytes de una entrada
                 fread(buffer, sizeof(buffer), 1, open_file); // Leo una entrada
                 if (buffer[0] == 0) {
                     finded = true;
                     fseek(open_file, 3 * BLOCK_SIZE + DIR_ENTRY_SIZE * i, SEEK_SET);
-                    int estado;
-                    estado = 3;
+                    char estado = '\0';
+                    // estado = 3;
                     fwrite(&estado, 1, 1, open_file); // SI ALGO FALLA REVISA ESTO
-                    int *puntero;
-                    *puntero = os_file->block_index_number;
-                    fwrite(puntero, sizeof(int), 1, open_file);
+                    int puntero;
+                    puntero = os_file->block_index_number;
+                    fwrite(&puntero, sizeof(int), 1, open_file);
 
                     for (int j = 0; j < 27; j++) {
-                        if (j >= pathleng){
-                            int zero=0;
-                            fwrite(&zero, 1,1,open_file);
+                        if (j >= pathleng-1){
+                            char uwu = '\0';
+                            fwrite(&uwu, 1,1,open_file);
                             break;
                         } else {
-                            printf("%c", filename2[j]);
-                            fwrite(filename2[j], 1,1,open_file);
+                            char* uwu = filename + j;
+                            // printf("%c", filename2[j]);
+                            fwrite(&uwu, 1,1,open_file);
                         }
                     }
                     printf("\n");
@@ -430,6 +433,7 @@ int os_write(osFile* file_desc, void* buffer, int nbytes) {  // NOTE: En proceso
         }
         // todos los cachos de añadir un nuevo bloque al archivo
         mark_as_used(data_block); //bitmap
+        printf("aaaaaaaaaa bloque index: %d\n", data_block);
         add_block_to_index(file_desc, data_block);
         file_desc ->amount_of_blocks ++; // añado 1 al contador de bloques
                 
