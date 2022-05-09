@@ -52,7 +52,7 @@ int is_page_rotten(int page, char* diskname) {
 }
 
 // Esta es para llamar a la otra con los parámetros iniciales
-int pathfinder(char* path){
+int z(char* path){
     if (strcmp(path, "~")){
         return 3;
     } else {
@@ -542,7 +542,7 @@ void mark_as_used(int bloque) {
 }
 // Busca en el bitmap el bit correspondiente al bloque
 // y lo marca como usado (lo pone en 1)
-void unmark_as_used(int bloque) {
+void mark_as_unused(int bloque) {
     // El bit que corresponda al bloque va a estar en el byte:
     int byte = bloque / 8;
     int offset = 7 - bloque % 8;
@@ -557,7 +557,7 @@ void unmark_as_used(int bloque) {
     fclose(f);
 
     // Convierto el bit que me interesa en 1
-    data = !(data | (1 << offset));
+    data = (data & ~(1 << offset));
 
     // Puntero al byte de datos a escribir
     unsigned char* point_data = &data;
@@ -569,6 +569,7 @@ void unmark_as_used(int bloque) {
     fclose(f);
 }
 
+
 int min(int a1, int a2) {
     if (a1 < a2){
         return a1;
@@ -577,29 +578,7 @@ int min(int a1, int a2) {
 }
 
 
-// Función auxiliar que busca el primer bloque vacío
-int blocksearch(){
-    // Cargo el bitmap
-    FILE *f = fopen(global_diskname, "rb");
-    unsigned char buffer[256];
-    fread(buffer, sizeof(buffer), 1, f);
-    int bloque = 0;
-    for(int i = 0; i < 256; i++){
-        for (int j = 7; j >= 0; j--){
-            // Shift left para sacar el bit
-            int bit = (buffer[i] & (1 << j)) >> j;
-            // Si el bit es 1 sigo buscando, si no, retorno
-            if(bit){
-                bloque++;
-            } else {
-                fclose(f);
-                return bloque;
-            }
-        }
-    }
-    fclose(f);
-    return 0; // Si no hay bloques disponibles
-}
+
 
 void update_rotten_page(int block, int page_inside_block){
     FILE* open_file = fopen(global_diskname, "rb+");

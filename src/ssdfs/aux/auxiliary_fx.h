@@ -46,8 +46,6 @@ char global_diskname[1023];
 int global_P_E;
 int unactualized_change;
 
-int blocksearch();
-
 long int calc_offset(int plane, // Número de planos
                      int block, // Número de bloques
                      int page, // Número de páginas

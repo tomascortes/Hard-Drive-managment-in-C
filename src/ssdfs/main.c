@@ -44,9 +44,8 @@ int main (int argc, char* const argv[]) {
     os_lifemap(6*PAGES_PER_BLOCK, 7*PAGES_PER_BLOCK);
     os_write(os_file, buffer, 10);
 
-
     os_lifemap(6*PAGES_PER_BLOCK, 7*PAGES_PER_BLOCK);
-
+    os_tree();
 
 
     // Cierra los archivos
