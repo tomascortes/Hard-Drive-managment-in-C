@@ -30,16 +30,20 @@ osFile* osFile_new(char* filename, char mode) {
     osFile_set_mode(instance_pointer, mode); // Inicializo con valores por defecto.
 
     if (strcmp(instance_pointer->mode, "w") == 0) {
-        // put_on_disk(instance_pointer, filename); 
+        // put_on_disk(instance_pointer, filename);
+
         //TODO: Falta agregar el osFile NUEVO al direcotrio del disco
-         // Encontrar primer bloque desocupado para usarlo de indice
+        // Encontrar primer bloque desocupado para usarlo de indice
         int index_block = get_usable_block();
+
         mark_as_used(index_block); // marcamos como usado el nuevo indice
-        instance_pointer ->block_index_number = index_block;
-        printf("Nuevo bloque de directorio %d\n", instance_pointer ->block_index_number);
-        instance_pointer-> filename = filename; // BUG: esto está mal uwu pero lo veré despues
+        instance_pointer->block_index_number = index_block;
+
+        printf("Nuevo bloque de directorio %d\n", instance_pointer->block_index_number);
+
+        instance_pointer->filename = filename; // BUG: esto está mal uwu pero lo veré despues
         instance_pointer->amount_of_blocks = 0; // atributo utilizado solo en write
-        instance_pointer->length=-1; // Archivo no escrito
+        instance_pointer->length = -1; // Archivo no escrito
 
         return instance_pointer;
     }
@@ -71,13 +75,13 @@ void setup_from_disk(osFile* self, char* filename) {
     // leer todo el bloque indice
     fread(self->index_pointer, sizeof(self->index_pointer), 1, opened_file); // Leo una entrada
 
-    //encontrar length
+    // encontrar length
     // Si quiero acceder a los primeros 8 Byte es self->pointer
     // Si quiero acceder a los 8 Byte siguientes al primer byte es (self->pointer + 1)
     // Si suma en C corresponde al avance en punteros de los byte correspondientes a la variable
     // +1 en char es 1 byte
     // +1 en int son 4 byte
-    self->length = *(long int*)self->index_pointer;
+    self->length = *(long int*) self->index_pointer;
 
     // puntero al pimer bloque de datos
     self->current_index = 2; // Indice Actual
@@ -103,16 +107,17 @@ void setup_from_disk(osFile* self, char* filename) {
 }
 
 void add_block_to_index(osFile* self, int new_block) {
-    FILE *file = fopen(global_diskname, "rb");
-    fseek(file , BLOCK_SIZE*(self->block_index_number) + 4*self->amount_of_blocks, SEEK_SET);
+    FILE* file = fopen(global_diskname, "rb");
+    fseek(file , BLOCK_SIZE*(self->block_index_number) + 4 * self->amount_of_blocks, SEEK_SET);
     fwrite(new_block, 1,1,file);
     fclose(file);
 }
 
 void print_index_block(osFile* self) {
-    FILE *file = fopen(global_diskname, "rb");
+    FILE* file = fopen(global_diskname, "rb");
     fseek(file , BLOCK_SIZE*(self->block_index_number), SEEK_SET);
     printf("\nImprimiendo bloque indice: %d\n",self->block_index_number);
+
     for (int i = 0; i < 256*2; i++) {
         int buffer; // see leen ints de 4 bytes
         fread(&buffer, sizeof(int), 1, file); // Leo una entrada de un int
