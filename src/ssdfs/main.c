@@ -46,18 +46,14 @@ int main (int argc, char* const argv[]) {
 
     // Cierra el archivo
     //os_close(os_file);
+    //char path[] = "~/carpeta/SuenosyEsperanzas/OwO";
+    //char path[] = "~/UwU";
+    // print_debug("Prueba os_mkdir");
+    // os_mkdir(path);
+    // print_debug("Fin prueba os_mkdir\n");
 
-    /*char path[] = "~/carpeta/SuenosyEsperanzas";
-    print_debug("Prueba os_mkdir");
-    os_mkdir(path);
-    print_debug("Fin prueba os_mkdir\n");*/
+    // os_tree();
 
-
-    char path_to_find[] = "~/";
-    print_debug("Prueba pathfinder");
-    printf("El archivo/directorio está en el bloque %i\n",
-        pathfinder(path_to_find));
-    print_debug("Fin prueba os_mkdir\n");
 
     /*
     printf("\Inicio de apertura del archivo\n");
@@ -74,5 +70,18 @@ int main (int argc, char* const argv[]) {
     printf("\nTermino de lectura  del archivo\n");
     os_close(os_file);  */
 
-    return 0;
+    //Test
+    /*char test[] = "AAAAAAAA";
+    int num = 321;
+    test[3] = (num >> 24) & 0xFF;
+    test[2] = (num >> 16) & 0xFF;
+    test[1] = (num >> 8) & 0xFF;
+    test[0] = num & 0xFF;
+    for (int i=0; i<9; i++){
+        printf("El byte es: %i\n", test[i]);
+    }
+    printf("La string es %s\n", test);
+    int puntero = *(int*) (test);
+    printf("EL N° ES: %i\n", puntero);
+    return 0;*/
 }
