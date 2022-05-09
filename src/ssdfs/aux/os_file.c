@@ -42,10 +42,12 @@ osFile* osFile_new(char* filename, char mode) {
         instance_pointer->length=-1; // Archivo no escrito
 
         return instance_pointer;
-    } 
+    }
+
     else if (strcmp(instance_pointer->mode, "r") == 0) {
         setup_from_disk(instance_pointer, filename);
         return instance_pointer;
+
     } else {
         return NULL;
     }
@@ -100,14 +102,14 @@ void setup_from_disk(osFile* self, char* filename) {
     fclose(opened_file);
 }
 
-void add_block_to_index(osFile* self, int new_block){
+void add_block_to_index(osFile* self, int new_block) {
     FILE *file = fopen(global_diskname, "rb");
     fseek(file , BLOCK_SIZE*(self->block_index_number) + 4*self->amount_of_blocks, SEEK_SET);
     fwrite(new_block, 1,1,file);
     fclose(file);
 }
 
-void print_index_block(osFile* self){
+void print_index_block(osFile* self) {
     FILE *file = fopen(global_diskname, "rb");
     fseek(file , BLOCK_SIZE*(self->block_index_number), SEEK_SET);
     printf("\nImprimiendo bloque indice: %d\n",self->block_index_number);
@@ -339,7 +341,7 @@ void print_index_block(osFile* self){
 // // Dado un indice de osFile [b0, b1, b2, b3, b4]
 // // retorno el puntero del bloque correspondiente
 // // osFile_get_block_pointer(3) -> numero debloque
-// int osFile_get_block_pointer(osFile* self, int bloque){
+// int osFile_get_block_pointer(osFile* self, int bloque) {
     
 //     return 0;
 // }

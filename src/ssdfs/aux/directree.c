@@ -30,7 +30,7 @@ void aux_directree(int directory_block, int depth, char* global_diskname) {
         fread(buffer, sizeof(buffer), 1, f2); // Leo una entrada
 
         if(buffer[0] == 3) { // archivo:
-            for (int k = 0; k < depth; k++){
+            for (int k = 0; k < depth; k++) {
                 printf("| ");
             }
 
@@ -42,7 +42,7 @@ void aux_directree(int directory_block, int depth, char* global_diskname) {
         }
 
         else if(buffer[0] == 1) { // Directorio
-            for (int k = 0; k < depth; k++){
+            for (int k = 0; k < depth; k++) {
                 printf("| ");
             }
 
@@ -110,7 +110,7 @@ int aux_directreen(int directory_block, char* filename,
             strcat(path, "/"); // Concatenar nuevo directorio
             int puntero = buffer[1]; // Pesco los bytes 1-4
 
-            if (aux_directreen(puntero, filename, path2, global_diskname)){// Función recursiva para leer
+            if (aux_directreen(puntero, filename, path2, global_diskname)) {// Función recursiva para leer
                 fclose(f2); // Evitamos leaks
                 return 1;
             }

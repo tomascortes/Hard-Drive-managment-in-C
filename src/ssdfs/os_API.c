@@ -123,7 +123,7 @@ void os_lifemap(int lower, int upper) {
             block_visited = 1;
         }
 
-        if (i % 256 == 0 && block_visited == 1){
+        if (i % 256 == 0 && block_visited == 1) {
           // Se suman las condiciones de bloque visitado
             rotten_blocks += rotten_found;
             total_blocks++;
@@ -154,7 +154,7 @@ int os_trim(unsigned limit) {  // TODO: Pendiente
 
 /* Función para imprimir el árbol de directorios y archivos del sistema, a partir del
  * directorio base. */
-void os_tree(){
+void os_tree() {
     //// NOTE: Moví directree a ./aux/directree.*:aux_directree    - Luis
     // Abro el archivo
     FILE *f = fopen(global_diskname, "rb");
@@ -176,12 +176,14 @@ void os_tree(){
                 printf("| ");
             }
             for (int j = 5; j < DIR_ENTRY_SIZE; j++) { // Printear nombre del directorio
-                if (buffer[j] == 0){
+                if (buffer[j] == 0) {
                     break;
+
                 } else {
                     printf("%c", buffer[j]);
                 }
             }
+
             printf("\n");
             int *puntero;
             puntero = &buffer[1];
@@ -194,13 +196,16 @@ void os_tree(){
             for (int k = 0; k < depth; k++) {
                 printf("| ");
             }
+
             for (int j = 5; j < DIR_ENTRY_SIZE; j++) { // Printear nombre del archivo
-                if (buffer[j] == 0){
+                if (buffer[j] == 0) {
                     break;
+
                 } else {
                     printf("%c", buffer[j]);
                 }
             }
+
             printf("\n");
         }
     }
@@ -225,22 +230,24 @@ int os_exists(char* filename) {
         // Buffer para guardar los bytes de una entrada
         fread(buffer, sizeof(buffer), 1, f); // Leo una entrada
 
-        if(buffer[0] == 3){ // archivo:
+        if(buffer[0] == 3) { // archivo:
             char path[100] = "/"; // path inicial
             char aux[2]; // variable para concatenar char
 
             for (int j = 5; j < DIR_ENTRY_SIZE; j++) { // Printear nombre del archivo
-                if (buffer[j] == 0){
+                if (buffer[j] == 0) {
                     aux[1] = '\0';
                     aux[0] = '\0';
                     strcat(path, aux); // Concatenar char
                     break;
+
                 } else {
                     aux[1] = '\0';
                     aux[0] = buffer[j];
                     strcat(path, aux); // Concatenar char   
                 }
             }
+
             if (strcmp(path, filename) == 0) { // compara con filename
                 fclose(f); // Evitamos leaks
                 return 1;
@@ -251,21 +258,23 @@ int os_exists(char* filename) {
             char path[100] = "/"; // path inicial
             char aux[2]; // variable para concatenar char
             for (int j = 5; j < DIR_ENTRY_SIZE; j++) { // Printear nombre del directorio
-                if (buffer[j] == 0){
+                if (buffer[j] == 0) {
                     aux[1] = '\0';
                     aux[0] = '\0';
                     strcat(path, aux); // Concatenar char
                     break;
+
                 } else {
                     aux[1] = '\0';
                     aux[0] = buffer[j];
                     strcat(path, aux); // Concatenar char   
                 }
             }
+
             strcat(path, "/");
             int *puntero;
             puntero = &buffer[1];
-            if (find_file(*puntero, filename, path)){// Función recursiva para leer
+            if (find_file(*puntero, filename, path)) {// Función recursiva para leer
                 fclose(f); // Evitamos leaks
                 return 1;
             }
@@ -285,15 +294,18 @@ osFile* os_open(char* filename, char mode) {  // NOTE: En proceso
             printf("(Lectura) Encuentra archivo. return osFile.\n");
             osFile* os_file = osFile_new(filename, mode);
             return os_file;
+
         } else {
             printf("(Lectura) No encuentra archivo. return NULL.\n");
             return NULL;
         }
     }
+
     if (mode == 'w') {
         if (os_exists(filename)) {
             printf("(Escritura) Encuentra archivo. return NULL.\n");
             return NULL;
+
         } else {
             /// PATH DIR
             char** splitpath = calloc(2, sizeof(char*));
@@ -315,17 +327,18 @@ osFile* os_open(char* filename, char mode) {  // NOTE: En proceso
             int leng = strlen(filename2);
             path[pathleng-leng] = '\0';
 
-            for(int i=0;i<index;i++){
+            for(int i=0;i<index;i++) {
                 free(splitpath[i]);
             }
             free(splitpath);
             /// PATH DIR
             
-            if(dir_exists(path)){
+            if(dir_exists(path)) {
                 printf("(Escritura) No encuentra archivo y existe directorio. return osFile.\n");
                 osFile* os_file = osFile_new(filename, mode);
                 return os_file;
-            }else{
+
+            } else {
                 printf("(Escritura) No encuentra archivo y no existe directorio. return NULL.\n");
                 return NULL;
             }
@@ -360,12 +373,12 @@ int os_write(osFile* file_desc, void* buffer, int nbytes) {  // NOTE: En proceso
         return 0;
     } 
 
-    if (nbytes % 2){
+    if (nbytes % 2) {
         printf("No es par aaaaaaaa");
         nbytes ++; //????    
     }
     int bloques_necesarios = nbytes/BLOCK_SIZE;
-    if (nbytes%BLOCK_SIZE != 0){
+    if (nbytes%BLOCK_SIZE != 0) {
         bloques_necesarios ++;
     }
 
@@ -375,10 +388,10 @@ int os_write(osFile* file_desc, void* buffer, int nbytes) {  // NOTE: En proceso
     int puntero_buffer = 0;
     int writed_bytes = 0;
     printf("Comienzo de  for\n");
-    for (int bloque = 0; bloque < bloques_necesarios; bloque ++){
+    for (int bloque = 0; bloque < bloques_necesarios; bloque ++) {
         
         data_block = get_usable_block();
-        if (data_block == -1){
+        if (data_block == -1) {
             break;
             //TODO: Asumiré por mientras que esto no pasa
         }
@@ -394,7 +407,7 @@ int os_write(osFile* file_desc, void* buffer, int nbytes) {  // NOTE: En proceso
         fseek(opened_file , BLOCK_SIZE*data_block, SEEK_SET); 
         // Escribimos los bytes corerspndientes a casa página
         int dif = nbytes-puntero_buffer;
-        for (int i=0; i < min(256, dif); i++ ){
+        for (int i=0; i < min(256, dif); i++ ) {
             char *puntero;
             puntero = &buffer[puntero_buffer];
             fwrite(*puntero, 4, 1, opened_file); //BUG: Asunmo que esta no esta haciendo lo que deberia
@@ -402,7 +415,7 @@ int os_write(osFile* file_desc, void* buffer, int nbytes) {  // NOTE: En proceso
             writed_bytes ++;
             // TODO: Actualizar lifema
         }
-        if (puntero_buffer >= nbytes){
+        if (puntero_buffer >= nbytes) {
             break;
         }
         printf("Quedan bytes\n");
