@@ -438,6 +438,9 @@ int os_read(osFile* file_desc, void* buffer, int nbytes) {
         }
     }
 
+    fxExtra_liberar_mem(donde_guardo_lo_leido);
+    fxExtra_liberar_mem(donde_meto_la_pagina_por_mientras);
+
     return cuenta_bytes_leidos;
 }
 
