@@ -369,13 +369,14 @@ osFile* os_open(char* filename, char mode) {  // NOTE: En proceso
 int os_read(osFile* file_desc, void* buffer, int nbytes) {
     // Sorry por esto, preferí separarlo del resto. El código está algo largo y me enreda
     int max_lectura;
+    int cuenta_bytes_leidos = 0;
 
     delayed_debug_print("Revisando modo (R/W)", 350);
 
     if (!fxExtra_revisar_modo(file_desc)) {
         delayed_debug_print("F. No es modo lectura", 1350);
         printf("Archivo no se encuentra en modo lectura.\nNo se efectúa lectura de contenido");
-        return 0;
+        return cuenta_bytes_leidos;
     }
 
     delayed_debug_print("Archivo en modo lectura, se prosigue...", 350);
@@ -408,25 +409,34 @@ int os_read(osFile* file_desc, void* buffer, int nbytes) {
         if (iteraciones_debug > 0) {
             delayed_debug_print("Copio un byte de página a array temp buffer", 100);
         }
+        copiar_byte(file_desc, donde_meto_la_pagina_por_mientras, donde_guardo_lo_leido);
 
         if (iteraciones_debug > 0) {
             delayed_debug_print("Avanzo el contador del archivo", 100);
         }
+        avanzar_contador_archivo_y_actualizar_pos(file_desc);
 
         if (iteraciones_debug > 0) {
             delayed_debug_print("Reduzco los bytes restantes", 100);
         }
+        reducir_bytes_restantes(file_desc);
 
         if (iteraciones_debug > 0) {
             delayed_debug_print("Aumento cuenta de bytes leidos", 100);
         }
+        cuenta_bytes_leidos++;
 
         if (iteraciones_debug > 0) {
             delayed_debug_print("Repito hasta que no queden más bytes", 100);
         }
+
+        if (iteraciones_debug > 0) {
+            delayed_debug_print("Resto nro de iteraciones", 100);
+            iteraciones_debug--;
+        }
     }
 
-    return 0;
+    return cuenta_bytes_leidos;
 }
 
 /* Esta función permite escribir un archivo. Escribe en el archivo descrito por file desc
