@@ -161,7 +161,8 @@ int fxExtra_calc_max_bytes_lectura(osFile* file, int nbytes) {
 }
 
 char* fxExtra_reservar_mem_char(int cantidad) {
-
+    char* memoria = malloc(cantidad);
+    return memoria;
 }
 
 void* fxExtra_reservar_mem_void(int cantidad) {
