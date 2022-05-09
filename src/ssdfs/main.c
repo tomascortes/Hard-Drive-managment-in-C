@@ -38,13 +38,17 @@ int main (int argc, char* const argv[]) {
     // Crear archivo nuevo
     printf("Comienza open\n");
     osFile* os_file = os_open("~/dir1/vivachile.mp4", 'w');
-    if (os_file != NULL){
-        char buffer[10] = "AAABBBCCCD";
+    // if (os_file != NULL){
+    //     char buffer[10] = "AAABBBCCCD";
         
-        os_write(os_file, buffer, 10);
-        os_lifemap(6*PAGES_PER_BLOCK, 7*PAGES_PER_BLOCK);
-        os_tree();
-    }
+    //     os_write(os_file, buffer, 10);
+    //     os_lifemap(6*PAGES_PER_BLOCK, 7*PAGES_PER_BLOCK);
+    //     os_tree();
+    // }
+    os_mkdir("~/SuenosyEsperanzas");
+    os_tree();
+    printf("~/SuenosyEsperanzas\n");
+    // os_rmdir(("~/SuenosyEsperanzas");
 
 
 
