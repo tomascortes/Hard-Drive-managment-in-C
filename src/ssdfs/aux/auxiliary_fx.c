@@ -425,3 +425,27 @@ bool is_block_available(unsigned num) {
 
     fclose(f); // Evitamos leaks
 }
+
+// Función auxiliar que busca el primer bloque vacío
+int blocksearch(){
+    // Cargo el bitmap
+    FILE *f = fopen(global_diskname, "rb");
+    unsigned char buffer[256];
+    fread(buffer, sizeof(buffer), 1, f);
+    int bloque = 0;
+    for(int i = 0; i < 256; i++){
+        for (int j = 7; j >= 0; j--){
+            // Shift left para sacar el bit
+            int bit = (buffer[i] & (1 << j)) >> j;
+            // Si el bit es 1 sigo buscando, si no, retorno
+            if(bit){
+                bloque++;
+            } else {
+                fclose(f);
+                return bloque;
+            }
+        }
+    }
+    fclose(f);
+    return 0; // Si no hay bloques disponibles
+}
