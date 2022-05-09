@@ -186,7 +186,7 @@ int fxExtra_nro_pagina_que_tengo_que_leer(osFile* file) {
     //  [ ] Armar un array de página involucradas
     //  [ ] Recorrer página por página y agregarla a un nuevo array si no está rotten
     //  [ ] Mandar nro de página absoluta, incluyendo rotten
-    return 0
+    return 0;
 }
 
 void fxExtra_cargar_pagina_en_mem(osFile* file, char* dir_pagina, int nro_pag) {
