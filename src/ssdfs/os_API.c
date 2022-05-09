@@ -390,10 +390,10 @@ int os_read(osFile* file_desc, void* buffer, int nbytes) {
 
     delayed_debug_print("Reservo memoria para guardar los bytes leidos", 350);
     // REVIEW: No se si tiene que ser void* o char*
-    char* donde_guardo_lo_leido = fxExtra_reservar_mem(max_lectura);
+    void* donde_guardo_lo_leido = fxExtra_reservar_mem_void(max_lectura);
 
     delayed_debug_print("Reservo memoria para guardar la página mientras la leo", 350);
-    char* donde_meto_la_pagina_por_mientras = fxExtra_reservar_mem(PAGE_SIZE);
+    char* donde_meto_la_pagina_por_mientras = fxExtra_reservar_mem_char(PAGE_SIZE);
 
     delayed_debug_print("Anoto la siguiente pagina que tengo que leer", 350);
     pagina_actual = fxExtra_nro_pagina_que_tengo_que_leer(file_desc);
@@ -438,8 +438,8 @@ int os_read(osFile* file_desc, void* buffer, int nbytes) {
         }
     }
 
-    fxExtra_liberar_mem(donde_guardo_lo_leido);
-    fxExtra_liberar_mem(donde_meto_la_pagina_por_mientras);
+    fxExtra_liberar_mem_void(donde_guardo_lo_leido);
+    fxExtra_liberar_mem_char(donde_meto_la_pagina_por_mientras);
 
     return cuenta_bytes_leidos;
 }
