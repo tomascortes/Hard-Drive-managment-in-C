@@ -16,6 +16,7 @@
 
 #include <string.h>
 #include "./os_file.h"
+#include "../debug/debug.h"
 
 // ========================== Struct ==========================
 
@@ -23,7 +24,7 @@
 /// Crea una nueva instancia de la representación de un archivo
 /// y retorna su ubicación en memoria
 osFile* osFile_new(char* filename, char mode) {
-    
+    delayed_debug_print("Reservando memoria", 1000);
     osFile* instance_pointer = malloc(sizeof(osFile)); // Reservo memoria
 
     instance_pointer->filename = filename;
@@ -116,7 +117,7 @@ void add_block_to_index(osFile* self, int new_block) {
 void print_index_block(osFile* self) {
     FILE* file = fopen(global_diskname, "rb");
     fseek(file , BLOCK_SIZE*(self->block_index_number), SEEK_SET);
-    printf("\nImprimiendo bloque indice: %d\n",self->block_index_number);
+    printf("\nImprimiendo bloque indice: %d\n", self->block_index_number);
 
     for (int i = 0; i < 256*2; i++) {
         int buffer; // see leen ints de 4 bytes
@@ -129,7 +130,9 @@ void print_index_block(osFile* self) {
 
 /// Libera la memoria de todo lo asociado al struct. Luego libera la memoria del struct mismo.
 void osFile_destroy(osFile* self) {
+    delayed_debug_print("Liberando memoria", 1000);
     // Libero memoria puntero nombre
+//    free(self->filename);
     free(self);
 }
 
@@ -227,7 +230,7 @@ void copiar_byte(osFile* file, char* desde, void* hacia, int en_donde_voy) {
     // char cosita = desde[file->bytes_loaded_count];
 
     // BUG: Creo que esto sobreescribe con el último byte todo el buffer
-    memcpy(hacia, desde[file->bytes_loaded_count], sizeof(desde[file->bytes_loaded_count]));
+    memcpy(hacia, desde, sizeof(desde[file->bytes_loaded_count]));
 
 }
 

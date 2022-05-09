@@ -371,10 +371,10 @@ int os_read(osFile* file_desc, void* buffer, int nbytes) {
     int max_lectura;
     int cuenta_bytes_leidos = 0;
     int pagina_actual;
-    int iteraciones_debug = 3;
 
-    int tiempito_debug = 100;
-    int tiempito_debug_corto = 10;
+    int iteraciones_debug = 3;
+    int tiempito_debug = 50;
+    int tiempito_debug_corto = 5;
 
     delayed_debug_print("Revisando modo (R/W)", tiempito_debug);
 

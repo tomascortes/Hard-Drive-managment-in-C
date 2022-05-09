@@ -62,8 +62,8 @@ int main (int argc, char* const argv[]) {
     // os_bitmap(0);
     // os_tree();
 
-    osFile* os_file = os_open("/redes/dino.jpg", 'r');
-    printf("\nInicio de lectura  del archivo\n");
+//    osFile* os_file = os_open("/redes/dino.jpg", 'r');
+//    printf("\nInicio de lectura  del archivo\n");
     void* buffer;
 
     // int a = 10;
