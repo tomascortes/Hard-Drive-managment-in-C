@@ -81,5 +81,7 @@ int main (int argc, char* const argv[]) {
     os_read(my_file, &buffer, 4);
     os_close(my_file);
 
+    delayed_debug_print("Fin del programa", 1000)
+
     return 0;
 }

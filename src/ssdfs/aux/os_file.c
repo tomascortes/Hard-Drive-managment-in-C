@@ -192,6 +192,8 @@ int fxExtra_nro_pagina_que_tengo_que_leer(osFile* file) {
 }
 
 void fxExtra_cargar_pagina_en_mem(osFile* file, char* dir_pagina, int nro_pag) {
+    int largo_archivo = file->length;
+
     int nro_bloque_en_el_que_estoy = largo_archivo / BLOCK_SIZE;
     int direccion_del_bloque_en_el_que_estoy = (long int) preguntar_por_direccion_del_bloque_n(file, nro_bloque_en_el_que_estoy);
     int nro_de_pagina_dentro_del_bloque = nro_pag % PAGES_PER_BLOCK;
@@ -202,8 +204,8 @@ void fxExtra_cargar_pagina_en_mem(osFile* file, char* dir_pagina, int nro_pag) {
     FILE* disk_file = fopen(global_diskname, "rb");
     fseek(disk_file, file->block_index_number * BLOCK_SIZE, SEEK_SET);
 
-    fseek(disk_file, offset, SEEK_SET);
-    fread(self->dir_pagina, PAGE_SIZE, 1, file);
+    fseek(disk_file, offset_pagina, SEEK_SET);
+    fread(dir_pagina, PAGE_SIZE, 1, disk_file);
     fclose(disk_file);
 
 }
