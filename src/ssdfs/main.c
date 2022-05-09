@@ -55,18 +55,4 @@ int main (int argc, char* const argv[]) {
     os_mkdir(testdir);
     os_tree();
 
-    //Test
-    /*char test[] = "AAAAAAAA";
-    int num = 321;
-    test[3] = (num >> 24) & 0xFF;
-    test[2] = (num >> 16) & 0xFF;
-    test[1] = (num >> 8) & 0xFF;
-    test[0] = num & 0xFF;
-    for (int i=0; i<9; i++){
-        printf("El byte es: %i\n", test[i]);
-    }
-    printf("La string es %s\n", test);
-    int puntero = *(int*) (test);
-    printf("EL N° ES: %i\n", puntero);
-    return 0;*/
 }
