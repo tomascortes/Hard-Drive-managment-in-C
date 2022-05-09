@@ -224,7 +224,8 @@ void fxExtra_cargar_pagina_en_mem(osFile* file, char* dir_pagina, int nro_pag) {
     // Bajo el supuesto de que por bloque no hay p´áginas rotten en el archivo porque no se puede escribir en un bloque on p´áginas rotten...
     long int largo_del_archivo = (long int) file->length;
     long int tamanio_bloque = (long int) BLOCK_SIZE;
-    long int cantidad_de_bloques_del_archivo = largo_del_archivo / BLOCK_SIZE;
+    long int pre_cantidad_de_bloques_del_archivo = largo_del_archivo / BLOCK_SIZE;
+    int cantidad_de_bloques_del_archivo = (int) pre_cantidad_de_bloques_del_archivo
 
 
 
