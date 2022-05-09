@@ -411,7 +411,7 @@ int os_read(osFile* file_desc, void* buffer, int nbytes) {
         if (iteraciones_debug > 0) {
             delayed_debug_print("Copio un byte de página a array temp buffer", 100);
         }
-        copiar_byte(file_desc, donde_meto_la_pagina_por_mientras, donde_guardo_lo_leido);
+        copiar_byte(file_desc, donde_meto_la_pagina_por_mientras, donde_guardo_lo_leido, cuenta_bytes_leidos);
 
         if (iteraciones_debug > 0) {
             delayed_debug_print("Avanzo el contador del archivo", 100);

@@ -133,5 +133,45 @@ void osFile_destroy(osFile* self) {
 /// ------------------------------------------
 
 bool fxExtra_revisar_modo(osFile* file) {
-    return true;
+
+}
+void fxExtra_hacer_el_setup(osFile* file) {
+
+}
+int fxExtra_calc_max_bytes_lectura(osFile* file, int nbytes) {
+
+}
+char* fxExtra_reservar_mem_char(int cantidad) {
+
+}
+
+void* fxExtra_reservar_mem_void(int cantidad) {
+
+}
+
+void fxExtra_liberar_mem_char(char* en_donde) {
+
+}
+
+void fxExtra_liberar_mem_void(void* en_donde) {
+
+}
+
+int fxExtra_nro_pagina_que_tengo_que_leer(osFile* file) {
+
+}
+void fxExtra_cargar_pagina_en_mem(osFile* file, char* dir_pagina, int nro_pag) {
+
+}
+bool quedan_bytes_por_leer(osFile* file) {
+
+}
+void copiar_byte(osFile* file, char* desde, void* hacia, int en_donde_voy) {
+
+}
+void avanzar_contador_archivo_y_actualizar_pos(osFile* file) {
+
+}
+void reducir_bytes_restantes(osFile* file) {
+
 }
