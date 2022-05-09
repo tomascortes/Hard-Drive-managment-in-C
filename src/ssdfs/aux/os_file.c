@@ -85,7 +85,7 @@ void setup_from_disk(osFile* self, char* filename) {
 
     // puntero al pimer bloque de datos
     self->current_index = 2; // Indice Actual
-    self->current_block = *(int*) (self->index_pointer + 4*self->current_index); // Número de bloque en el que se encuentra el archivo
+    self->current_block = *(int*) (self->index_pointer + 4 * self->current_index); // Número de bloque en el que se encuentra el archivo
     self->current_page = 0; // Página actual
     self->current_cell = 0; // celda actual
     self->current_byte = 0; // byte actual
@@ -212,6 +212,7 @@ void fxExtra_cargar_pagina_en_mem(osFile* file, char* dir_pagina, int nro_pag) {
     //  [ ] Avanzar pág por pág hasta la que necesito
     //  [ ] Cargar la que necesito en memoria
 
+    int nro_bloque_en_el_que_estoy = largo_archivo / BLOCK_SIZE;
 
 
 
@@ -249,4 +250,20 @@ void avanzar_contador_archivo_y_actualizar_pos(osFile* file) {
 
 void reducir_bytes_restantes(osFile* file) {
     file->remaining_bytes--;
+}
+
+
+int preguntar_por_direccion_del_bloque_n(osFile* file, int numero_de_bloque) {
+    osFile* self = file;
+
+    self->block_index_number = get_index_pointer(filename);
+    FILE* opened_file = fopen(global_diskname, "rb");
+    fseek(opened_file, self->block_index_number * BLOCK_SIZE, SEEK_SET);
+    fread(self->index_pointer, sizeof(self->index_pointer), 1, opened_file);
+    self->current_index = 2;
+    self->current_block = *(int*) (self->index_pointer + 4 * self->current_index);
+
+    // Tamaño de dirección: 4B --> int
+
+    bloque_magico = *(int*) (((numero_de_bloque - 1) * 4) + self->index_pointer + 4 * self->current_index);
 }
