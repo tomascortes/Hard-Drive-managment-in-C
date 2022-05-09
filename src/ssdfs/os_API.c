@@ -303,7 +303,7 @@ osFile* os_open(char* filename, char mode) {  // NOTE: En proceso
         int pathleng = strlen(filename);
         char path[pathleng+1];
         strcpy(path, filename);
-
+        
         char* token = strtok(path, "/");
         while(token != NULL)
         {
@@ -312,6 +312,7 @@ osFile* os_open(char* filename, char mode) {  // NOTE: En proceso
             token = strtok(NULL, "/");
         }
         
+        strcpy(path, filename);
         char* filename2 = splitpath[index-1];
         int leng = strlen(filename2);
         path[pathleng-leng] = '\0';
@@ -322,10 +323,6 @@ osFile* os_open(char* filename, char mode) {  // NOTE: En proceso
         free(splitpath);
         /// PATH DIR
         
-        printf("filename: %s\n", filename);
-        printf("path: %s\n", path);
-        // printf("filename2: %s\n", filename2);
-        printf("resultado %d\n", pathfinder(filename));
         if(dir_exists(path)){
             printf("(Escritura) No encuentra archivo y existe directorio. return osFile.\n");
             osFile* os_file = osFile_new(filename, mode);
