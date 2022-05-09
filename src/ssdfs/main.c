@@ -30,26 +30,30 @@ int main (int argc, char* const argv[]) {
     mark_as_used(1);
     mark_as_used(2);
     mark_as_used(3);
-    for (int i = 5; i<100;i++){
-        mark_as_unused(i);
-    }
+    // for (int i = 5; i<100;i++){
+    //     mark_as_unused(i);
+    // }
 
 
     // Crear archivo nuevo
-    printf("Comienza open\n");
-    osFile* os_file = os_open("~/dir1/vivachile.mp4", 'w');
-    if (os_file != NULL){
-        char buffer[10] = "AAABBBCCCD";
+    // printf("Comienza open\n");
+    // osFile* os_file = os_open("~/dir1/vivachile.mp4", 'w');
+    // if (os_file != NULL){
+    //     char buffer[10] = "AAABBBCCCD";
         
-        os_write(os_file, buffer, 10);
-        os_lifemap(6*PAGES_PER_BLOCK, 7*PAGES_PER_BLOCK);
-        os_tree();
-    }
+    //     os_write(os_file, buffer, 10);
+    //     os_lifemap(6*PAGES_PER_BLOCK, 7*PAGES_PER_BLOCK);
+    //     os_tree();
+    // }
 
 
 
     printf("\nTermino de lectura  del archivo\n");
-    os_close(os_file);
+    // os_close(os_file);
+
+    char testdir[] = "~/carpeta/ggramo";
+    os_mkdir(testdir);
+    os_tree();
 
     //Test
     /*char test[] = "AAAAAAAA";
