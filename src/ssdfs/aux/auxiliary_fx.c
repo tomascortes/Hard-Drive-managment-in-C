@@ -53,7 +53,9 @@ int is_page_rotten(int page, char* diskname) {
 
 // Esta es para llamar a la otra con los parámetros iniciales
 int pathfinder(char* path){
-    if (strcmp(path, "~")==0){
+
+    if (strcmp(path, "~") == 0){
+
         return 3;
     } else {
         return pathfinder_internal(path, 3, "~/");
@@ -426,7 +428,7 @@ void directree(int directory_block, int depth, char* global_diskname) {
                 printf("%c", buffer[j]);
             }
             printf("\n");
-            int puntero = *(int*) buffer + 1;
+            int puntero = *(int*)(buffer + 1);
             depth++; // Subo la profundidad en 1
             directree(puntero, depth, global_diskname); // Llamada recursiva
             depth--; // Vuelvo a la profundidad anterior

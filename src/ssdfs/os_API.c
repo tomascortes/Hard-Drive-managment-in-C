@@ -183,10 +183,9 @@ void os_tree(){
                 }
             }
             printf("\n");
-            int *puntero;
-            puntero = &buffer[1];
+            int puntero = *(int*)(buffer + 1);
             depth++; // Subo la profundidad en 1
-            directree(*puntero, depth, global_diskname); // Llamada recursiva
+            directree(puntero, depth, global_diskname); // Llamada recursiva
             depth--; // Vuelvo a la profundidad anterior
         } 
         
@@ -503,17 +502,23 @@ int os_rm(char* filename) {  // TODO: Pendiente
 /* Esta función crea un directorio con el nombre indicado. Esto incrementa en 1
    el contador P/E de las páginas que sea necesario actualizar 
    para crear las referencias a este directorio. */
+
 int os_mkdir(char* path) {  // TODO: Pendiente
 
     int bloquel = get_usable_block();
-    printf("El primer bloque disponible es: %i\n", bloquel);
 
+    printf("El primer bloque disponible es: %i\n", bloquel);
+    mark_as_used(bloquel); // Marco la cosa como usada en el bitmap
+
+    // Creo splitpath para contener el path a la carpeta origen como una string
+    // y el nombre de la carpeta a ser creada en otra
     char** splitpath = calloc(2, sizeof(char*));
     int index = 0;
 
     int pathleng = strlen(path);
     char pathto[pathleng]; strcpy(pathto, path);
 
+    // Hacemos brujería para splittear la string path
     ///// PATHSEARCH START
     char* token = strtok(path, "/");
     while(token != NULL)
@@ -530,17 +535,42 @@ int os_mkdir(char* path) {  // TODO: Pendiente
         splitpath[index - 1][len - 1] = '\0';
     ///// PATHSEARCH END
 
+    // filename es solo el nombre de la carpeta
     char* filename = splitpath[index-1];
+    // leng es el largo en caracteres
     int leng = strlen(filename);
-    pathto[pathleng-leng] = '\0'; 
+    // pathto es el path de la carpeta origen
+    pathto[pathleng-leng-1] = '\0';
 
     printf("El path es: %s\n", pathto);
     printf("El nombre es: %s\n", filename);
 
-    //writeblock = os_find(pathto); // Se asume que esto funciona
-    FILE *f = fopen(global_diskname, "rb");
-    //fseek(f2, writeblock * 1048576, SEEK_SET);
-    //char* texto = "AAA"; // Lo que voy a escribir
+    // Veo en qué bloque está el directorio origen
+    int writeblock = pathfinder(pathto); 
+    FILE *f = fopen(global_diskname, "rb+");
+    fseek(f, writeblock * BLOCK_SIZE, SEEK_SET);
+
+    // Son 32768 entradas en un bloque de directorio
+    for (int i = 0; i < DIR_ENTRIES_PER_BLOCK; i++) {
+        unsigned char buffer[DIR_ENTRY_SIZE];
+        // Buffer para guardar los bytes de una entrada
+        fread(buffer, sizeof(buffer), 1, f); // Leo una entrada
+
+        if (buffer[0] == 0){ // Entrada libre
+            fseek(f, -DIR_ENTRY_SIZE, SEEK_CUR); // Retrocedo para escribir en
+            //printf("File pointer libre: %ld\n", ftell(f));
+            buffer[0] = 1;
+            buffer[1] = bloquel & 0xFF;
+            buffer[2] = (bloquel >> 8) & 0xFF;
+            buffer[3] = (bloquel >> 16) & 0xFF;
+            buffer[4] = (bloquel >> 24) & 0xFF;
+            for (int j = 0; j < leng; j++) { // Escribo el nombre del archivo
+                buffer[j + 5] = filename[j];
+            }
+            fwrite(buffer, sizeof(buffer), 1, f); // Escribo la entrada
+            break;
+        } else {continue;}
+    }
     fclose(f);
     
     return 0;

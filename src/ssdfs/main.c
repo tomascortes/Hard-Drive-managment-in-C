@@ -47,44 +47,22 @@ int main (int argc, char* const argv[]) {
     }
 
 
-    // Cierra los archivos
-    // os_close(os_file);
-    //os_close(os_file2);
 
-    // TODO: Malo
-    //osFile_destroy(os_file);
-
-    // Cierra el archivo
-    //os_close(os_file);
-
-    /*char path[] = "~/carpeta/SuenosyEsperanzas";
-    print_debug("Prueba os_mkdir");
-    os_mkdir(path);
-    print_debug("Fin prueba os_mkdir\n");*/
-
-
-    // char path_to_find[] = "~/";
-    // print_debug("Prueba pathfinder");
-    // printf("El archivo/directorio está en el bloque %i\n",
-    //     pathfinder(path_to_find));
-    // print_debug("Fin prueba os_mkdir\n");
-
-    // // os_bitmap(0);
-    // // os_tree();
-
-    // osFile* os_file = os_open("/redes/dino.jpg", 'r');
-    // printf("\nInicio de lectura  del archivo\n");
-    // void* buffer;
-
-    // // int a = 10;
-    // // void buffer2[sideof(int)] = a;
-
-    // os_read(os_file, &buffer, 4);
-    // os_read(os_file, &buffer, 10);
-    // os_read(os_file, &buffer, 3);
-    // os_read(os_file, &buffer, 2);
     printf("\nTermino de lectura  del archivo\n");
     os_close(os_file);
 
-    return 0;
+    //Test
+    /*char test[] = "AAAAAAAA";
+    int num = 321;
+    test[3] = (num >> 24) & 0xFF;
+    test[2] = (num >> 16) & 0xFF;
+    test[1] = (num >> 8) & 0xFF;
+    test[0] = num & 0xFF;
+    for (int i=0; i<9; i++){
+        printf("El byte es: %i\n", test[i]);
+    }
+    printf("La string es %s\n", test);
+    int puntero = *(int*) (test);
+    printf("EL N° ES: %i\n", puntero);
+    return 0;*/
 }
