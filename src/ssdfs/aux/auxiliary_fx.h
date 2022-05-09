@@ -46,6 +46,8 @@ char global_diskname[1023];
 int global_P_E;
 int unactualized_change;
 
+int blocksearch();
+
 long int calc_offset(int plane, // Número de planos
                      int block, // Número de bloques
                      int page, // Número de páginas
@@ -68,8 +70,10 @@ int find_dir(int directory_block,
              
 int get_index_file(int directory_block, char* filename, char* path);
 
-int get_index_pointer_and_length(char* filenamem);
+int get_index_pointer(char* filenamem);
 
 void directree(int directory_block, int depth, char* global_diskname);
 bool is_block_rotten(int block);
 bool is_block_available(unsigned num);
+void mark_as_used(int bloque);
+void unmark_as_used(int bloque);

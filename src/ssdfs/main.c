@@ -21,46 +21,12 @@
 
 #include <string.h> // Para testear
 
-// Busca en el bitmap el bit correspondiente al bloque
-// y lo marca como usado (lo pone en 1)
-void mark_as_used(int bloque) {
-    // El bit que corresponda al bloque va a estar en el byte:
-    int byte = bloque / 8;
-    int offset = 7 - bloque % 8;
 
-    // Abro el archivo
-    FILE* f = fopen(global_diskname, "rb");
-
-    unsigned char buffer[256]; // Buffer con los bytes del bitmap
-    fread(buffer, sizeof(buffer), 1, f);
-
-    unsigned char data = buffer[byte]; // Saco el byte que me sirve
-    fclose(f);
-
-    // Convierto el bit que me interesa en 1
-    data = data | (1 << offset);
-
-    // Puntero al byte de datos a escribir
-    unsigned char* point_data = &data;
-    f = fopen(global_diskname, "rb+");
-
-    fseek(f, byte, SEEK_SET);
-    fwrite(point_data, 1, 1, f);
-
-    fclose(f);
-}
 
 int main (int argc, char* const argv[]) {
    
-    // Montar el disco pasado por consola con life = 5000
     os_mount(argv[1], 5000);
-
-    //Prueba bitmap
     os_bitmap(0);
-    //mark_as_used(7); Funciona!
-    //os_bitmap(0);
-
-    // Ver todos los archivos y directorios
     os_tree();
 
     // Abre el archivo
@@ -95,6 +61,21 @@ int main (int argc, char* const argv[]) {
     printf("El directorio está en el bloque %i\n",
         pathfinder(path_to_find, testint, path_inicial_test));
     print_debug("Fin prueba os_mkdir\n");
+
+    /*
+    printf("\Inicio de apertura del archivo\n");
+    osFile* os_file = os_open("/redes/dino.jpg", 'r');
+    printf("\nTermino de apertura del archivo\n");
+    printf("\Inicio de lectura  del archivo\n");
+    void* buffer;
+    // int a = 10;
+    // void buffer2[sideof(int)] = a;
+    os_read(os_file, &buffer, 4);
+    os_read(os_file, &buffer, 10);
+    os_read(os_file, &buffer, 3);
+    os_read(os_file, &buffer, 2);
+    printf("\nTermino de lectura  del archivo\n");
+    os_close(os_file);  */
 
     return 0;
 }
