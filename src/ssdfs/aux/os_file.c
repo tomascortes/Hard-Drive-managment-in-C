@@ -213,8 +213,11 @@ void fxExtra_cargar_pagina_en_mem(osFile* file, char* dir_pagina, int nro_pag) {
     //  [ ] Cargar la que necesito en memoria
 
     int nro_bloque_en_el_que_estoy = largo_archivo / BLOCK_SIZE;
+    int direccion_del_bloque_en_el_que_estoy = preguntar_por_direccion_del_bloque_n(nro_bloque_en_el_que_estoy);
+    int nro_de_pagina_dentro_del_bloque = nro_pag % PAGES_PER_BLOCK;
 
-    int direccion_del_bloque_en_el_que_estoy = preguntar_por_direccion_del_bloque_n(nro_bloque_en_el_que_estoy)
+    long int offset_pagina = calc_offset(0, 0, nro_de_pagina_dentro_del_bloque, 0, 0);
+
 
 
 }
