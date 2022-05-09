@@ -236,7 +236,6 @@ void avanzar_contador_archivo_y_actualizar_pos(osFile* file) {
     //  [F] Calcular plano, bloque, página, celda y byte donde voy en relación a bytes_loaded_count
     //  [F] Actualizar valores en obj.
 
-
     // Misterios y magia negra. No actualizo los valores de las posiciones
     file->bytes_loaded_count++;
 
