@@ -29,6 +29,7 @@ void os_mount(char* diskname, unsigned life) {
     /* Crea una variable global con el nombre del archivo y otra con el
      * valor de life */
     strcpy(global_diskname, diskname);
+    // WARN: Narrowing conversion from 'unsigned int' to signed type 'int' is implementation-defined
     global_P_E = life;
     unactualized_change = 0;
 }
@@ -155,7 +156,6 @@ int os_trim(unsigned limit) {  // TODO: Pendiente
 /* Función para imprimir el árbol de directorios y archivos del sistema, a partir del
  * directorio base. */
 void os_tree() {
-    //// NOTE: Moví directree a ./aux/directree.*:aux_directree    - Luis
     // Abro el archivo
     FILE *f = fopen(global_diskname, "rb");
 
@@ -175,6 +175,7 @@ void os_tree() {
             for (int k = 0; k < depth; k++) { // Desplazar depth a la derecha
                 printf("| ");
             }
+
             for (int j = 5; j < DIR_ENTRY_SIZE; j++) { // Printear nombre del directorio
                 if (buffer[j] == 0) {
                     break;
@@ -186,13 +187,13 @@ void os_tree() {
 
             printf("\n");
             int *puntero;
+            // WARN: Incompatible pointer types assigning to 'int *' from 'unsigned char *'
             puntero = &buffer[1];
             depth++; // Subo la profundidad en 1
             directree(*puntero, depth, global_diskname); // Llamada recursiva
             depth--; // Vuelvo a la profundidad anterior
-        } 
-        
-        else if (buffer[0] == 3) { // archivo:
+
+        } else if (buffer[0] == 3) { // archivo:
             for (int k = 0; k < depth; k++) {
                 printf("| ");
             }
@@ -210,7 +211,7 @@ void os_tree() {
         }
     }
 
-    fclose(f); // Evitamos leaks
+    fclose(f);
 }
 
 // ----- Funciones de manejo de archivos -----
@@ -243,6 +244,7 @@ int os_exists(char* filename) {
 
                 } else {
                     aux[1] = '\0';
+                    // WARN: Narrowing conversion from 'unsigned char' to signed type 'char' is implementation-defined
                     aux[0] = buffer[j];
                     strcat(path, aux); // Concatenar char   
                 }
@@ -266,6 +268,7 @@ int os_exists(char* filename) {
 
                 } else {
                     aux[1] = '\0';
+                    // WARN: Narrowing conversion from 'unsigned char' to signed type 'char' is implementation-defined
                     aux[0] = buffer[j];
                     strcat(path, aux); // Concatenar char   
                 }
@@ -273,6 +276,7 @@ int os_exists(char* filename) {
 
             strcat(path, "/");
             int *puntero;
+            // WARN: Incompatible pointer types assigning to 'int *' from 'unsigned char *'
             puntero = &buffer[1];
             if (find_file(*puntero, filename, path)) {// Función recursiva para leer
                 fclose(f); // Evitamos leaks
@@ -311,25 +315,28 @@ osFile* os_open(char* filename, char mode) {  // NOTE: En proceso
             char** splitpath = calloc(2, sizeof(char*));
             int index = 0;
 
+            // WARN: Narrowing conversion from 'unsigned long' to signed type 'int' is implementation-defined
             int pathleng = strlen(filename);
             char path[pathleng+1];
             strcpy(path, filename);
 
             char* token = strtok(path, "/");
-            while(token != NULL)
-            {
+            while(token != NULL) {
                 splitpath[index] = calloc(4096, sizeof(char));
                 strcpy(splitpath[index++], token);
                 token = strtok(NULL, "/");
             }
             
             char* filename2 = splitpath[index-1];
+
+            // WARN: Narrowing conversion from 'unsigned long' to signed type 'int' is implementation-defined
             int leng = strlen(filename2);
             path[pathleng-leng] = '\0';
 
             for(int i=0;i<index;i++) {
                 free(splitpath[i]);
             }
+
             free(splitpath);
             /// PATH DIR
             
@@ -344,6 +351,7 @@ osFile* os_open(char* filename, char mode) {  // NOTE: En proceso
             }
         }
     }
+
     return NULL;
 }
 
@@ -462,8 +470,8 @@ int os_rm(char* filename) {  // TODO: Pendiente
 }
 
 /* Esta función crea un directorio con el nombre indicado. Esto incrementa en 1
-   el contador P/E de las páginas que sea necesario actualizar 
-   para crear las referencias a este directorio. */
+ * el contador P/E de las páginas que sea necesario actualizar
+ * para crear las referencias a este directorio. */
 int os_mkdir(char* path) {  // TODO: Pendiente
     int bloquel = blocksearch();
     printf("El primer bloque disponible es: %i\n", bloquel);
@@ -471,6 +479,7 @@ int os_mkdir(char* path) {  // TODO: Pendiente
     char** splitpath = calloc(2, sizeof(char*));
     int index = 0;
 
+    // WARN: Narrowing conversion from 'unsigned long' to signed type 'int' is implementation-defined
     int pathleng = strlen(path);
     char pathto[pathleng]; strcpy(pathto, path);
 
@@ -483,6 +492,7 @@ int os_mkdir(char* path) {  // TODO: Pendiente
         token = strtok(NULL, "/");
     }
     // Remove dangling Windows (\r) and Unix (\n) newlines
+    // WARN: Narrowing conversion from 'unsigned long' to signed type 'int' is implementation-defined
     int len = strlen(splitpath[index - 1]);
     if (len > 1 && splitpath[index - 1][len - 2] == '\r')
         splitpath[index - 1][len - 2] = '\0';
@@ -490,6 +500,7 @@ int os_mkdir(char* path) {  // TODO: Pendiente
         splitpath[index - 1][len - 1] = '\0';
     ///// PATHSEARCH END
 
+    // WARN: Narrowing conversion from 'unsigned long' to signed type 'int' is implementation-defined
     char* filename = splitpath[index-1];
     int leng = strlen(filename);
     pathto[pathleng-leng] = '\0'; 
@@ -540,11 +551,11 @@ int os_load(char* orig) {  // TODO: Pendiente
 // Tira los nombres de todo lo que hay en el disco
 void print_names() {
     // Abro el archivo
-    FILE *f = fopen(global_diskname, "rb");
+    FILE* disk_file = fopen(global_diskname, "rb");
 
     // Me muevo 3 MiB, para llegar al bloque N°3, del directorio base.
     int offset = 3 * BLOCK_SIZE; // 3MiB
-    fseek(f, offset, SEEK_SET);
+    fseek(disk_file, offset, SEEK_SET);
 
     // root está en el bloque 3 por convención, por lo que si
     // hubiese que moverlo para que no se pudra, se perdería para siempre
@@ -556,7 +567,7 @@ void print_names() {
 
     for (int i = 0; i < entries; i++) {
         unsigned char buffer[max_buffer_size]; // Buffer para guardar los bytes de una entrada
-        fread(buffer, sizeof(buffer), 1, f); // Leo una entrada
+        fread(buffer, sizeof(buffer), 1, disk_file); // Leo una entrada
 
         if (buffer[0]) { // Si hay archivo o directorio:
             printf("Primer byte entrada %i: %i\n", i, buffer[0]);
@@ -570,5 +581,5 @@ void print_names() {
         }
     }
 
-    fclose(f);
+    fclose(disk_file);
 }
