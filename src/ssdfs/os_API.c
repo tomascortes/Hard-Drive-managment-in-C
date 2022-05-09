@@ -18,7 +18,6 @@
 
 // ===== API de ssdfs =====
 
-
 // ----- Funciones generales -----
 
 /* Monta el disco virtual
@@ -29,6 +28,8 @@ void os_mount(char* diskname, unsigned life) {
     /* Crea una variable global con el nombre del archivo y otra con el
      * valor de life */
     strcpy(global_diskname, diskname);
+    // WARN: " = life;":
+    //  Narrowing conversion from 'unsigned int' to signed type 'int' is implementation-defined
     global_P_E = life;
     unactualized_change = 0;
 }
@@ -103,15 +104,16 @@ void os_lifemap(int lower, int upper) {
         return;
     }
 
+    int rotten_blocks = 0;
+    int total_blocks = 0;
+    int rotten_found = 0;
+    int block_visited = 0;
+
     if (lower  == -1 && upper == -1) {
         upper = PAGES_PER_DISK;
         lower = 0;
     }
 
-    int rotten_blocks = 0;
-    int total_blocks = 0;
-    int rotten_found = 0;
-    int block_visited = 0;
     // Son 524288 paginas entre los 2 planos, por lo que recorremos 524288 numeros
     // Son 4096 bloques en el disco
     for (int i = 0; i < PAGES_PER_DISK; i++) {
@@ -123,17 +125,19 @@ void os_lifemap(int lower, int upper) {
             block_visited = 1;
         }
 
-        if (i % 256 == 0 && block_visited == 1){
-          // Se suman las condiciones de bloque visitado
+        if (i % 256 == 0 && block_visited == 1) {
+            // Se suman las condiciones de bloque visitado
             rotten_blocks += rotten_found;
             total_blocks++;
             rotten_found = 0;
             block_visited = 0;
         }
+
         if (buffer == -1) {
             rotten_found = 1;
         }
     }
+
     printf("\nCantidad de bloques rotten: %d", rotten_blocks);
     printf("\nCantidad de bloques sanos: %d\n", total_blocks - rotten_blocks);
     fclose(f); // Evitamos leaks
@@ -154,8 +158,9 @@ int os_trim(unsigned limit) {  // TODO: Pendiente
 
 /* Función para imprimir el árbol de directorios y archivos del sistema, a partir del
  * directorio base. */
-void os_tree(){
-    //// NOTE: Moví directree a ./aux/directree.*:aux_directree    - Luis
+void os_tree() {
+    int *puntero;
+
     // Abro el archivo
     FILE *f = fopen(global_diskname, "rb");
 
@@ -168,6 +173,7 @@ void os_tree(){
     // Son 32768 entradas en un bloque de directorio
     for (int i = 0; i < DIR_ENTRIES_PER_BLOCK; i++) {
         unsigned char buffer[DIR_ENTRY_SIZE];
+
         // Buffer para guardar los bytes de una entrada
         fread(buffer, sizeof(buffer), 1, f); // Leo una entrada
 
@@ -175,32 +181,42 @@ void os_tree(){
             for (int k = 0; k < depth; k++) { // Desplazar depth a la derecha
                 printf("| ");
             }
+
             for (int j = 5; j < DIR_ENTRY_SIZE; j++) { // Printear nombre del directorio
-                if (buffer[j] == 0){
+                if (buffer[j] == 0) {
                     break;
+
                 } else {
                     printf("%c", buffer[j]);
                 }
             }
+
             printf("\n");
-            int *puntero;
-            puntero = &buffer[1];
+
+            // NOTE: Cambié la línea a la que sigue.
+            //  Casteé de unsigned int a int
+            //puntero = &buffer[1];
+            puntero = (int *) &buffer[1];
+
             depth++; // Subo la profundidad en 1
             directree(*puntero, depth, global_diskname); // Llamada recursiva
             depth--; // Vuelvo a la profundidad anterior
-        } 
+        }
         
         else if (buffer[0] == 3) { // archivo:
             for (int k = 0; k < depth; k++) {
                 printf("| ");
             }
+
             for (int j = 5; j < DIR_ENTRY_SIZE; j++) { // Printear nombre del archivo
                 if (buffer[j] == 0){
                     break;
+
                 } else {
                     printf("%c", buffer[j]);
                 }
             }
+
             printf("\n");
         }
     }
@@ -225,34 +241,42 @@ int os_exists(char* filename) {
         // Buffer para guardar los bytes de una entrada
         fread(buffer, sizeof(buffer), 1, f); // Leo una entrada
 
-        if(buffer[0] == 3){ // archivo:
+        if(buffer[0] == 3) { // archivo:
             char path[100] = "/"; // path inicial
             char aux[2]; // variable para concatenar char
 
             for (int j = 5; j < DIR_ENTRY_SIZE; j++) { // Printear nombre del archivo
                 aux[1] = '\0';
+                // WARN: Narrowing conversion from 'unsigned char' to signed type 'char' is implementation-defined
                 aux[0] = buffer[j];
                 strcat(path, aux); // Concatenar char
             }
+
             if (strcmp(path, filename) == 0) { // compara con filename
                 fclose(f); // Evitamos leaks
                 return 1;
             }
-        }
 
-        else if (buffer[0] == 1) { // directorio:
+        } else if (buffer[0] == 1) { // directorio:
             char path[100] = "/"; // path inicial
             char aux[2]; // variable para concatenar char
+            int *puntero;
+
             for (int j = 5; j < DIR_ENTRY_SIZE; j++) { // Printear nombre del directorio
                 aux[1] = '\0';
-                //// WARN: Se está tirando un "unsign char" a "char"
+                // WARN: Se está tirando un "unsign char" a "char"
                 aux[0] = buffer[j];
                 strcat(path, aux); // Concatenar char
             }
+
             strcat(path, "/");
-            int *puntero;
-            puntero = &buffer[1];
-            if (find_file(*puntero, filename, path)){// Función recursiva para leer
+
+            // NOTE: Cambié la línea a la que sigue.
+            //  Casteé de unsigned int a int
+            // puntero = &buffer[1];
+            puntero = (int *) &buffer[1];
+            if (find_file(*puntero, filename, path)){
+                // Función recursiva para leer
                 fclose(f); // Evitamos leaks
                 return 1;
             }
@@ -272,52 +296,57 @@ osFile* os_open(char* filename, char mode) {  // NOTE: En proceso
             printf("(Lectura) Encuentra archivo. return osFile.\n");
             osFile* os_file = osFile_new(filename, mode);
             return os_file;
+
         } else {
             printf("(Lectura) No encuentra archivo. return NULL.\n");
             return NULL;
         }
     }
+
     if (mode == 'w') {
         if (os_exists(filename)) {
             printf("(Escritura) Encuentra archivo. return NULL.\n");
             return NULL;
+
         } else {
             /// PATH DIR
             char** splitpath = calloc(2, sizeof(char*));
             int index = 0;
-
+            // WARN: Narrowing conversion from 'unsigned long' to signed type 'int' is implementation-defined
             int pathleng = strlen(filename);
             char path[pathleng+1];
+
             strcpy(path, filename);
             char pathto[pathleng]; strcpy(pathto, path);
 
             char* token = strtok(path, "/");
-            while(token != NULL)
-            {
+            while(token != NULL) {
                 splitpath[index] = calloc(4096, sizeof(char));
                 strcpy(splitpath[index++], token);
                 token = strtok(NULL, "/");
             }
             
             char* filename2 = splitpath[index-1];
+            // WARN: Narrowing conversion from 'unsigned long' to signed type 'int' is implementation-defined
             int leng = strlen(filename2);
             pathto[pathleng-leng] = '\0';
 
             for(int i=0;i<index;i++){
                 free(splitpath[i]);
             }
+
             free(splitpath);
             /// PATH DIR
             
-            if(dir_exists(pathto)){
+            if(dir_exists(pathto)) {
                 printf("(Escritura) No encuentra archivo y existe directorio. return osFile.\n");
                 osFile* os_file = osFile_new(filename, mode);
                 return os_file;
-            }else{
+
+            } else {
                 printf("(Escritura) No encuentra archivo y no existe directorio. return NULL.\n");
                 return NULL;
             }
-            return NULL;
         }
     }
     return NULL;
@@ -330,91 +359,7 @@ osFile* os_open(char* filename, char mode) {  // NOTE: En proceso
  * archivo contenga páginas rotten. La lectura de read se efectúa desde la posición del
  * archivo inmediatamente posterior a la última posición leı́da por un llamado a read. */
 int os_read(osFile* file_desc, void* buffer, int nbytes) {  // REVIEW
-    // int page_offset;
-    // int* rotten_pages;
-
-    // int starting_page_byte;
-    // int end_page_byte;
-    // int reading_delta;
-    // int amount_read = 0;
-
-    // int buffer_counter = 0;
-
-    // if (strcmp(file_desc->mode, "r") != 0) {
-    //     printf("Archivo no está abierto en modo lectura");
-    //     return 0;
-    // }
-
-    // // Caso borde: nbytes = 0 ==> No se lee ningún byte
-    // if (nbytes == 0) {
-    //     return 0;
-    // }
-
-    // // Reviso las páginas rotten.
-    // rotten_pages = calloc(PAGES_PER_BLOCK, sizeof(bool));
-
-    // page_offset = file_desc->current_plane * BLOCKS_PER_PLANE * PAGES_PER_BLOCK;
-    // page_offset += file_desc->current_block * PAGES_PER_BLOCK;
-
-    // for (int n_page = 0; n_page < PAGES_PER_BLOCK; n_page ++) {
-    //     rotten_pages[n_page] = is_page_rotten(n_page + page_offset,
-    //                                           global_diskname);
-    // }
-
-    // // Reseteo cuenta de bytes leídos para hacer la comparación
-    // osFile_reset_bytes_count(file_desc);
-
-    // // Mientras que me queden bytes por leer debo seguir avanzando loopea
-    // while (nbytes > 0) {
-    //     // (nbytes - 1 // page_size) + 1 = Páginas por leer
-    //     // Usa la función piso/división parte entera, por eso el +-1
-    //     // Y como solo se pueden leer páginas como número entero...
-    //     osFile_load_pointer_page(file_desc, rotten_pages);
-
-    //     // Inicio y fin de lectura de la página
-    //     starting_page_byte = file_desc->current_pos % PAGE_SIZE;
-
-    //     if (nbytes >= PAGE_SIZE) {
-    //         end_page_byte = PAGE_SIZE;
-
-    //     } else {
-    //         end_page_byte = nbytes;
-    //     }
-
-    //     // Cant. de bytes leídos
-    //     reading_delta = end_page_byte - starting_page_byte + 1;
-
-    //     // Sustraigo bytes efectivamente leídos
-    //     nbytes -= reading_delta;
-
-    //     // Check de largo de archivo
-    //     if (file_desc->current_pos + reading_delta > file_desc->length) {
-    //         reading_delta = file_desc->length - file_desc->current_pos;
-    //         end_page_byte = starting_page_byte + reading_delta;
-    //     }
-
-    //     // Bytes realmente leidos
-    //     amount_read += reading_delta;
-
-    //     // Cargo bytes a heap
-    //     osFile_load_data(file_desc, starting_page_byte, end_page_byte);
-
-
-    //     // Copio heap a buffer byte por byte
-    //     for (int byte = 0; byte < reading_delta; byte++) {
-    //         // BUG: No sé cómo copiar un byte de heap (unsigened char*) a buffer (void*)
-    //         //  "Incomplete type 'void' is not assignable"
-    //         //  La siguiente línea representa la idea de lo que quiero hacer.
-    //         //  void* buffer?!?!?!!?
-    //         // buffer[buffer_counter] = file_desc->loaded_data[byte];
-    //         buffer_counter++;
-    //     }
-    // }
-
-    // // MEM leak := feo
-    // // :(
-    // free(rotten_pages);
-
+    // F
     return 0;
 }
 
@@ -431,15 +376,15 @@ int os_write(osFile* file_desc, void* buffer, int nbytes) {  // NOTE: En proceso
         return 0;
     }
 
-
     // verificar si quedan suficientes bloques TODO
 
     // Encontrar primer bloque desocupado para usarlo de indice
     for (int i = 1; i < 2048; i++) {
+        int index_block; // see leen ints de 4 bytes
+
         // fread(&buffer, sizeof(int), 1, opened_file); // Leo una entrada de un int
 
-        int index_block; // see leen ints de 4 bytes
-        if (is_block_available(i)  && is_block_rotten(i) == false){
+        if (is_block_available(i)  && is_block_rotten(i) == false) {
             printf("Bloque util %d\n", i);
             index_block = i;
         }
@@ -454,8 +399,6 @@ int os_write(osFile* file_desc, void* buffer, int nbytes) {  // NOTE: En proceso
     // Actualizamos el bitmap
     // Actualizamos el  lifemap
     // actualizar el directorio
-
-    
 
     // fclose(opened_file);
     return 0;
@@ -482,31 +425,7 @@ int os_rm(char* filename) {  // TODO: Pendiente
    el contador P/E de las páginas que sea necesario actualizar 
    para crear las referencias a este directorio. */
 int os_mkdir(char* path) {  // TODO: Pendiente
-    // Función auxiliar que busca el primer bloque vacío
-    int blocksearch(){
-        // Cargo el bitmap
-        FILE *f = fopen(global_diskname, "rb");
-        unsigned char buffer[256];
-        fread(buffer, sizeof(buffer), 1, f);
-        int bloque = 0;
-        for(int i = 0; i < 256; i++){
-            for (int j = 7; j >= 0; j--){
-                // Shift left para sacar el bit
-                int bit = (buffer[i] & (1 << j)) >> j;
-                // Si el bit es 1 sigo buscando, si no, retorno
-                if(bit){
-                    bloque++;
-                } else {
-                    fclose(f);
-                    return bloque;
-                } 
-            }
-        }
-        fclose(f);
-        return 0; // Si no hay bloques disponibles
-    }
-
-    int bloquel = blocksearch();
+    int bloquel = blocksearch(global_diskname);
     printf("El primer bloque disponible es: %i\n", bloquel);
 
     char** splitpath = calloc(2, sizeof(char*));

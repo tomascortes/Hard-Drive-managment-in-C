@@ -55,186 +55,234 @@ int is_page_rotten(int page, char* diskname) {
    en el que está ubicado el directorio */
 // 1° llamada -> bloque_final = 3
 // 1° llamada -> path_parcial = "~/" de largo 100
-int pathfinder(char* path, int bloque_final, char* path_parcial){
+int pathfinder(char* path, int bloque_final, char* path_parcial, char* diskname) {
     printf("llamada a la función\t");
     // Abro el archivo
-    FILE *f = fopen(global_diskname, "rb");
-
+    FILE* disk_file = fopen(diskname, "rb");
+    
     // Me muevo 3 MiB, para llegar al bloque N°3, de directorio.
-    fseek(f, BLOCK_SIZE * bloque_final, SEEK_SET);
+    fseek(disk_file, BLOCK_SIZE * bloque_final, SEEK_SET);
 
     // Son 32768 entradas en un bloque de directorio
     for (int i = 0; i < DIR_ENTRIES_PER_BLOCK; i++) {
         unsigned char buffer[DIR_ENTRY_SIZE];
-        
-        // Buffer para guardar los bytes de una entrada
-        fread(buffer, sizeof(buffer), 1, f); // Leo una entrada
         char path_parcial_r[100];
+
+        // Buffer para guardar los bytes de una entrada
+        fread(buffer, sizeof(buffer), 1, disk_file); // Leo una entrada
         strcpy(path_parcial_r, path_parcial);
+
         if (buffer[0] == 1){ // archivo o directorio:
             char aux[2]; // variable para concatenar char
+
             for (int j = 5; j < DIR_ENTRY_SIZE; j++){
                 aux[1] = '\0';
+                // WARN: Narrowing conversion from 'unsigned char' to signed type 'char' is implementation-defined
                 aux[0] = buffer[j];
                 strcat(path_parcial_r, aux); // Concatenar char
             } // Debuggear acá
             
             printf("Bloque final antes: %i\t", bloque_final);
-            int bloque_final = *(int*) (buffer + 1);
+            bloque_final = *(int*) (buffer + 1);
             printf("Bloque final después: %i\t", bloque_final);
             printf("Path parcial: %s\n", path_parcial_r);
-            if (strcmp(path_parcial_r, path) == 0){
-                fclose(f); // Evitamos leaks
-                return bloque_final; 
+
+            if (strcmp(path_parcial_r, path) == 0) {
+                fclose(disk_file); // Evitamos leaks
+                return bloque_final;
             }
+
             strcat(path_parcial_r, "/");
             printf("Path parcial hasta acá: %s\n", path_parcial);
             // Recursión
-            fclose(f); // Què pasarà si saco esto?
+            fclose(disk_file); // Què pasarà si saco esto?
             printf("%s, %i, %s\n", path, bloque_final, path_parcial_r);
             
-            if(strstr(path, path_parcial_r)){ // Solo si es substr
-                bloque_final = pathfinder(path, bloque_final, path_parcial_r);
-                if (bloque_final){
-                fclose(f);
-                return bloque_final; 
+            if(strstr(path, path_parcial_r)) { // Solo si es substr
+                bloque_final = pathfinder(path, bloque_final,
+                                          path_parcial_r, diskname);
+
+                if (bloque_final) {
+                    fclose(disk_file);
+                    return bloque_final;
                 }
             }
         }
     }
-    fclose(f); // Evitamos leaks
+
+    fclose(disk_file); // Evitamos leaks
     return 0; // 0 es que no se encontró
 }
 
     
 
-// Defino la verión recursiva de la función acá adentro
+// Defino la función recursiva de la función acá adentro
 // para cumplir con las reglas de no ofrecer más funciones en la API
-int find_file(int directory_block, char* filename, char* path) {
-    FILE* f2 = fopen(global_diskname, "rb");
-    fseek(f2, directory_block * BLOCK_SIZE, SEEK_SET);
-    // Cada bloque tiene 1048576 bytes
-
-    // Son 32768 entradas en un bloque de directorio
+int find_file(int directory_block, char* filename, char* path, char* diskname) {
+    FILE* disk_file = fopen(diskname, "rb");
+    fseek(disk_file, directory_block * BLOCK_SIZE, SEEK_SET);
+    
     for (int i = 0; i < DIR_ENTRIES_PER_BLOCK; i++) {
-        unsigned char buffer[DIR_ENTRY_SIZE]; // Buffer para guardar los bytes de una entrada
-        fread(buffer, sizeof(buffer), 1, f2); // Leo una entrada
+        // Buffer para guardar los bytes de una entrada
+        unsigned char buffer[DIR_ENTRY_SIZE];
 
+        // Leo una entrada
+        fread(buffer, sizeof(buffer), 1, disk_file);
+        
         if(buffer[0] == 3) { // archivo:
-            char path2[100]; // path actual
+            char current_path[100]; // path actual
             char aux[2]; // variable para concatenar char
-            strcpy(path2, path); // Copiar strings
+            strcpy(current_path, path); // Copiar strings
             for (int j = 5; j < DIR_ENTRY_SIZE; j++) { // Printear nombre del archivo
+                
                 aux[1] = '\0';
+                // WARN: Narrowing conversion from 'unsigned char' to signed type 'char' is implementation-
                 aux[0] = buffer[j];
-                strcat(path2, aux); // Concatenar char
+
+                // Concatenar char
+                strcat(current_path, aux);
             }
-            if (strcmp(path2, filename) == 0) { // compara con filename
-                fclose(f2); // Evitamos leaks
+
+            // compara con filename
+            if (strcmp(current_path, filename) == 0) {
+                fclose(disk_file);
                 return 1;
             }
-        }
-        else if(buffer[0] == 1) { // Directorio
+
+        // Directorio
+        } else if(buffer[0] == 1) {
             char path2[100]; // path actual
             char aux[2]; // variable para concatenar char
+            int puntero = *(int*) buffer + 1;
+            
             strcpy(path2, path); // Copiar strings
-            for (int j = 5; j < DIR_ENTRY_SIZE; j++) { // Printear nombre del directorio
+            
+            for (int j = 5; j < DIR_ENTRY_SIZE; j++) {
+                // Printear nombre del directorio
                 aux[1] = '\0';
+                // WARN: Narrowing conversion from 'unsigned char' to signed type 'char' is implementation-defined
                 aux[0] = buffer[j];
                 strcat(path2, aux); // Concatenar char
             }
+            
             strcat(path, "/"); // Concatenar nuevo directorio
-            int puntero = *(int*) buffer + 1;
-            if (find_file(puntero, filename, path2)){// Función recursiva para leer
-                fclose(f2); // Evitamos leaks
+
+            // Función recursiva para leer
+            if (find_file(puntero, filename, path2)) {
+                fclose(disk_file);
                 return 1;
             };
         }
     }
-
-    fclose(f2); // Evitamos leaks
+    fclose(disk_file);
     return 0;
 }
 
-int dir_exists(char* dirname) {
+int dir_exists(char* dirname, char* diskname) {
     // Abro el archivo
-    FILE *f = fopen(global_diskname, "rb");
     char dir[100];
+    FILE* disk_file = fopen(diskname, "rb");
+
     strcpy(dir, dirname);
 
     // Me muevo 3 MiB, para llegar al bloque N°3, de directorio.
-    fseek(f, BLOCK_SIZE * 3, SEEK_SET);
+    fseek(disk_file, BLOCK_SIZE * 3, SEEK_SET);
 
     // Son 32768 entradas en un bloque de directorio
     for (int i = 0; i < DIR_ENTRIES_PER_BLOCK; i++) {
         unsigned char buffer[DIR_ENTRY_SIZE];
+        int *puntero;
+        
         // Buffer para guardar los bytes de una entrada
-        fread(buffer, sizeof(buffer), 1, f); // Leo una entrada
+        fread(buffer, sizeof(buffer), 1, disk_file); // Leo una entrada
+
         if(buffer[0] == 1) { // directorio:
             char path[100] = "/"; // path inicial
             char aux[2]; // variable para concatenar char
-            for (int j = 5; j < DIR_ENTRY_SIZE; j++) { // Printear nombre del directorio
+
+            // Printear nombre del directorio
+            for (int j = 5; j < DIR_ENTRY_SIZE; j++) {
                 aux[1] = '\0';
+                // WARN: Narrowing conversion from 'unsigned char' to signed type 'char' is implementation-defined
                 aux[0] = buffer[j];
                 strcat(path, aux); // Concatenar char
             }
+
             strcat(path, "/");
-            int *puntero;
-            puntero = &buffer[1];
+
+            // NOTE: Cambié la línea a la que sigue.
+            //  Casteé de unsigned int a int
+            // puntero = &buffer[1];
+            puntero = (int *) &buffer[1];
+
             if (strcmp(path, dirname) == 0) { // compara con filename
-                fclose(f); // Evitamos leaks
+                fclose(disk_file); // Evitamos leaks
                 return 1;
             }
-            if (find_dir(*puntero, dir, path)){// Función recursiva para leer
-                fclose(f); // Evitamos leaks
+
+            if (find_dir(*puntero, dir, path)) { // Función recursiva para leer
+                fclose(disk_file); // Evitamos leaks
                 return 1;
-            };
+            }
         }
     }
 
-    fclose(f); // Evitamos leaks
+    fclose(disk_file); // Evitamos leaks
     return 0;
 }
 
-int find_dir(int directory_block, char* dirname, char* path) {
-    FILE* f2 = fopen(global_diskname, "rb");
-    fseek(f2, directory_block * BLOCK_SIZE, SEEK_SET);
-    // Cada bloque tiene 1048576 bytes
-
-    // Son 32768 entradas en un bloque de directorio
+int find_dir(int directory_block, char* dirname, char* path, char* diskname) {
+    FILE* disk_file = fopen(diskname, "rb");
+    fseek(disk_file, directory_block * BLOCK_SIZE, SEEK_SET);
+    
     for (int i = 0; i < DIR_ENTRIES_PER_BLOCK; i++) {
-        unsigned char buffer[DIR_ENTRY_SIZE]; // Buffer para guardar los bytes de una entrada
-        
-        fread(buffer, sizeof(buffer), 1, f2); // Leo una entrada
+        // Buffer para guardar los bytes de una entrada
+        unsigned char buffer[DIR_ENTRY_SIZE];
+        int *pointer;
+
+        // Leo una entrada
+        fread(buffer, sizeof(buffer), 1, disk_file);
 
         if(buffer[0] == 1) { // Directorio
-            char path2[100]; // path actual
+            char current_path[100]; // path actual
             char aux[2]; // variable para concatenar char
-            strcpy(path2, path); // Copiar strings
-            for (int j = 5; j < DIR_ENTRY_SIZE; j++) { // Printear nombre del directorio
+
+            strcpy(current_path, path); // Copiar strings
+
+            // Printear nombre del directorio
+            for (int j = 5; j < DIR_ENTRY_SIZE; j++) {
                 aux[1] = '\0';
                 aux[0] = buffer[j];
-                strcat(path2, aux); // Concatenar char
+                // Concatenar char
+                strcat(current_path, aux);
             }
-            strcat(path2, "/"); // Concatenar nuevo directorio
-            int *puntero;
-            puntero = &buffer[1];
-            if (strcmp(path2, dirname) == 0) { // compara con filename
-                fclose(f2); // Evitamos leaks
+
+            // Concatenar nuevo directorio
+            strcat(current_path, "/");
+            // NOTE: Cambié la línea a la que sigue.
+            //  Casteé de unsigned int a int
+            // pointer = &buffer[1];
+            pointer = (int *) &buffer[1];
+
+            // compara con filename
+            if (strcmp(current_path, dirname) == 0) {
+                fclose(disk_file);
                 return 1;
             }
-            if (find_dir(*puntero, dirname, path2)){// Función recursiva para leer
-                fclose(f2); // Evitamos leaks
+
+            // Función recursiva para leer
+            if (find_dir(*pointer, dirname, current_path)) {
+                fclose(disk_file);
                 return 1;
-            };
+            }
         }
     }
 
-    fclose(f2); // Evitamos leaks
+    fclose(disk_file);
     return 0;
 }
 
-int get_index_file(int directory_block, char* filename, char* path) {
+int get_index_file(int directory_block, char* filename, char* path, char* diskname) {
     FILE* f2 = fopen(global_diskname, "rb");
     fseek(f2, directory_block * BLOCK_SIZE, SEEK_SET);
     // Cada bloque tiene 1048576 bytes
@@ -283,7 +331,7 @@ int get_index_file(int directory_block, char* filename, char* path) {
     return 0;
 }
 
-int get_index_pointer_and_length(char* filename) {
+int get_index_pointer_and_length(char* filename, char* diskname) {
     // Abro el archivo
     FILE *f = fopen(global_diskname, "rb");
 
@@ -334,9 +382,9 @@ int get_index_pointer_and_length(char* filename) {
 
 // Defino la verión recursiva de la función acá adentro
 // para cumplir con las reglas de no ofrecer más funciones en la API
-void directree(int directory_block, int depth, char* global_diskname) {
+void directree(int directory_block, int depth, char* diskname) {
     //NOTE: Consejo: Poner un maxdepth para que no haga stack overflow si se sale de control
-    FILE* f2 = fopen(global_diskname, "rb");
+    FILE* f2 = fopen(diskname, "rb");
     fseek(f2, directory_block * BLOCK_SIZE, SEEK_SET);
     // Cada bloque tiene 1048576 bytes
 
@@ -378,7 +426,7 @@ void directree(int directory_block, int depth, char* global_diskname) {
 }
 
 
-bool is_block_rotten(int block){
+bool is_block_rotten(int block, char* diskname){
     FILE *f = fopen(global_diskname, "rb");
 
     fseek(f, 1 * BLOCK_SIZE, SEEK_SET);
@@ -399,7 +447,7 @@ bool is_block_rotten(int block){
     return false;
 }
 
-bool is_block_available(unsigned num) {
+bool is_block_available(unsigned num, char* diskname) {
     // Abro el archivo
     FILE *f = fopen(global_diskname, "rb");
 
@@ -424,4 +472,32 @@ bool is_block_available(unsigned num) {
     }
 
     fclose(f); // Evitamos leaks
+}
+
+// Función auxiliar que busca el primer bloque vacío
+int blocksearch(char* diskname) {
+    // Cargo el bitmap
+    FILE *f = fopen(diskname, "rb");
+    unsigned char buffer[256];
+    int bloque = 0;
+
+    fread(buffer, sizeof(buffer), 1, f);
+
+    for(int i = 0; i < 256; i++) {
+        for (int j = 7; j >= 0; j--) {
+            // Shift left para sacar el bit
+            int bit = (buffer[i] & (1 << j)) >> j;
+
+            // Si el bit es 1 sigo buscando, si no, retorno
+            if(bit) {
+                bloque++;
+            } else {
+                fclose(f);
+                return bloque;
+            }
+        }
+    }
+
+    fclose(f);
+    return 0; // Si no hay bloques disponibles
 }

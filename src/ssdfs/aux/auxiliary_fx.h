@@ -23,7 +23,6 @@
 #include <stdlib.h>
 #include <stdbool.h>
 
-
 #define PLANES_PER_DISK 2
 #define BLOCKS_PER_PLANE 1024
 #define PAGES_PER_BLOCK 256
@@ -60,7 +59,7 @@ int find_file(int directory_block,
               char* filename,
               char* path);
 
-int pathfinder(char* path, int bloque_final, char* path_parcial);
+int pathfinder(char* path, int bloque_final, char* path_parcial, char* diskname);
 
 int find_dir(int directory_block,
              char* filename,
@@ -71,5 +70,7 @@ int get_index_file(int directory_block, char* filename, char* path);
 int get_index_pointer_and_length(char* filenamem);
 
 void directree(int directory_block, int depth, char* global_diskname);
+int blocksearch(char* diskname);
+
 bool is_block_rotten(int block);
 bool is_block_available(unsigned num);
