@@ -227,8 +227,14 @@ void fxExtra_cargar_pagina_en_mem(osFile* file, char* dir_pagina, int nro_pag) {
     long int pre_cantidad_de_bloques_del_archivo = largo_del_archivo / BLOCK_SIZE;
     int cantidad_de_bloques_del_archivo = (int) pre_cantidad_de_bloques_del_archivo;
 
-    long int pre_cantidad_de_bloques_del_archivo = file->by / BLOCK_SIZE;
-    int bloque_en_el_que_voy_leyendo =
+    long int pre_cantidad_de_bloques_avanzado_en_archivo = file->by / BLOCK_SIZE;
+    int bloque_en_el_que_voy_leyendo = (int) pre_cantidad_de_bloques_avanzado_en_archivo;
+
+    memoria_para_el_array = cantidad_de_bloques_del_archivo * sizeof(int);
+
+    char* memoria_para_los_bloques = malloc(memoria_para_el_array);
+
+
 
 
 
