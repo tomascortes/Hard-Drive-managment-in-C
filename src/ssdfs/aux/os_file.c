@@ -197,13 +197,19 @@ int fxExtra_nro_pagina_que_tengo_que_leer(osFile* file) {
 
 void fxExtra_cargar_pagina_en_mem(osFile* file, char* dir_pagina, int nro_pag) {
     // TODO:
-    //  [ ] Ver dónde estoy parado
-    //  [ ] Calcular página según longitud
+    //  [X] Ver dónde estoy parado
+    //  [X] Calcular página según longitud
     //  [ ] Meterme al índice y armar un array de bloques
     //  [ ] Armar un array de página involucradas
     //  [ ] Recorrer página por página y agregarla a un nuevo array si no está rotten
     //  [ ] Avanzar pág por pág hasta la que necesito
     //  [ ] Cargar la que necesito en memoria
+
+    long int tamanio = file->length;
+    int donde_voy_leyendo = file->bytes_loaded_count;
+    int mi_paginita = nro_pag;
+
+
 }
 
 bool quedan_bytes_por_leer(osFile* file) {
