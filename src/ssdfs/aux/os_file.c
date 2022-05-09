@@ -127,3 +127,8 @@ void osFile_destroy(osFile* self) {
     // Libero memoria puntero nombre
     free(self);
 }
+
+/// ------------------------------------------
+/// Cosas que fui necesitando en el camino
+/// ------------------------------------------
+
