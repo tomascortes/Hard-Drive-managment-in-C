@@ -32,7 +32,6 @@ typedef struct osFile {
     char mode[2]; // r -> ReadOnly || w-> WriteOnly
     long int length; // Largo en bytes del archivo
 
-    // TODO: Verificar correctitud de los intervalos
     int current_index; // numero de bloque index
     // entre 1 y 1012 y 
     int current_block; // Número de bloque en el que se encuentra el archivo.

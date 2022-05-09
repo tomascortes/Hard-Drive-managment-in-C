@@ -209,6 +209,24 @@ void fxExtra_cargar_pagina_en_mem(osFile* file, char* dir_pagina, int nro_pag) {
     int donde_voy_leyendo = file->bytes_loaded_count;
     int mi_paginita = nro_pag;
 
+    FILE* disco = fopen(global_diskname, "rb");
+    fseek(disco, file->block_index_number * BLOCK_SIZE, SEEK_SET);
+
+    
+
+
+
+    // leer todo el bloque indice
+    fread(self->index_pointer, sizeof(self->index_pointer), 1, opened_file); // Leo una entrada
+
+    //encontrar length
+    // Si quiero acceder a los primeros 8 Byte es self->pointer
+    // Si quiero acceder a los 8 Byte siguientes al primer byte es (self->pointer + 1)
+    // Si suma en C corresponde al avance en punteros de los byte correspondientes a la variable
+    // +1 en char es 1 byte
+    // +1 en int son 4 byte
+    self->length = *(long int*)self->index_pointer;
+
 
 }
 
