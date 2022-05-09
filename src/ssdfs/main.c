@@ -36,16 +36,15 @@ int main (int argc, char* const argv[]) {
 
 
     // Crear archivo nuevo
-    os_tree();
     printf("Comienza open\n");
-    osFile* os_file = os_open("~/quiero_llorar.a", 'w');
-    char buffer[10] = "AAABBBCCCD";
-    
-    os_lifemap(6*PAGES_PER_BLOCK, 7*PAGES_PER_BLOCK);
-    os_write(os_file, buffer, 10);
-
-    os_lifemap(6*PAGES_PER_BLOCK, 7*PAGES_PER_BLOCK);
-    os_tree();
+    osFile* os_file = os_open("~/dir1/vivachile.mp4", 'w');
+    if (os_file != NULL){
+        char buffer[10] = "AAABBBCCCD";
+        
+        os_write(os_file, buffer, 10);
+        os_lifemap(6*PAGES_PER_BLOCK, 7*PAGES_PER_BLOCK);
+        os_tree();
+    }
 
 
     // Cierra los archivos
