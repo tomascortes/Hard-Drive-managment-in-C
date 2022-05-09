@@ -230,14 +230,15 @@ void fxExtra_cargar_pagina_en_mem(osFile* file, char* dir_pagina, int nro_pag) {
     long int pre_cantidad_de_bloques_avanzado_en_archivo = file->by / BLOCK_SIZE;
     int bloque_en_el_que_voy_leyendo = (int) pre_cantidad_de_bloques_avanzado_en_archivo;
 
-    memoria_para_el_array = cantidad_de_bloques_del_archivo * sizeof(int);
+    long int* memoria_para_los_bloques = calloc(cantidad_de_bloques_del_archivo, sizeof(long int));
 
-    char* memoria_para_los_bloques = malloc(memoria_para_el_array);
+    for (int cuenta_bloque = 0; cuenta_bloque < cantidad_de_bloques_del_archivo; cuenta_bloque++) {
+        a
+    }
 
 
 
-
-
+    free(memoria_para_los_bloques);
 
 
 }
