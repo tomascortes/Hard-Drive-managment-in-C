@@ -30,7 +30,7 @@ osFile* osFile_new(char* filename, char mode) {
     osFile_set_mode(instance_pointer, mode); // Inicializo con valores por defecto.
 
     if (strcmp(instance_pointer->mode, "w") == 0) {
-        // put_on_disk(instance_pointer, filename); 
+        // put_on_disk(instance_pointer, filename);
         //TODO: Falta agregar el osFile NUEVO al direcotrio del disco
          // Encontrar primer bloque desocupado para usarlo de indice
         int index_block = get_usable_block();
