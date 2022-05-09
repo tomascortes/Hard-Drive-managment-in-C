@@ -167,6 +167,7 @@ void fxExtra_cargar_pagina_en_mem(osFile* file, char* dir_pagina, int nro_pag) {
 bool quedan_bytes_por_leer(osFile* file) {
 
 }
+
 void copiar_byte(osFile* file, char* desde, void* hacia, int en_donde_voy) {
 
 }
