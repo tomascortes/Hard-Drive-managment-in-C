@@ -53,7 +53,11 @@ int is_page_rotten(int page, char* diskname) {
 
 // Esta es para llamar a la otra con los parámetros iniciales
 int pathfinder(char* path){
-    return pathfinder_internal(path, 3, "~/");
+    if (strcmp(path, "~")){
+        return 3;
+    } else {
+        return pathfinder_internal(path, 3, "~/");
+    }
 }
 
 /* Esta función recibe un path y me tira el bloque
