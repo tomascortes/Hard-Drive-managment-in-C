@@ -128,3 +128,6 @@ void osFile_destroy(osFile* self);
 
 void add_block_to_index(osFile* self, int new_block);
 void print_index_block(osFile* self);
+void print_text_file(osFile* self);
+void change_length_of_file(osFile* self, long length);
+void add_to_directory(osFile* os_file, int directory_block);

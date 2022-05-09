@@ -31,9 +31,9 @@ int main (int argc, char* const argv[]) {
     mark_as_used(1);
     mark_as_used(2);
     mark_as_used(3);
-    // for (int i = 5; i<100;i++){
-    //     unmark_as_used(i);
-    // }
+    for (int i = 5; i<100;i++){
+        mark_as_unused(i);
+    }
 
     //Prueba bitmap
     // os_bitmap(0);
@@ -43,18 +43,17 @@ int main (int argc, char* const argv[]) {
     // osFile* os_file = os_open("/dir1ta/amogus.mp4", 'r');
 
     // Crear archivo nuevo
-    osFile* os_file2 = os_open("/quiero_llorar.a", 'w');
-    char buffer[4] = "AAAA" ;
+    osFile* os_file = os_open("/quiero_llorar.a", 'w');
+    char buffer[10] = "AAABBBCCCD";
     
-    os_write(os_file2, &buffer, 4);
-    printf("Segundo archivo\n");
+    os_lifemap(6*PAGES_PER_BLOCK, 7*PAGES_PER_BLOCK);
+    os_write(os_file, buffer, 10);
 
-    os_bitmap(0);
+
     os_tree();
-    printf("\nTermino de escritura en el dico\n");
-    // read_from_disk(os_file2, "quiero_llorar.a");// Arreglar el directorio primero
+    os_lifemap(6*PAGES_PER_BLOCK, 7*PAGES_PER_BLOCK);
 
-    os_close(os_file2);
+    os_close(os_file);
 
 
     // Cierra los archivos

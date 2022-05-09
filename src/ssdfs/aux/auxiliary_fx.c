@@ -374,7 +374,7 @@ bool is_block_rotten(int block){
     fseek(f, 1 * BLOCK_SIZE, SEEK_SET);
 
     if (block > 2048 || block < 0 ) {
-        printf("Error de input para usefull_lifemap\n");
+        printf("Error de input para is_block_rotten\n");
         return true;
     }
 
@@ -460,7 +460,7 @@ void mark_as_used(int bloque) {
 }
 // Busca en el bitmap el bit correspondiente al bloque
 // y lo marca como usado (lo pone en 1)
-void unmark_as_used(int bloque) {
+void mark_as_unused(int bloque) {
     // El bit que corresponda al bloque va a estar en el byte:
     int byte = bloque / 8;
     int offset = 7 - bloque % 8;
@@ -475,7 +475,7 @@ void unmark_as_used(int bloque) {
     fclose(f);
 
     // Convierto el bit que me interesa en 1
-    data = !(data | (1 << offset));
+    data = (data & ~(1 << offset));
 
     // Puntero al byte de datos a escribir
     unsigned char* point_data = &data;
@@ -492,4 +492,20 @@ int min(int a1, int a2){
         return a1;
     }
     return a2;
+}
+
+void update_rotten_page(int block, int page_inside_block){
+    FILE* open_file = fopen(global_diskname, "rb+");
+    int real_page = (block*PAGES_PER_BLOCK + page_inside_block)*sizeof(int);
+
+    fseek(open_file, 1 * BLOCK_SIZE + real_page, SEEK_SET);
+    int buffer;
+    fread(&buffer, sizeof(int), 1, open_file);
+    buffer ++;
+    if (buffer >= global_P_E){
+        buffer = -1;
+    }
+    fseek(open_file, 1 * BLOCK_SIZE + real_page, SEEK_SET);
+    fwrite(&buffer, sizeof(int), 1, open_file);
+    fclose(open_file);
 }

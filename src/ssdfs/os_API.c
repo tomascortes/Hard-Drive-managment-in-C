@@ -118,8 +118,8 @@ void os_lifemap(int lower, int upper) {
         int buffer; // see leen ints de 4 bytes
         fread(&buffer, sizeof(int), 1, f); // Leo una entrada de un int
 
-        if ( lower < i && i < upper) {
-            printf(" %d", buffer);
+        if ( lower <= i && i < upper) {
+            printf("%d ", buffer);
             block_visited = 1;
         }
 
@@ -299,6 +299,7 @@ osFile* os_open(char* filename, char mode) {  // NOTE: En proceso
             }
             free(splitpath);
             /// PATH DIR
+            printf("path: %s\n", path);
             
             if(dir_exists(path)){
                 printf("(Escritura) No encuentra archivo y existe directorio. return osFile.\n");
@@ -419,15 +420,13 @@ int os_read(osFile* file_desc, void* buffer, int nbytes) {  // REVIEW
  * (incluso 0). Esta función aumenta en 1 el contador P/E en el lifemap asociado a cada
  * página que se escriba. */
 int os_write(osFile* file_desc, void* buffer, int nbytes) {  // NOTE: En proceso
-    // if (file_desc->mode ==  'w') {
-    //     printf("Error: El archivo debe estar en modo write.\n");
-    //     return 0;
-    // } 
-
-    if (nbytes % 2){
-        printf("No es par aaaaaaaa");
-        nbytes ++; //???? uwu 
-        // TODO: añadir byte 0 a buffer   
+    if (file_desc->mode ==  'w') {
+        printf("Error: El archivo debe estar en modo write.\n");
+        return 0;
+    } 
+    bool pagina_incompleta = false;
+    if (nbytes % PAGE_SIZE != 0){
+        pagina_incompleta = true;
     }
     int bloques_necesarios = nbytes/BLOCK_SIZE;
     if (nbytes%BLOCK_SIZE != 0){
@@ -435,66 +434,58 @@ int os_write(osFile* file_desc, void* buffer, int nbytes) {  // NOTE: En proceso
     }
 
     // Abrimos el disco
-    FILE *opened_file = fopen(global_diskname, "rb");
+    FILE *opened_file = fopen(global_diskname, "rb+");
     int data_block;
-    int puntero_buffer = 0;
-    int writed_bytes = 0;
-    printf("Comienzo de  for\n");
+    long  *writen_bytes;
+    long c = 0;
+    writen_bytes = &c;
     for (int bloque = 0; bloque < bloques_necesarios; bloque ++){
         
-        data_block = get_usable_block(); //retorna bloque no rotten ni vacio
+        data_block = get_usable_block(); //retorna bloque libre y no rotten (fresh)
         if (data_block == -1){
             // Significa que no quedan bloques en el disco
-            break;
-            //TODO: Asumiré por mientras que esto no pasa
+            return *writen_bytes;
         }
-        
         // todos los cachos de añadir un nuevo bloque al archivo
         mark_as_used(data_block); //bitmap
-        int direccion = BLOCK_SIZE*file_desc->block_index_number + 8 + file_desc ->amount_of_blocks*4; // 
-        fseek(opened_file , direccion, SEEK_SET); 
-        fwrite(data_block, 4, 1, opened_file); // escribimos el numero de bloque en el indice //BUG: Esta linea no hace lo que debería
-        printf("Añadido nuevo bloque al indice es el numero: %d  en la posición: %d", data_block);
+        add_block_to_index(file_desc, data_block);
         file_desc ->amount_of_blocks ++; // añado 1 al contador de bloques
                 
         fseek(opened_file , BLOCK_SIZE*data_block, SEEK_SET); 
         // Escribimos los bytes corerspndientes a casa página
-        int dif = nbytes-puntero_buffer;
-        for (int i=0; i < min(256, dif); i++ ){
+        long dif = nbytes-*writen_bytes;
+        for (int byte=0; byte < min(BLOCK_SIZE, dif); byte++ ){
             char *puntero;
-            puntero = &buffer[puntero_buffer];
-            fwrite(*puntero, 4, 1, opened_file); //BUG: Asunmo que esta no esta haciendo lo que deberia
-            puntero_buffer ++;
-            writed_bytes ++;
-            // TODO: Actualizar lifema
+            puntero = buffer + *writen_bytes;
+            fwrite(puntero, 1, 1, opened_file); 
+            *writen_bytes = *writen_bytes + 1;
+            if (byte%PAGE_SIZE == 0){
+                update_rotten_page(data_block, *writen_bytes/PAGE_SIZE); // recibe numero de bloque y pagina relativa dentro del bloque
+            }
         }
-        if (puntero_buffer >= nbytes){
+        if (*writen_bytes >= nbytes){
             break;
         }
         printf("Quedan bytes\n");
-        printf("puntero_buffer: %d\n", puntero_buffer);
+        printf("*writen_bytes: %ld\n", *writen_bytes);
         printf("nbytes: %d\n", nbytes);
         data_block = get_usable_block();
         mark_as_used(data_block); 
     }
-    // imprimimos para chequear
-    // Actualizar el directorio
-    // Actualizamos el length
-    fseek(opened_file , BLOCK_SIZE*file_desc->block_index_number, SEEK_SET); 
-    file_desc->length = writed_bytes;
-    // fwrite(25, sizeof(int), 1, opened_file); //BUG: Esta linea no hace lo que debería
-    // fseek(opened_file , BLOCK_SIZE*file_desc->block_index_number - 1, SEEK_SET); 
-    fwrite(25, sizeof(int), 1, opened_file); //BUG: Esta linea no hace lo que debería
-    // fseek(opened_file , BLOCK_SIZE*file_desc->block_index_number + 1, SEEK_SET); 
-    // fwrite(25, sizeof(int), 1, opened_file); //BUG: Esta linea no hace lo que debería
-
-    print_index_block(file_desc);
-
-
-    
-
+    if (pagina_incompleta){
+        // Dejamos los bytes faltantes
+        for (int byte = nbytes%PAGE_SIZE; byte < PAGE_SIZE; byte++ ){
+            char puntero;
+            puntero = 0;
+            fwrite(&puntero, 1, 1, opened_file); 
+        }
+    }
     fclose(opened_file);
-    return 0;
+    // Actualizamos el length
+    file_desc->length = *writen_bytes;
+    change_length_of_file(file_desc, *writen_bytes);
+    
+    return *writen_bytes;
 }
 
 /* Esta función permite cerrar un archivo. Cierra el archivo indicado por file desc. Debe
@@ -518,31 +509,8 @@ int os_rm(char* filename) {  // TODO: Pendiente
    el contador P/E de las páginas que sea necesario actualizar 
    para crear las referencias a este directorio. */
 int os_mkdir(char* path) {  // TODO: Pendiente
-    // Función auxiliar que busca el primer bloque vacío
-    int blocksearch(){
-        // Cargo el bitmap
-        FILE *f = fopen(global_diskname, "rb");
-        unsigned char buffer[256];
-        fread(buffer, sizeof(buffer), 1, f);
-        int bloque = 0;
-        for(int i = 0; i < 256; i++){
-            for (int j = 7; j >= 0; j--){
-                // Shift left para sacar el bit
-                int bit = (buffer[i] & (1 << j)) >> j;
-                // Si el bit es 1 sigo buscando, si no, retorno
-                if(bit){
-                    bloque++;
-                } else {
-                    fclose(f);
-                    return bloque;
-                } 
-            }
-        }
-        fclose(f);
-        return 0; // Si no hay bloques disponibles
-    }
 
-    int bloquel = blocksearch();
+    int bloquel = get_usable_block();
     printf("El primer bloque disponible es: %i\n", bloquel);
 
     char** splitpath = calloc(2, sizeof(char*));
