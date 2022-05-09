@@ -67,30 +67,28 @@ void setup_from_disk(osFile* self, char* filename) {
     fseek(opened_file, self->block_index_number * BLOCK_SIZE, SEEK_SET);
 
     // leer todo el bloque indice
-    unsigned char buffer[4056]; // Buffer para guardar los bytes de bloque indice
-    fread(buffer, sizeof(buffer), 1, opened_file); // Leo una entrada
-    
+    fread(self->index_pointer, sizeof(self->index_pointer), 1, opened_file); // Leo una entrada
+
     //encontrar length
-    long int *length;
-    length = &buffer[0];
-    self->length = *length;
+    self->length = *(long int*)self->index_pointer;
 
     // puntero al pimer bloque de datos
-    self->index_pointer = &buffer[8];
-
-    self->current_index = self->block_index_number; // numero de bloque index
-    self->current_block = *self->index_pointer; // Número de bloque en el que se encuentra el archivo.
+    self->current_index = 8; // Indice Actual
+    self->current_block = *(int*)(self->index_pointer + self->current_index); // Número de bloque en el que se encuentra el archivo
     self->current_page = 0; // Página actual
-    self->current_pos = 0; // Posición actual dentro de la página actual
-    
-    self->bytes_loaded_count = 0; // Cantidad de bytes leídos. Debe resetearse cada vez que se lee.
-    self->remaining_bytes = self->length; // Bytes restantes que quedan por leer 
+    self->current_cell = 0; // celda actual
+    self->current_byte = 0; // byte actual
+
+    self->bytes_loaded_count = 0; // Cantidad de bytes leídos. Debe resetearse cada vez que se lee
+    self->remaining_bytes = self->length; // Bytes restantes que quedan por leer
 
     printf("Largo de Archivo: %ld\n", self->length);
-    printf("Numero de Bloque Index: %ld\n", self->block_index_number);
-    printf("Numero del Primer Bloque de Datos: %d\n", self->current_block);
-    printf("Numero de la Primera Pagina: %d\n", self->current_page);
-    printf("Numero de la posicion en la pagina: %d\n", self->current_pos);
+    printf("Cantidad de Bloques del Archivo: %f\n", (float)self->length/BLOCK_SIZE);
+    printf("Indice Actual: %d\n", self->current_index);
+    printf("Bloque Actual: %d\n", self->current_block);
+    printf("Pagina Actual: %d\n", self->current_page);
+    printf("Celda Actual: %d\n", self->current_cell);
+    printf("Byte Actual: %d\n", self->current_byte);
 
     fclose(opened_file);
 }
