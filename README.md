@@ -29,6 +29,7 @@
 ### Supuestos adicionales ocupados
 
 - El bloque 4 correspondiente al directorio, dice 0 en empty, pero no puede ser escrito porque es el bloque de directorio
+- Un bloque con una o más páginas *rotten* se convierte en un bloque ilegible puesto a que nunca debió ser escrito en primer lugar por restricciones ya existentes.
 
 ---
 
