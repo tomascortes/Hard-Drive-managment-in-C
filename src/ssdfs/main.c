@@ -25,62 +25,17 @@
 
 int main (int argc, char* const argv[]) {
    
-    // Montar el disco pasado por consola con life = 5000
     os_mount(argv[1], 5000);
-    mark_as_used(0);
-    mark_as_used(1);
-    mark_as_used(2);
-    mark_as_used(3);
-    // for (int i = 5; i<100;i++){
-    //     unmark_as_used(i);
-    // }
-
-    //Prueba bitmap
-    // os_bitmap(0);
-    // os_tree();
-
-    // abrir archivo existente
-    // osFile* os_file = os_open("/dir1ta/amogus.mp4", 'r');
-
-    // Crear archivo nuevo
-    osFile* os_file2 = os_open("/quiero_llorar.a", 'w');
-    char buffer[4] = "AAAA" ;
-    
-    os_write(os_file2, &buffer, 4);
-    printf("Segundo archivo\n");
-
     os_bitmap(0);
     os_tree();
-    printf("\nTermino de escritura en el dico\n");
-    // read_from_disk(os_file2, "quiero_llorar.a");// Arreglar el directorio primero
-
-    os_close(os_file2);
-
-
-    // Cierra los archivos
-    // os_close(os_file);
-
-    // TODO: Malo
-    //osFile_destroy(os_file);
-
-    // Cierra el archivo
-    // os_close(os_file);
-
-    /*char path[] = "~/carpeta/SuenosyEsperanzas";
-    print_debug("Prueba os_mkdir");
-    os_mkdir(path);
-    print_debug("Fin prueba os_mkdir\n");*/
-
-
-    // char path_to_find[] = "~/rottendir";
-    // char path_inicial_test[100];
-    // int testint = 3;
-    // strcpy(path_inicial_test, "~/");
-    // print_debug("Prueba pathfinder");
-    // printf("El directorio está en el bloque %i\n", 
-    //         pathfinder(path_to_find, testint, path_inicial_test));
-    // print_debug("Fin prueba os_mkdir\n");
-    
+    printf("\Inicio de apertura del archivo\n");
+    osFile* os_file = os_open("/quiero_llorar.a", 'r');
+    printf("\nTermino de apertura del archivo\n");
+    void* buffer;
+    printf("\Inicio de lectura  del archivo\n");
+    os_read(os_file, &buffer, 4);
+    printf("\nTermino de lectura  del archivo\n");
+    os_close(os_file);  
 
     return 0;
 }
