@@ -133,47 +133,103 @@ void osFile_destroy(osFile* self) {
 /// ------------------------------------------
 
 bool fxExtra_revisar_modo(osFile* file) {
+    if (strcmp(file->mode, "r") == 0 || strcmp(file->mode, "R") == 0) {
+        return true;
 
+    } else {
+        return false;
+    }
 }
+
 void fxExtra_hacer_el_setup(osFile* file) {
-
+    // Creo que al final no va nada aquí
 }
-int fxExtra_calc_max_bytes_lectura(osFile* file, int nbytes) {
 
+int fxExtra_calc_max_bytes_lectura(osFile* file, int nbytes) {
+    int bytes_que_me_quedan_por_leer;
+    int byes_que_me_dicen_que_lea;
+
+    byes_que_me_dicen_que_lea = nbytes;
+    bytes_que_me_quedan_por_leer = file->remaining_bytes;
+
+    if (byes_que_me_dicen_que_lea > bytes_que_me_quedan_por_leer) {
+        return bytes_que_me_quedan_por_leer;
+
+    } else {
+        return byes_que_me_dicen_que_lea;
+    }
 }
 
 char* fxExtra_reservar_mem_char(int cantidad) {
-
+    char* memoria = malloc(cantidad);
+    return memoria;
 }
 
 void* fxExtra_reservar_mem_void(int cantidad) {
-
+    void* memoria = malloc(cantidad);
+    return memoria;
 }
 
 void fxExtra_liberar_mem_char(char* en_donde) {
-
+    free(en_donde);
 }
 
 void fxExtra_liberar_mem_void(void* en_donde) {
-
+    free(en_donde);
 }
 
 int fxExtra_nro_pagina_que_tengo_que_leer(osFile* file) {
-
+    // TODO:
+    //  [ ] Ver dónde estoy parado
+    //  [ ] Calcular página según longitud
+    //  [ ] Meterme al índice y armar un array de bloques
+    //  [ ] Armar un array de página involucradas
+    //  [ ] Recorrer página por página y agregarla a un nuevo array si no está rotten
+    //  [ ] Mandar nro de página absoluta, incluyendo rotten
+    return 0
 }
+
 void fxExtra_cargar_pagina_en_mem(osFile* file, char* dir_pagina, int nro_pag) {
-
+    // TODO:
+    //  [ ] Ver dónde estoy parado
+    //  [ ] Calcular página según longitud
+    //  [ ] Meterme al índice y armar un array de bloques
+    //  [ ] Armar un array de página involucradas
+    //  [ ] Recorrer página por página y agregarla a un nuevo array si no está rotten
+    //  [ ] Avanzar pág por pág hasta la que necesito
+    //  [ ] Cargar la que necesito en memoria
 }
-bool quedan_bytes_por_leer(osFile* file) {
 
+bool quedan_bytes_por_leer(osFile* file) {
+    if (file->remaining_bytes <= 0) {
+        return false;
+
+    } else {
+        return true;
+    }
 }
 
 void copiar_byte(osFile* file, char* desde, void* hacia, int en_donde_voy) {
-
+    // TODO:
+    //  [ ] Mover la posición en_donde_voy desde desde hacia hacia
 }
+
 void avanzar_contador_archivo_y_actualizar_pos(osFile* file) {
+    // TODO:
+    //  [X] Actualizar cuenta de bytes leidos
+    //  [ ] Ir al índice y ver bloques
+    //  [ ] Cargar array de bloques desde el índice
+    //  [ ] Armar array de nro páginas absolutas
+    //  [ ] Armar array de igual largo al anterior
+    //  [ ] Definir contador = nro páginas en array
+    //  [ ] Copiar nros páginas buenas y restar cant de rotten en el contador
+    //  [ ] Calcular plano, bloque, página, celda y byte donde voy en relación a bytes_loaded_count
+    //  [ ] Actualizar valores en obj.
+
+    file->bytes_loaded_count++;
 
 }
-void reducir_bytes_restantes(osFile* file) {
 
+void reducir_bytes_restantes(osFile* file) {
+    file->remaining_bytes--;
 }
