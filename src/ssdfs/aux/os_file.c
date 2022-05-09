@@ -184,15 +184,6 @@ void fxExtra_liberar_mem_void(void* en_donde) {
 }
 
 int fxExtra_nro_pagina_que_tengo_que_leer(osFile* file) {
-    // TODO:
-    //  [X] Ver dónde estoy parado
-    //  [X] Calcular página según longitud
-    //  [F] Meterme al índice y armar un array de bloques
-    //  [F] Armar un array de página involucradas
-    //  [F] Recorrer página por página y agregarla a un nuevo array si no está rotten
-    //  [-] Mandar nro de página absoluta, incluyendo rotten
-    //      [X] Mándo nro de pagina
-
     long int tamanio = file->length;
     int donde_voy_leyendo = file->bytes_loaded_count;
     int mi_paginita = donde_voy_leyendo / PAGE_SIZE;
