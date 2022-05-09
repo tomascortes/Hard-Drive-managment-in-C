@@ -222,6 +222,11 @@ bool quedan_bytes_por_leer(osFile* file) {
 void copiar_byte(osFile* file, char* desde, void* hacia, int en_donde_voy) {
     // TODO:
     //  [ ] Mover la posición en_donde_voy desde desde hacia hacia
+    void* buffer = &hacia;
+
+
+    // int a = 10;
+    // void buffer2[sizeof(int)] = a;
 }
 
 void avanzar_contador_archivo_y_actualizar_pos(osFile* file) {
