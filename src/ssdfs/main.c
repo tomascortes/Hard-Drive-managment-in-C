@@ -45,24 +45,12 @@ int main (int argc, char* const argv[]) {
         os_lifemap(6*PAGES_PER_BLOCK, 7*PAGES_PER_BLOCK);
         os_tree();
     }
+    char path[] = "~/dir1";
+    os_mkdir(path);
+    os_tree();
 
-
-
-    printf("\nTermino de lectura  del archivo\n");
     os_close(os_file);
+    printf("\n Termino exitoso\n");
+    return 0;
 
-    //Test
-    /*char test[] = "AAAAAAAA";
-    int num = 321;
-    test[3] = (num >> 24) & 0xFF;
-    test[2] = (num >> 16) & 0xFF;
-    test[1] = (num >> 8) & 0xFF;
-    test[0] = num & 0xFF;
-    for (int i=0; i<9; i++){
-        printf("El byte es: %i\n", test[i]);
-    }
-    printf("La string es %s\n", test);
-    int puntero = *(int*) (test);
-    printf("EL N° ES: %i\n", puntero);
-    return 0;*/
 }
