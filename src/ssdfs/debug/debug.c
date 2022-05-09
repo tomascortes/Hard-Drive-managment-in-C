@@ -200,4 +200,9 @@ void print_debug(char *input) {
     }
 }
 
-void print()
+void delayed_debug_print(char* input, int time_ms) {
+    if (DEBUG_MODE) {
+        dprint_txt_char_x(input);
+        wait_debug(time_ms);
+    }
+}

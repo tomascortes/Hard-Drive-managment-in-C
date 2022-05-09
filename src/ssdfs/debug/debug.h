@@ -57,3 +57,5 @@ void dprint_float(float input);
 void dprint_txt_float(float input);
 
 void print_debug(char *input);
+
+void delayed_debug_print(char* input, int time_ms);
