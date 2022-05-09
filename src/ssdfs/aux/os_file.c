@@ -230,6 +230,8 @@ void fxExtra_cargar_pagina_en_mem(osFile* file, char* dir_pagina, int nro_pag) {
 
 
 
+
+
 }
 
 bool quedan_bytes_por_leer(osFile* file) {
