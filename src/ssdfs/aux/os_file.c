@@ -224,8 +224,10 @@ void copiar_byte(osFile* file, char* desde, void* hacia, int en_donde_voy) {
     // hacia[en_donde_voy] = desde[bytes_loaded_count];
     // strcpy(desde[bytes_loaded_count], hacia[en_donde_voy]);
 
-    char cosita = desde[file->bytes_loaded_count];
+    // char cosita = desde[file->bytes_loaded_count];
 
+    // BUG: Creo que esto sobreescribe con el último byte todo el buffer
+    memcpy(hacia, desde[file->bytes_loaded_count], sizeof(desde[file->bytes_loaded_count]));
 
 }
 
