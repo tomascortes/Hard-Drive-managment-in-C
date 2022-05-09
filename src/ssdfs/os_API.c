@@ -400,14 +400,31 @@ int os_read(osFile* file_desc, void* buffer, int nbytes) {
 
     int iteraciones_debug = 10;
 
-    delayed_debug_print("Mientras que queden bytes por leer...", 350);
-    delayed_debug_print("Copio un byte de página a array temp buffer", 100);
-    delayed_debug_print("Avanzo el contador del archivo", 100);
-    delayed_debug_print("Reduzco los bytes restantes", 100);
-    delayed_debug_print("Aumento cuenta de bytes leidos", 100);
-    delayed_debug_print("Repito hasta que no queden más bytes", 100);
+    while (quedan_bytes_por_leer) {
+        if (iteraciones_debug > 0) {
+            delayed_debug_print("Mientras que queden bytes por leer...", 350);
+        }
 
+        if (iteraciones_debug > 0) {
+            delayed_debug_print("Copio un byte de página a array temp buffer", 100);
+        }
 
+        if (iteraciones_debug > 0) {
+            delayed_debug_print("Avanzo el contador del archivo", 100);
+        }
+
+        if (iteraciones_debug > 0) {
+            delayed_debug_print("Reduzco los bytes restantes", 100);
+        }
+
+        if (iteraciones_debug > 0) {
+            delayed_debug_print("Aumento cuenta de bytes leidos", 100);
+        }
+
+        if (iteraciones_debug > 0) {
+            delayed_debug_print("Repito hasta que no queden más bytes", 100);
+        }
+    }
 
     return 0;
 }
