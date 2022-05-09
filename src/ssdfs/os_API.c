@@ -390,10 +390,10 @@ int os_read(osFile* file_desc, void* buffer, int nbytes) {
 
     delayed_debug_print("Reservo memoria para guardar los bytes leidos", 350);
     // REVIEW: No se si tiene que ser void* o char*
-    char* donde_guardo_lo_leido = fxExtra_reservar_mem(max_lectura);
+    void* donde_guardo_lo_leido = fxExtra_reservar_mem_void(max_lectura);
 
     delayed_debug_print("Reservo memoria para guardar la página mientras la leo", 350);
-    char* donde_meto_la_pagina_por_mientras = fxExtra_reservar_mem(PAGE_SIZE);
+    char* donde_meto_la_pagina_por_mientras = fxExtra_reservar_mem_char(PAGE_SIZE);
 
     delayed_debug_print("Anoto la siguiente pagina que tengo que leer", 350);
     pagina_actual = fxExtra_nro_pagina_que_tengo_que_leer(file_desc);
@@ -403,7 +403,7 @@ int os_read(osFile* file_desc, void* buffer, int nbytes) {
     delayed_debug_print("...y meterse al índice", 350);
     fxExtra_cargar_pagina_en_mem(file_desc, donde_meto_la_pagina_por_mientras, pagina_actual);
 
-    while (quedan_bytes_por_leer) {
+    while (quedan_bytes_por_leer(file_desc)) {
         if (iteraciones_debug > 0) {
             delayed_debug_print("Mientras que queden bytes por leer...", 350);
         }
@@ -411,7 +411,7 @@ int os_read(osFile* file_desc, void* buffer, int nbytes) {
         if (iteraciones_debug > 0) {
             delayed_debug_print("Copio un byte de página a array temp buffer", 100);
         }
-        copiar_byte(file_desc, donde_meto_la_pagina_por_mientras, donde_guardo_lo_leido);
+        copiar_byte(file_desc, donde_meto_la_pagina_por_mientras, donde_guardo_lo_leido, cuenta_bytes_leidos);
 
         if (iteraciones_debug > 0) {
             delayed_debug_print("Avanzo el contador del archivo", 100);
@@ -437,6 +437,9 @@ int os_read(osFile* file_desc, void* buffer, int nbytes) {
             iteraciones_debug--;
         }
     }
+
+    fxExtra_liberar_mem_void(donde_guardo_lo_leido);
+    fxExtra_liberar_mem_char(donde_meto_la_pagina_por_mientras);
 
     return cuenta_bytes_leidos;
 }
