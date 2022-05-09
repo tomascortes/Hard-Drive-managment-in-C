@@ -320,10 +320,17 @@ osFile* os_open(char* filename, char mode) {  // NOTE: En proceso
             }
             free(splitpath);
             /// PATH DIR
-            printf("path: %s\n", path);
             
+            printf("path: %s\n", path);
             if(dir_exists(path)){
                 printf("(Escritura) No encuentra archivo y existe directorio. return osFile.\n");
+                if (path == "/\n"){
+                    printf("Caso facil\n");
+                } 
+                else{
+                    printf("Caso no facil\n");
+
+                }
                 osFile* os_file = osFile_new(filename, mode);
                 return os_file;
             }else{
