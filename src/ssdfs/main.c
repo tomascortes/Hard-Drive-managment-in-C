@@ -37,7 +37,7 @@ int main (int argc, char* const argv[]) {
 
     // Crear archivo nuevo
     printf("Comienza open\n");
-    osFile* os_file = os_open("~/dir1/vivachile.mp4", 'w');
+    osFile* os_file = os_open("~/drums.mp4", 'w');
     if (os_file != NULL){
         char buffer[10] = "AAABBBCCCD";
         
@@ -45,11 +45,11 @@ int main (int argc, char* const argv[]) {
         os_lifemap(6*PAGES_PER_BLOCK, 7*PAGES_PER_BLOCK);
         os_tree();
     }
+    os_tree(0);
 
-
-
+    os_rm("~/drums.mp4");
     printf("\nTermino de lectura  del archivo\n");
-    os_close(os_file);
+    // os_close(os_file);
 
     //Test
     /*char test[] = "AAAAAAAA";
