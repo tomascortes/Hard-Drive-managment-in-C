@@ -46,8 +46,6 @@ char global_diskname[1023];
 int global_P_E;
 int unactualized_change;
 
-int blocksearch();
-
 long int calc_offset(int plane, // Número de planos
                      int block, // Número de bloques
                      int page, // Número de páginas
@@ -76,7 +74,7 @@ void directree(int directory_block, int depth, char* global_diskname);
 bool is_block_rotten(int block);
 bool is_block_available(unsigned num);
 void mark_as_used(int bloque);
-void unmark_as_used(int bloque);
-
+void mark_as_unused(int bloque);
+void update_rotten_page(int block, int page_inside_block);
 int min(int a1, int a2);
 int get_usable_block();

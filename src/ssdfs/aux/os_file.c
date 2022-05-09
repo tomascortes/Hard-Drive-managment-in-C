@@ -30,14 +30,17 @@ osFile* osFile_new(char* filename, char mode) {
     osFile_set_mode(instance_pointer, mode); // Inicializo con valores por defecto.
 
     if (strcmp(instance_pointer->mode, "w") == 0) {
-        // put_on_disk(instance_pointer, filename); 
         //TODO: Falta agregar el osFile NUEVO al direcotrio del disco
+        // Caso en que está en root
+
+        // Caso en que está en un directorio
+
+
          // Encontrar primer bloque desocupado para usarlo de indice
         int index_block = get_usable_block();
         mark_as_used(index_block); // marcamos como usado el nuevo indice
         instance_pointer ->block_index_number = index_block;
-        printf("Nuevo bloque de directorio %d\n", instance_pointer ->block_index_number);
-        instance_pointer-> filename = filename; // BUG: esto está mal uwu pero lo veré despues
+        printf("Nuevo bloque de indice %d\n", instance_pointer ->block_index_number);
         instance_pointer->amount_of_blocks = 0; // atributo utilizado solo en write
         instance_pointer->length=-1; // Archivo no escrito
 
@@ -101,9 +104,16 @@ void setup_from_disk(osFile* self, char* filename) {
 }
 
 void add_block_to_index(osFile* self, int new_block){
-    FILE *file = fopen(global_diskname, "rb");
-    fseek(file , BLOCK_SIZE*(self->block_index_number) + 4*self->amount_of_blocks, SEEK_SET);
-    fwrite(new_block, 1,1,file);
+    FILE *file = fopen(global_diskname, "rb+");
+    fseek(file , BLOCK_SIZE*(self->block_index_number) + 8 + 4*self->amount_of_blocks, SEEK_SET);
+    fwrite(&new_block, sizeof(int),1,file);
+    fclose(file);
+}
+
+void change_length_of_file(osFile* self, long length){
+    FILE *file = fopen(global_diskname, "rb+");
+    fseek(file , BLOCK_SIZE*(self->block_index_number), SEEK_SET);
+    fwrite(&length, sizeof(long),1,file);
     fclose(file);
 }
 
@@ -111,13 +121,44 @@ void print_index_block(osFile* self){
     FILE *file = fopen(global_diskname, "rb");
     fseek(file , BLOCK_SIZE*(self->block_index_number), SEEK_SET);
     printf("\nImprimiendo bloque indice: %d\n",self->block_index_number);
+    long int buffer_0; // see leen ints de 4 bytes
+    fread(&buffer_0, sizeof(long int), 1, file); // Leo una entrada de un int
+    printf("Largo archivo: %ld\n", buffer_0);
+    printf("Largo teorico del archivo %ld\n",self->length);
     for (int i = 0; i < 256*2; i++) {
         int buffer; // see leen ints de 4 bytes
         fread(&buffer, sizeof(int), 1, file); // Leo una entrada de un int
-        printf(" %d", buffer);
+        printf("%d ", buffer);
     }
     printf("\n");
     fclose(file);
+}
+
+void print_text_file(osFile* self){
+    // asumiendo que el archivo es texto puro, imrpime el primer bloque del archivo
+    FILE *file = fopen(global_diskname, "rb");
+    fseek(file , BLOCK_SIZE*(self->block_index_number), SEEK_SET);
+    long largo;
+    fread(&largo, sizeof(long), 1, file);
+    int first_block;
+    fread(&first_block, sizeof(int), 1, file);
+    self -> current_block = first_block;
+    fseek(file , BLOCK_SIZE*(self -> current_block), SEEK_SET);
+
+    largo = min(largo, 256*2);
+    char buffer[largo]; 
+    fread(buffer, sizeof(buffer), 1, file); 
+    for (int i = 0; i < largo; i++) {
+        char *puntero;
+        puntero = buffer + i;
+        printf("%c", *puntero);
+    }
+    printf("\n");
+    fclose(file);
+}
+
+void add_to_directory(osFile* os_file, int directory_block){
+
 }
 
 

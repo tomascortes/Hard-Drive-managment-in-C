@@ -53,7 +53,9 @@ int is_page_rotten(int page, char* diskname) {
 
 // Esta es para llamar a la otra con los parámetros iniciales
 int pathfinder(char* path){
+
     if (strcmp(path, "~") == 0){
+
         return 3;
     } else {
         return pathfinder_internal(path, 3, "~/");
@@ -183,9 +185,10 @@ int dir_exists(char* dirname) {
     char dir[100];
     strcpy(dir, dirname);
     // Abro el archivo
-    if (strcmp(dir, "/") == 0 ){
+    if (strcmp(dir, "~/") == 0 ){
         return 1;
-    };
+    }
+    
 
     // Me muevo 3 MiB, para llegar al bloque N°3, de directorio.
     fseek(f, BLOCK_SIZE * 3, SEEK_SET);
@@ -196,7 +199,7 @@ int dir_exists(char* dirname) {
         // Buffer para guardar los bytes de una entrada
         fread(buffer, sizeof(buffer), 1, f); // Leo una entrada
         if(buffer[0] == 1) { // directorio:
-            char path[100] = "/"; // path inicial
+            char path[100] = "~/"; // path inicial
             char aux[2]; // variable para concatenar char
             for (int j = 5; j < DIR_ENTRY_SIZE; j++) { // Printear nombre del directorio
                 if (buffer[j] == 0){
@@ -352,7 +355,7 @@ int get_index_pointer(char* filename) {
         fread(buffer, sizeof(buffer), 1, f); // Leo una entrada
 
         if(buffer[0] == 3){ // archivo:
-            char path[100] = "/"; // path inicial
+            char path[100] = "~/"; // path inicial
             char aux[2]; // variable para concatenar char
 
             for (int j = 5; j < DIR_ENTRY_SIZE; j++) { // Printear nombre del archivo
@@ -376,7 +379,7 @@ int get_index_pointer(char* filename) {
         }
 
         else if (buffer[0] == 1) { // directorio:
-            char path[100] = "/"; // path inicial
+            char path[100] = "~/"; // path inicial
             char aux[2]; // variable para concatenar char
             for (int j = 5; j < DIR_ENTRY_SIZE; j++) { // Printear nombre del directorio
                 if (buffer[j] == 0){
@@ -542,7 +545,7 @@ void mark_as_used(int bloque) {
 }
 // Busca en el bitmap el bit correspondiente al bloque
 // y lo marca como usado (lo pone en 1)
-void unmark_as_used(int bloque) {
+void mark_as_unused(int bloque) {
     // El bit que corresponda al bloque va a estar en el byte:
     int byte = bloque / 8;
     int offset = 7 - bloque % 8;
@@ -557,7 +560,7 @@ void unmark_as_used(int bloque) {
     fclose(f);
 
     // Convierto el bit que me interesa en 1
-    data = !(data | (1 << offset));
+    data = (data & ~(1 << offset));
 
     // Puntero al byte de datos a escribir
     unsigned char* point_data = &data;
@@ -569,6 +572,7 @@ void unmark_as_used(int bloque) {
     fclose(f);
 }
 
+
 int min(int a1, int a2) {
     if (a1 < a2){
         return a1;
@@ -577,26 +581,20 @@ int min(int a1, int a2) {
 }
 
 
-// Función auxiliar que busca el primer bloque vacío
-int blocksearch(){
-    // Cargo el bitmap
-    FILE *f = fopen(global_diskname, "rb");
-    unsigned char buffer[256];
-    fread(buffer, sizeof(buffer), 1, f);
-    int bloque = 0;
-    for(int i = 0; i < 256; i++){
-        for (int j = 7; j >= 0; j--){
-            // Shift left para sacar el bit
-            int bit = (buffer[i] & (1 << j)) >> j;
-            // Si el bit es 1 sigo buscando, si no, retorno
-            if(bit){
-                bloque++;
-            } else {
-                fclose(f);
-                return bloque;
-            }
-        }
+
+
+void update_rotten_page(int block, int page_inside_block){
+    FILE* open_file = fopen(global_diskname, "rb+");
+    int real_page = (block*PAGES_PER_BLOCK + page_inside_block)*sizeof(int);
+
+    fseek(open_file, 1 * BLOCK_SIZE + real_page, SEEK_SET);
+    int buffer;
+    fread(&buffer, sizeof(int), 1, open_file);
+    buffer ++;
+    if (buffer >= global_P_E){
+        buffer = -1;
     }
-    fclose(f);
-    return 0; // Si no hay bloques disponibles
+    fseek(open_file, 1 * BLOCK_SIZE + real_page, SEEK_SET);
+    fwrite(&buffer, sizeof(int), 1, open_file);
+    fclose(open_file);
 }

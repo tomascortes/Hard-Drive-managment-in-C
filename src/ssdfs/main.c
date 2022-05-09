@@ -26,48 +26,28 @@
 int main (int argc, char* const argv[]) {
 
     os_mount(argv[1], 5000);
-    os_bitmap(0);
-    os_tree();
-
-    // Abre el archivo
-    // osFile* os_file = os_open("/dir1ta/amogus.mp4", 'r');
-    //printf("Segundo archivo\n");
-    //osFile* os_file2 = os_open("/dir1ta/quiero_lorrar.a", 'w');
-    //char buffer[3] = "AAA";
-    //os_write(os_file2, buffer, 24);
+    mark_as_used(0);
+    mark_as_used(1);
+    mark_as_used(2);
+    mark_as_used(3);
+    for (int i = 5; i<100;i++){
+        mark_as_unused(i);
+    }
 
 
-    // Cierra los archivos
-    // os_close(os_file);
-    //os_close(os_file2);
-
-    // TODO: Malo
-    //osFile_destroy(os_file);
-
-    // Cierra el archivo
-    //os_close(os_file);
-    //char path[] = "~/carpeta/SuenosyEsperanzas/OwO";
-    //char path[] = "~/UwU";
-    // print_debug("Prueba os_mkdir");
-    // os_mkdir(path);
-    // print_debug("Fin prueba os_mkdir\n");
-
-    // os_tree();
+    // Crear archivo nuevo
+    printf("Comienza open\n");
+    osFile* os_file = os_open("~/dir1/vivachile.mp4", 'w');
+    if (os_file != NULL){
+        char buffer[10] = "AAABBBCCCD";
+        
+        os_write(os_file, buffer, 10);
+        os_lifemap(6*PAGES_PER_BLOCK, 7*PAGES_PER_BLOCK);
+        os_tree();
+    }
 
 
-    /*
-    printf("\Inicio de apertura del archivo\n");
-    osFile* os_file = os_open("/redes/dino.jpg", 'r');
-    printf("\nInicio de lectura  del archivo\n");
-    void* buffer;
 
-    // int a = 10;
-    // void buffer2[sideof(int)] = a;
-
-    os_read(os_file, &buffer, 4);
-    os_read(os_file, &buffer, 10);
-    os_read(os_file, &buffer, 3);
-    os_read(os_file, &buffer, 2);
     printf("\nTermino de lectura  del archivo\n");
     os_close(os_file);
 
