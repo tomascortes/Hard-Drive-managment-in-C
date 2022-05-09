@@ -334,24 +334,29 @@ osFile* os_open(char* filename, char mode) {  // NOTE: En proceso
             osFile* os_file = osFile_new(filename, mode);
             return os_file;
 
+            printf("CHECKPOIHNT A\n");
 
             // Obtenemos el bloque directorio
             int bloque_dir = pathfinder(filename);
 
             // Comienza codigo reutilizado de Felipe
             FILE *open_file = fopen(global_diskname, "rb");
+            printf("CHECKPOIHNT B\n");
             // Me muevo 3 MiB, para llegar al bloque N°3, de directorio.
             fseek(open_file, 3 * BLOCK_SIZE, SEEK_SET);
             bool finded = false;
 
+            printf("CHECKPOIHNT B\n");
             // Son 32768 entradas en un bloque de directorio
             for (int i = 0; i < DIR_ENTRIES_PER_BLOCK; i++) {
+                printf("CHECKPOIHNT\n");
                 unsigned char buffer[DIR_ENTRY_SIZE];
                 // Buffer para guardar los bytes de una entrada
                 fread(buffer, sizeof(buffer), 1, open_file); // Leo una entrada
+                printf("a%c\n", buffer[0]);
                 if (buffer[0] == 0) {
                     finded = true;
-                        
+                    printf("asdfasd\n\n\n\n");
                     fseek(open_file, 3 * BLOCK_SIZE + DIR_ENTRY_SIZE * i, SEEK_SET);
                     char *estado;
                     *estado = 3;
@@ -396,91 +401,7 @@ osFile* os_open(char* filename, char mode) {  // NOTE: En proceso
  * archivo contenga páginas rotten. La lectura de read se efectúa desde la posición del
  * archivo inmediatamente posterior a la última posición leı́da por un llamado a read. */
 int os_read(osFile* file_desc, void* buffer, int nbytes) {  // REVIEW
-    // int page_offset;
-    // int* rotten_pages;
-
-    // int starting_page_byte;
-    // int end_page_byte;
-    // int reading_delta;
-    // int amount_read = 0;
-
-    // int buffer_counter = 0;
-
-    // if (strcmp(file_desc->mode, "r") != 0) {
-    //     printf("Archivo no está abierto en modo lectura");
-    //     return 0;
-    // }
-
-    // // Caso borde: nbytes = 0 ==> No se lee ningún byte
-    // if (nbytes == 0) {
-    //     return 0;
-    // }
-
-    // // Reviso las páginas rotten.
-    // rotten_pages = calloc(PAGES_PER_BLOCK, sizeof(bool));
-
-    // page_offset = file_desc->current_plane * BLOCKS_PER_PLANE * PAGES_PER_BLOCK;
-    // page_offset += file_desc->current_block * PAGES_PER_BLOCK;
-
-    // for (int n_page = 0; n_page < PAGES_PER_BLOCK; n_page ++) {
-    //     rotten_pages[n_page] = is_page_rotten(n_page + page_offset,
-    //                                           global_diskname);
-    // }
-
-    // // Reseteo cuenta de bytes leídos para hacer la comparación
-    // osFile_reset_bytes_count(file_desc);
-
-    // // Mientras que me queden bytes por leer debo seguir avanzando loopea
-    // while (nbytes > 0) {
-    //     // (nbytes - 1 // page_size) + 1 = Páginas por leer
-    //     // Usa la función piso/división parte entera, por eso el +-1
-    //     // Y como solo se pueden leer páginas como número entero...
-    //     osFile_load_pointer_page(file_desc, rotten_pages);
-
-    //     // Inicio y fin de lectura de la página
-    //     starting_page_byte = file_desc->current_pos % PAGE_SIZE;
-
-    //     if (nbytes >= PAGE_SIZE) {
-    //         end_page_byte = PAGE_SIZE;
-
-    //     } else {
-    //         end_page_byte = nbytes;
-    //     }
-
-    //     // Cant. de bytes leídos
-    //     reading_delta = end_page_byte - starting_page_byte + 1;
-
-    //     // Sustraigo bytes efectivamente leídos
-    //     nbytes -= reading_delta;
-
-    //     // Check de largo de archivo
-    //     if (file_desc->current_pos + reading_delta > file_desc->length) {
-    //         reading_delta = file_desc->length - file_desc->current_pos;
-    //         end_page_byte = starting_page_byte + reading_delta;
-    //     }
-
-    //     // Bytes realmente leidos
-    //     amount_read += reading_delta;
-
-    //     // Cargo bytes a heap
-    //     osFile_load_data(file_desc, starting_page_byte, end_page_byte);
-
-
-    //     // Copio heap a buffer byte por byte
-    //     for (int byte = 0; byte < reading_delta; byte++) {
-    //         // BUG: No sé cómo copiar un byte de heap (unsigened char*) a buffer (void*)
-    //         //  "Incomplete type 'void' is not assignable"
-    //         //  La siguiente línea representa la idea de lo que quiero hacer.
-    //         //  void* buffer?!?!?!!?
-    //         // buffer[buffer_counter] = file_desc->loaded_data[byte];
-    //         buffer_counter++;
-    //     }
-    // }
-
-    // // MEM leak := feo
-    // // :(
-    // free(rotten_pages);
-
+    
     return 0;
 }
 

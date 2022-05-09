@@ -24,7 +24,7 @@
 
 
 int main (int argc, char* const argv[]) {
-   
+
     os_mount(argv[1], 5000);
     mark_as_used(0);
     mark_as_used(1);
@@ -34,26 +34,19 @@ int main (int argc, char* const argv[]) {
         mark_as_unused(i);
     }
 
-    //Prueba bitmap
-    // os_bitmap(0);
-    // os_tree();
-
-    // abrir archivo existente
-    // osFile* os_file = os_open("/dir1ta/amogus.mp4", 'r');
 
     // Crear archivo nuevo
     os_tree();
-    osFile* os_file = os_open("/cats/quiero_llorar.a", 'w');
+    printf("Comienza open\n");
+    osFile* os_file = os_open("/quiero_llorar.a", 'w');
     char buffer[10] = "AAABBBCCCD";
     
     os_lifemap(6*PAGES_PER_BLOCK, 7*PAGES_PER_BLOCK);
     os_write(os_file, buffer, 10);
 
 
-    os_tree();
     os_lifemap(6*PAGES_PER_BLOCK, 7*PAGES_PER_BLOCK);
 
-    os_close(os_file);
 
 
     // Cierra los archivos
@@ -72,26 +65,28 @@ int main (int argc, char* const argv[]) {
     print_debug("Fin prueba os_mkdir\n");*/
 
 
-    char path_to_find[] = "~/";
-    print_debug("Prueba pathfinder");
-    printf("El archivo/directorio está en el bloque %i\n",
-        pathfinder(path_to_find));
-    print_debug("Fin prueba os_mkdir\n");
+    // char path_to_find[] = "~/";
+    // print_debug("Prueba pathfinder");
+    // printf("El archivo/directorio está en el bloque %i\n",
+    //     pathfinder(path_to_find));
+    // print_debug("Fin prueba os_mkdir\n");
 
-    /*
-    printf("\Inicio de apertura del archivo\n");
-    osFile* os_file = os_open("/redes/dino.jpg", 'r');
-    printf("\nTermino de apertura del archivo\n");
-    printf("\Inicio de lectura  del archivo\n");
-    void* buffer;
-    // int a = 10;
-    // void buffer2[sideof(int)] = a;
-    os_read(os_file, &buffer, 4);
-    os_read(os_file, &buffer, 10);
-    os_read(os_file, &buffer, 3);
-    os_read(os_file, &buffer, 2);
+    // // os_bitmap(0);
+    // // os_tree();
+
+    // osFile* os_file = os_open("/redes/dino.jpg", 'r');
+    // printf("\nInicio de lectura  del archivo\n");
+    // void* buffer;
+
+    // // int a = 10;
+    // // void buffer2[sideof(int)] = a;
+
+    // os_read(os_file, &buffer, 4);
+    // os_read(os_file, &buffer, 10);
+    // os_read(os_file, &buffer, 3);
+    // os_read(os_file, &buffer, 2);
     printf("\nTermino de lectura  del archivo\n");
-    os_close(os_file);  */
+    os_close(os_file);
 
     return 0;
 }

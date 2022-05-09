@@ -27,7 +27,7 @@
 typedef struct osFile {
     
     char* filename;  // Nombre del archivo
-    int* index_pointer; // Puntero al inicio del bloque indice
+    unsigned char index_pointer[4056]; // Puntero al inicio del bloque indice
     int block_index_number; // Numero del bloque que corresponde con indice
     char mode[2]; // r -> ReadOnly || w-> WriteOnly
     long int length; // Largo en bytes del archivo
@@ -38,17 +38,14 @@ typedef struct osFile {
     int current_block; // Número de bloque en el que se encuentra el archivo.
     // entre 1 y 1024
     int current_page; // Página actual
-    // page entre 1 y 256
-    int current_pos; // Posición actual dentro de la página actual
-    // pos entre 1 y 4096
+    // page entre 0 y 255
+    int current_cell; // Posición actual dentro de la página actual
+    // pos entre 0 y 4095
+    int current_byte; // Posición actual dentro de la celda
+    // pos entre 0 y 1
 
-    unsigned char* loaded_page; //página cargada en memoria
-    int has_page_loaded; // Si una página está cargada o no en heap
-    unsigned char* loaded_data; //datos de una página cargados en memoria
-    int has_data_loaded; // Si tiene datos cargados
-    
-    int bytes_loaded_count; // Cantidad de bytes leídos. Debe resetearse cada vez que se lee.
-    long int remaining_bytes; // Bytes restantes que quedan por leer 
+    int bytes_loaded_count; // Cantidad de bytes leídos
+    int remaining_bytes; // Bytes restantes que quedan por leer
 
     int amount_of_blocks;
 
