@@ -32,8 +32,6 @@ int main (int argc, char* const argv[]) {
     mark_as_used(3);
 
     os_tree();
-
-    os_rmdir();
-
-    os_close(os_file);
+    os_rmdir("~/rottendir");
+    os_tree();
 }

@@ -579,7 +579,40 @@ int os_mkdir(char* path) {  // TODO: Pendiente
 /* Esta función elimina un directorio vacı́o con el nombre indicado. Esto incrementa en 1
  * el contador P/E de las páginas que sea necesario actualizar para borrar las referencias
  * a este directorio. */
-int os_rmdir(char* path) {  // TODO: Pendiente
+int os_rmdir(char* path) { 
+    if (pathfinder(path_name)){
+        char** splitpath = calloc(2, sizeof(char*));
+        int index = 0;
+
+        char* path2[strlen(path)]
+        int pathleng = strlen(path2);
+        char pathto[pathleng]; strcpy(pathto, path2);
+
+        // Hacemos brujería para splittear la string path
+        char* token = strtok(path2, "/");
+        while(token != NULL)
+        {
+            splitpath[index] = calloc(4096, sizeof(char));
+            strcpy(splitpath[index++], token);
+            token = strtok(NULL, "/");
+        }
+
+        // filename es solo el nombre de la carpeta
+        char* filename = splitpath[index-1];
+        // leng es el largo en caracteres
+        int leng = strlen(filename);
+        // pathto es el path de la carpeta origen
+        pathto[pathleng-leng-1] = '\0';
+
+        printf("El path es: %s\n", pathto);
+        printf("El nombre es: %s\n", filename);
+
+        // Veo en qué bloque está el directorio origen
+        int writeblock = pathfinder(pathto);
+        FILE *f = fopen(global_diskname, "rb+");
+        fseek(f, writeblock * BLOCK_SIZE, SEEK_SET);
+        fclose(f);
+    }
     return 0;
 }
 
