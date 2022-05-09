@@ -230,9 +230,16 @@ int os_exists(char* filename) {
             char aux[2]; // variable para concatenar char
 
             for (int j = 5; j < DIR_ENTRY_SIZE; j++) { // Printear nombre del archivo
-                aux[1] = '\0';
-                aux[0] = buffer[j];
-                strcat(path, aux); // Concatenar char
+                if (buffer[j] == 0){
+                    aux[1] = '\0';
+                    aux[0] = '\0';
+                    strcat(path, aux); // Concatenar char
+                    break;
+                } else {
+                    aux[1] = '\0';
+                    aux[0] = buffer[j];
+                    strcat(path, aux); // Concatenar char   
+                }
             }
             if (strcmp(path, filename) == 0) { // compara con filename
                 fclose(f); // Evitamos leaks
@@ -244,10 +251,16 @@ int os_exists(char* filename) {
             char path[100] = "/"; // path inicial
             char aux[2]; // variable para concatenar char
             for (int j = 5; j < DIR_ENTRY_SIZE; j++) { // Printear nombre del directorio
-                aux[1] = '\0';
-                //// WARN: Se está tirando un "unsign char" a "char"
-                aux[0] = buffer[j];
-                strcat(path, aux); // Concatenar char
+                if (buffer[j] == 0){
+                    aux[1] = '\0';
+                    aux[0] = '\0';
+                    strcat(path, aux); // Concatenar char
+                    break;
+                } else {
+                    aux[1] = '\0';
+                    aux[0] = buffer[j];
+                    strcat(path, aux); // Concatenar char   
+                }
             }
             strcat(path, "/");
             int *puntero;

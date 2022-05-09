@@ -35,8 +35,6 @@ typedef struct osFile {
     // TODO: Verificar correctitud de los intervalos
     int current_index; // numero de bloque index
     // entre 1 y 1012 y 
-    int current_plane; // Número de plano en el que se encuentra el archivo.
-    // entre 1 y 2
     int current_block; // Número de bloque en el que se encuentra el archivo.
     // entre 1 y 1024
     int current_page; // Página actual
@@ -64,7 +62,7 @@ osFile* osFile_new(char* filename, char mode);
 void osFile_set_mode(osFile* self, char mode);
 
 /// Settea la ubicación del puntero y largo del archivo
-void read_from_disk(osFile* self, char* filename);
+void setup_from_disk(osFile* self, char* filename);
 
 /// Settea el archivo en el disco
 void put_on_disk(osFile* self, char* filename);
