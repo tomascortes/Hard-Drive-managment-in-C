@@ -64,7 +64,7 @@ int main (int argc, char* const argv[]) {
 
 //    osFile* os_file = os_open("/redes/dino.jpg", 'r');
 //    printf("\nInicio de lectura  del archivo\n");
-    void* buffer;
+//    void* buffer;
 
     // int a = 10;
     // void buffer2[sizeof(int)] = a;
@@ -76,10 +76,19 @@ int main (int argc, char* const argv[]) {
 //    printf("\nTermino de lectura  del archivo\n");
 //    os_close(os_file);
 
+    void* buffer;
 
     osFile* my_file = os_open("/message.txt", 'r');
-    os_read(my_file, &buffer, 4);
-    os_read(my_file, &buffer, 50);
+//    os_read(my_file, &buffer, 4);
+    os_read(my_file, &buffer, 64);
+
+    delayed_debug_print("====== BUFFER ======", 1000);
+    char* buffer2;
+    buffer2 = buffer;
+
+    printf("%s\n", buffer2);
+    delayed_debug_print("====== BUFFER ======", 1000);
+
     os_close(my_file);
 
     delayed_debug_print("Fin del programa", 1000);
