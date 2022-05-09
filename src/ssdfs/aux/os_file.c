@@ -261,5 +261,7 @@ int preguntar_por_direccion_del_bloque_n(osFile* file, int numero_de_bloque) {
 
     int bloque_magico = *(int*) (((numero_de_bloque - 1) * 4) + self->index_pointer + 4 * self->current_index);
 
+    fclose(opened_file);
+
     return bloque_magico;
 }
