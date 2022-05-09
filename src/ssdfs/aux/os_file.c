@@ -133,8 +133,14 @@ void osFile_destroy(osFile* self) {
 /// ------------------------------------------
 
 bool fxExtra_revisar_modo(osFile* file) {
+    if (strcmp(file->mode, "r") == 0 || strcmp(file->mode, "R") == 0) {
+        return true;
 
+    } else {
+        return false;
+    }
 }
+
 void fxExtra_hacer_el_setup(osFile* file) {
 
 }
