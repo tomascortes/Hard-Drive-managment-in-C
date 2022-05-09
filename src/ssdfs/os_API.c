@@ -320,19 +320,13 @@ osFile* os_open(char* filename, char mode) {  // NOTE: En proceso
         
         path[pathleng-leng] = '\0';
         
-
-        
-        
         if(dir_exists(path)){
             printf("(Escritura) No encuentra archivo y existe directorio. return osFile.\n");
             osFile* os_file = osFile_new(filename, mode);
-            printf("nombre archivo: %s\n", os_file ->filename);
 
             // Obtenemos el bloque directorio
             path[strlen(path) - 1] = '\0';
             int bloque_dir = pathfinder(path);
-            printf("path %s\n", path);
-            printf("Directorio: %d\n", bloque_dir);
 
             // Comienza codigo reutilizado de Felipe
             FILE *open_file = fopen(global_diskname, "rb+");
@@ -359,16 +353,11 @@ osFile* os_open(char* filename, char mode) {  // NOTE: En proceso
 
                     char filename3[leng+1];
                     strcpy(filename3, "");
-                    printf("filename3 %s\n", filename3);
-                    printf("LEng f2 %d\n", strlen(filename2));
-                    printf("LEng f2 %d\n", leng);
                     for (int i=0; i<leng;i++){
-                        printf("Ronda %d \n", i);
                         char aux[2];
                         aux[0] = filename2[i];
                         aux[1] = '\0';
                         strcat(filename3, aux);
-                        printf("filename3 %s\n", filename3);
                     }
                     // strncpy(filename3, filename2, leng + 1);
                     // filename3[leng] = '\0';
