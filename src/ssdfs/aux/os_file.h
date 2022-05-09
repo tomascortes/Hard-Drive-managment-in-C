@@ -33,7 +33,7 @@ typedef struct osFile {
     long int length; // Largo en bytes del archivo
 
     int current_index; // numero de bloque index
-    // entre 1 y 1012 y 
+    // entre 1 y 1012
     int current_block; // Número de bloque en el que se encuentra el archivo.
     // entre 1 y 1024
     int current_page; // Página actual
