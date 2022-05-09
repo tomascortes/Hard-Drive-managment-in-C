@@ -24,7 +24,7 @@
 
 
 int main (int argc, char* const argv[]) {
-   
+
     os_mount(argv[1], 5000);
     os_bitmap(0);
     os_tree();
@@ -58,17 +58,18 @@ int main (int argc, char* const argv[]) {
     /*
     printf("\Inicio de apertura del archivo\n");
     osFile* os_file = os_open("/redes/dino.jpg", 'r');
-    printf("\nTermino de apertura del archivo\n");
-    printf("\Inicio de lectura  del archivo\n");
+    printf("\nInicio de lectura  del archivo\n");
     void* buffer;
+
     // int a = 10;
     // void buffer2[sideof(int)] = a;
+
     os_read(os_file, &buffer, 4);
     os_read(os_file, &buffer, 10);
     os_read(os_file, &buffer, 3);
     os_read(os_file, &buffer, 2);
     printf("\nTermino de lectura  del archivo\n");
-    os_close(os_file);  */
+    os_close(os_file);
 
     //Test
     /*char test[] = "AAAAAAAA";
