@@ -221,7 +221,12 @@ bool quedan_bytes_por_leer(osFile* file) {
 
 void copiar_byte(osFile* file, char* desde, void* hacia, int en_donde_voy) {
 
-    *(char*) hacia[en_donde_voy] = *(char*) desde[en_donde_voy];
+    // hacia[en_donde_voy] = desde[bytes_loaded_count];
+    // strcpy(desde[bytes_loaded_count], hacia[en_donde_voy]);
+
+    char cosita = desde[file->bytes_loaded_count];
+
+
 }
 
 void avanzar_contador_archivo_y_actualizar_pos(osFile* file) {
