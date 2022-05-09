@@ -51,12 +51,14 @@ int is_page_rotten(int page, char* diskname) {
     }
 }
 
+// Esta es para llamar a la otra con los parámetros iniciales
 int pathfinder(char* path){
     return pathfinder_internal(path, 3, "~/");
 }
 
-/* Esta función recibe un path que ya sé que existe y me tira el bloque
-   en el que está ubicado el directorio */
+/* Esta función recibe un path y me tira el bloque
+   en el que está ubicado el directorio o archivo 
+   (0 si no existe)*/
 // 1° llamada -> bloque_final = 3
 // 1° llamada -> path_parcial = "~/" de largo 100
 int pathfinder_internal(char* path, int bloque_final, char* path_parcial){
@@ -77,10 +79,14 @@ int pathfinder_internal(char* path, int bloque_final, char* path_parcial){
         if (buffer[0]){ // archivo o directorio:
             char aux[2]; // variable para concatenar char
             for (int j = 5; j < DIR_ENTRY_SIZE; j++){
-                aux[1] = '\0';
-                aux[0] = buffer[j];
-                strcat(path_parcial_r, aux); // Concatenar char
-            } // Debuggear acá
+                if (buffer[j] == 0){ // No caracteres basura
+                    break;
+                } else {
+                    aux[1] = '\0';
+                    aux[0] = buffer[j];
+                    strcat(path_parcial_r, aux); // Concatenar char
+                } // Debuggear acá
+            }
             
             int bloque_final = *(int*) (buffer + 1);
 
@@ -93,16 +99,14 @@ int pathfinder_internal(char* path, int bloque_final, char* path_parcial){
             // Recursión no testeada
             if(strstr(path, path_parcial_r)){ // Solo si es substr
                 fclose(f); // Què pasarà si saco esto?
-                printf("El strstr pasa\n");
+                strcat(path_parcial_r, "/");
                 bloque_final = pathfinder_internal(path, bloque_final, path_parcial_r);
-                if (bloque_final){
-                fclose(f);
-                return bloque_final; 
-                }
+                return bloque_final;
             }
         }
     }
     fclose(f); // Evitamos leaks
+    printf("No existe ese path\n");
     return 0; // 0 es que no se encontró
 }
 
