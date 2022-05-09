@@ -487,9 +487,12 @@ bool is_block_available(unsigned num) {
         // num / 8 es el byte donde se encuentra el bit deseado
         // num % 8 es el offset del bit dentro de ese byte
         if (1 == (buffer[num / 8] & 1 << (7 - num % 8)) >> (7 - num % 8)){
+            fclose(f); // Evitamos leaks
             return false;
+
         }
         else{
+            fclose(f); // Evitamos leaks
             return true;
         }
 

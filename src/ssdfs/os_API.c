@@ -382,15 +382,13 @@ osFile* os_open(char* filename, char mode) {  // NOTE: En proceso
                 }
                 free(splitpath);
                 printf("(Escritura) No encuentra archivo y no existe directorio. return NULL.\n");
+//                fclose(open_file);
                 return NULL;
             }
-            for(int i=0;i<index;i++){
-                free(splitpath[i]);
-            }
-            free(splitpath);
-            return NULL;
         }
     }
+
+//    fclose(open_file);
     return NULL;
 }
 
@@ -437,6 +435,7 @@ int os_write(osFile* file_desc, void* buffer, int nbytes) {  // NOTE: En proceso
         data_block = get_usable_block(); //retorna bloque libre y no rotten (fresh)
         if (data_block == -1){
             // Significa que no quedan bloques en el disco
+            fclose(opened_file);
             return *writen_bytes;
         }
         // todos los cachos de añadir un nuevo bloque al archivo
@@ -478,7 +477,7 @@ int os_write(osFile* file_desc, void* buffer, int nbytes) {  // NOTE: En proceso
     // Actualizamos el length
     file_desc->length = *writen_bytes;
     change_length_of_file(file_desc, *writen_bytes);
-    
+
     return *writen_bytes;
 }
 
