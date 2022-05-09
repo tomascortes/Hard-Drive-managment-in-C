@@ -25,54 +25,44 @@
 
 /// Representación de archivos abiertos mediate struct
 typedef struct osFile {
-    char* name;  // Nombre del archivo
-    // Puse 2 caracteres para que sea un poco más a prueba de errores
-    char mode[2]; // r -> ReadOnly || w-> WriteOnly || {rw,wr,r+} -> ReadWrite || N -> Null
+    
+    char* filename;  // Nombre del archivo
+    unsigned char index_pointer[4056]; // Puntero al inicio del bloque indice
+    int block_index_number; // Numero del bloque que corresponde con indice
+    char mode[2]; // r -> ReadOnly || w-> WriteOnly
+    long int length; // Largo en bytes del archivo
 
-    char* disk; // Puntero al disco para hacer las lecturas.
-
-    int current_plane; // Número de plano en el que se encuentra el archivo.
-    // plane --> {0..1}
+    // TODO: Verificar correctitud de los intervalos
+    int current_index; // numero de bloque index
+    // entre 1 y 1012 y 
     int current_block; // Número de bloque en el que se encuentra el archivo.
-    // block --> {0..1023}
-    // cada pag tiene 2048 celdas
-    // cada celda son 16b
-
-    int length; // Largo en bytes del archivo
-
+    // entre 1 y 1024
     int current_page; // Página actual
-    // page --> {0..256}
-    int current_pos; // Posición actual dentro de la página actual
-    // pos --> {0..4096}
+    // page entre 0 y 255
+    int current_cell; // Posición actual dentro de la página actual
+    // pos entre 0 y 4095
+    int current_byte; // Posición actual dentro de la celda
+    // pos entre 0 y 1
 
-    unsigned char* loaded_page; //página cargada en memoria
-    bool has_page_loaded; // Si una página está cargada o no en heap
+    int bytes_loaded_count; // Cantidad de bytes leídos
+    int remaining_bytes; // Bytes restantes que quedan por leer
 
-    // NOTE: esto no es propio de un archivo como tal, pero no se me ocurría cómo más pasarlo
-    //  si no era por medio de este atributo.
-    unsigned char* loaded_data; //datos de una página cargados en memoria
-    bool has_data_loaded; // Si tiene datos cargados
-
-    // De uso temporal por lectura
-    // Cantidad de bytes leídos. Debe resetearse cada vez que se lee.
-    int bytes_loaded_count;
+    int amount_of_blocks;
 
 } osFile;
 
 // ----- Setup -----
 /// Crea una nueva instancia de la representación de un archivo y retorna su
-/// ubicación en memoria
-osFile* osFile_new(char* name, char* disk_pointer);
+osFile* osFile_new(char* filename, char mode);
 
 /// Settea el modo de operación (read/write)
-void osFile_set_mode(osFile* self, char mode[2]);
+void osFile_set_mode(osFile* self, char mode);
 
 /// Settea la ubicación del puntero y largo del archivo
-void osFile_set_location(osFile* self,
-                            int plane,
-                            int block,
-                            // Bloque de índice dice el tamaño del archivo para ponerlo aquí.
-                            int length_bytes);
+void setup_from_disk(osFile* self, char* filename);
+
+/// Settea el archivo en el disco
+void put_on_disk(osFile* self, char* filename);
 
 // ----- File pointer -----
 /// Desplazo el puntero n espacios
@@ -130,3 +120,6 @@ void osFile_release_data(osFile* self);
 // ----- Clean -----
 /// Libera la memoria de todo lo asociado al struct. Luego libera la memoria del struct mismo.
 void osFile_destroy(osFile* self);
+
+void add_block_to_index(osFile* self, int new_block);
+void print_index_block(osFile* self);
