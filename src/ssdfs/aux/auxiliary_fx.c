@@ -607,9 +607,8 @@ int is_empty(char* path){
 
     FILE *f = fopen(global_diskname, "rb");
 
-    // Me muevo 3 MiB, para llegar al bloque N°3, de directorio.
-    fseek(f, 3 * BLOCK_SIZE, SEEK_SET);
     int target = pathfinder(path);
+    fseek(f, target * BLOCK_SIZE, SEEK_SET);
 
     // Son 32768 entradas en un bloque de directorio
     for (int i = 0; i < DIR_ENTRIES_PER_BLOCK; i++) {
@@ -620,7 +619,26 @@ int is_empty(char* path){
             fclose(f);
             return 0;
         }
+    }
+    return 1;
+}
 
+int is_empty(int block){
+
+    FILE *f = fopen(global_diskname, "rb");
+
+    fseek(f, block * BLOCK_SIZE, SEEK_SET);
+
+    // Son 32768 entradas en un bloque de directorio
+    for (int i = 0; i < DIR_ENTRIES_PER_BLOCK; i++) {
+        unsigned char buffer[DIR_ENTRY_SIZE];
+        // Buffer para guardar los bytes de una entrada
+        fread(buffer, sizeof(buffer), 1, f); // Leo una entrada
+        if(buffer[0] != 0){
+            fclose(f);
+            return 0;
+        }
+    }
     return 1;
 }
 }
