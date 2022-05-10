@@ -596,14 +596,63 @@ int os_mkdir(char* path) {  // TODO: Pendiente
 /* Esta función elimina un directorio vacı́o con el nombre indicado. Esto incrementa en 1
  * el contador P/E de las páginas que sea necesario actualizar para borrar las referencias
  * a este directorio. */
-int os_rmdir(char* path) {  // TODO: Pendiente
-    return 0;
+int os_rmdir(char* path) {
+
 }
 
 /* Esta función elimina un directorio con el nombre indicado, todos sus archivos y
  * subdirectorios correspondientes. Esto incrementa en 1 el contador P/E de las páginas
  * que sea necesario actualizar para borrar las referencias a este directorio. */
-int os_rmrfdir(char* path) {  // TODO: Pendiente
+int os_rmrfdir(char* path) {
+    target = pathfinder(path);
+    if is_empty(target){
+        os_rmdir(path);
+    } else {
+        FILE *f = fopen(global_diskname, "rb");
+
+        // Me muevo 3 MiB, para llegar al bloque N°3, de directorio.
+        fseek(f, 3 * BLOCK_SIZE, SEEK_SET);
+        int target = pathfinder(path);
+
+        // Son 32768 entradas en un bloque de directorio
+        for (int i = 0; i < DIR_ENTRIES_PER_BLOCK; i++) {
+            unsigned char buffer[DIR_ENTRY_SIZE];
+            // Buffer para guardar los bytes de una entrada
+            fread(buffer, sizeof(buffer), 1, f); // Leo una entrada
+            if (buffer[0] == 1){ // Directorio
+                char temp_path[100];
+                strcpy(temp_path, path);
+                strcat(temp_path, "/");
+                char aux[2]; // variable para concatenar char
+                for (int j = 5; j < DIR_ENTRY_SIZE; j++){
+                    if (buffer[j] == 0){ // No caracteres basura
+                        break;
+                    } else {
+                        aux[1] = '\0';
+                        aux[0] = buffer[j];
+                        strcat(temp_path, aux); // Concatenar char
+                    }
+                }
+                os_rmrfdir(temp_path);
+            } else if (buffer[0] == 1){
+                char temp_path[100];
+                strcpy(temp_path, path);
+                strcat(temp_path, "/");
+                char aux[2]; // variable para concatenar char
+                for (int j = 5; j < DIR_ENTRY_SIZE; j++){
+                    if (buffer[j] == 0){ // No caracteres basura
+                        break;
+                    } else {
+                        aux[1] = '\0';
+                        aux[0] = buffer[j];
+                        strcat(temp_path, aux); // Concatenar char
+                    }
+                }
+                os_rm(temp_path);
+            }
+        }
+        return 0;
+    }
     return 0;
 }
 
