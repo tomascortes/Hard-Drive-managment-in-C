@@ -495,7 +495,86 @@ int os_close(osFile* file_desc) {
  * directorio que contenı́a el puntero a dicho ı́ndice, lo que también incrementa su
  * contador P/E en 1. */
 int os_rm(char* filename) {  // TODO: Pendiente
-    return 0;
+    // Abrimos el disco
+    // Encuentro el bloque en que se encuentra el archivo
+
+    if (!os_exists(filename)) {
+            printf("(Escritura) No se encuentra archivo a eliminar. Return NULL.\n");
+            return NULL;
+    } else {
+        FILE *open_file = fopen(global_diskname, "rb+");
+
+        int index_pointer = get_index_pointer(filename);
+        fseek(open_file, index_pointer*BLOCK_SIZE, SEEK_SET);
+        
+        // //define largo del bloque indice del archivo
+        // long largo;
+        // fread(&largo, sizeof(long), 1, file);
+        // long *length;
+        // *length = *length + index_pointer;
+        // //iteracion sobre los bloques
+        // fread(length, sizeof(long), 1, open_file);
+        int current_index = 2; // Indice Actual
+
+
+        int cero = 0;
+        for (int i = 0; i<BLOCK_SIZE/4; i++){ // itero sobre bloques del archivo
+            fwrite(&cero, 4, 1, open_file); //Borro el puntero del current block
+
+            if (i%4096 == 0){
+                mark_as_unused(i/PAGES_PER_BLOCK); //Borro su presencia en bitmap
+                update_rotten_page(index_pointer, i/PAGE_SIZE); // recibe numero de bloque y pagina relativa dentro del bloque
+            }
+            current_index ++;
+        } 
+        fseek(open_file, 3*BLOCK_SIZE, SEEK_SET);
+        fclose(open_file);
+    }
+
+    // ---------------------------------------------------------------
+    // removerlo dir
+    // Abro el archivo
+    FILE *f = fopen(global_diskname, "rb+");
+
+    // Me muevo 3 MiB, para llegar al bloque N°3, de directorio.
+    fseek(f, BLOCK_SIZE * 3, SEEK_SET);
+
+    // Son 32768 entradas en un bloque de directorio
+    for (int i = 0; i < DIR_ENTRIES_PER_BLOCK; i++) {
+        unsigned char buffer[DIR_ENTRY_SIZE];
+        
+        // Buffer para guardar los bytes de una entrada
+        fread(buffer, sizeof(buffer), 1, f); // Leo una entrada
+
+        if(buffer[0] == 3){ // archivo:
+            char path[100] = "~/"; // path inicial
+            char aux[2]; // variable para concatenar char
+
+            for (int j = 5; j < DIR_ENTRY_SIZE; j++) { // Printear nombre del archivo
+                if (buffer[j] == 0){
+                    aux[1] = '\0';
+                    aux[0] = '\0';
+                    strcat(path, aux); // Concatenar char
+                    break;
+                } else {
+                    aux[1] = '\0';
+                    aux[0] = buffer[j];
+                    strcat(path, aux); // Concatenar char   
+                }
+            }
+            int zero=0;
+            if (strcmp(path, filename) == 0) { // compara con filename
+                fseek(f, 3*BLOCK_SIZE +  i*sizeof(DIR_ENTRY_SIZE), SEEK_SET);
+                fwrite(&zero, sizeof(int), 8, f);
+                fclose(f); // Evitamos leaks
+                return 1;
+            }
+        }
+
+    }
+
+    fclose(f); // Evitamos leaks
+    return 0; 
 }
 
 /* Esta función crea un directorio con el nombre indicado. Esto incrementa en 1
