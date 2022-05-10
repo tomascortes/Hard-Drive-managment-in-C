@@ -623,11 +623,17 @@ int os_mkdir(char* path) {  // TODO: Pendiente
     // Checks
     if (strchr(filename, '/')){
         printf("/ es un caracter inválido.");
+        for(int i=0;i<index;i++){
+            free(splitpath[i]);
+        }
         free(splitpath);
         return 0;
     }
     if (leng > 27) {
         printf("Máximo 27 carcteres de largo para el nombre.");
+        for(int i=0;i<index;i++){
+            free(splitpath[i]);
+        }
         free(splitpath);
         return 0;
     }
@@ -667,8 +673,11 @@ int os_mkdir(char* path) {  // TODO: Pendiente
             break;
         } else {continue;}
     }
-    fclose(f);
+    for(int i=0;i<index;i++){
+            free(splitpath[i]);
+        }
     free(splitpath);
+    fclose(f);
     return 0;
 }
 
