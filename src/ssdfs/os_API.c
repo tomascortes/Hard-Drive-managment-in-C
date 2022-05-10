@@ -382,15 +382,13 @@ osFile* os_open(char* filename, char mode) {  // NOTE: En proceso
                 }
                 free(splitpath);
                 printf("(Escritura) No encuentra archivo y no existe directorio. return NULL.\n");
+//                fclose(open_file);
                 return NULL;
             }
-            for(int i=0;i<index;i++){
-                free(splitpath[i]);
-            }
-            free(splitpath);
-            return NULL;
         }
     }
+
+//    fclose(open_file);
     return NULL;
 }
 
@@ -437,6 +435,7 @@ int os_write(osFile* file_desc, void* buffer, int nbytes) {  // NOTE: En proceso
         data_block = get_usable_block(); //retorna bloque libre y no rotten (fresh)
         if (data_block == -1){
             // Significa que no quedan bloques en el disco
+            fclose(opened_file);
             return *writen_bytes;
         }
         // todos los cachos de añadir un nuevo bloque al archivo
@@ -478,7 +477,7 @@ int os_write(osFile* file_desc, void* buffer, int nbytes) {  // NOTE: En proceso
     // Actualizamos el length
     file_desc->length = *writen_bytes;
     change_length_of_file(file_desc, *writen_bytes);
-    
+
     return *writen_bytes;
 }
 
@@ -542,6 +541,18 @@ int os_mkdir(char* path) {  // TODO: Pendiente
     // pathto es el path de la carpeta origen
     pathto[pathleng-leng-1] = '\0';
 
+    // Checks
+    if (strchr(filename, '/')){
+        printf("/ es un caracter inválido.");
+        free(splitpath);
+        return 0;
+    }
+    if (leng > 27) {
+        printf("Máximo 27 carcteres de largo para el nombre.");
+        free(splitpath);
+        return 0;
+    }
+
     printf("El path es: %s\n", pathto);
     printf("El nombre es: %s\n", filename);
 
@@ -558,7 +569,10 @@ int os_mkdir(char* path) {  // TODO: Pendiente
 
         if (buffer[0] == 0){ // Entrada libre
             fseek(f, -DIR_ENTRY_SIZE, SEEK_CUR); // Retrocedo para escribir en
-            //printf("File pointer libre: %ld\n", ftell(f));
+            int byte_a_escribir = ftell(f);
+            int page_relativa_a_escribir = 
+                                    (byte_a_escribir % BLOCK_SIZE) / PAGE_SIZE;
+            update_rotten_page(bloquel, page_relativa_a_escribir);
             buffer[0] = 1;
             buffer[1] = bloquel & 0xFF;
             buffer[2] = (bloquel >> 8) & 0xFF;
@@ -567,12 +581,15 @@ int os_mkdir(char* path) {  // TODO: Pendiente
             for (int j = 0; j < leng; j++) { // Escribo el nombre del archivo
                 buffer[j + 5] = filename[j];
             }
+            for (int k = 5 + leng; k < 32; k++){ // Relleno con 0s
+                buffer[k] = NULL;
+            }
             fwrite(buffer, sizeof(buffer), 1, f); // Escribo la entrada
             break;
         } else {continue;}
     }
     fclose(f);
-    
+    free(splitpath);
     return 0;
 }
 
@@ -580,15 +597,21 @@ int os_mkdir(char* path) {  // TODO: Pendiente
  * el contador P/E de las páginas que sea necesario actualizar para borrar las referencias
  * a este directorio. */
 int os_rmdir(char* path) { 
-    if (pathfinder(path_name)){
+    int block_path = pathfinder(path);
+    if (block_path){
+        // Creo splitpath para contener el path a la carpeta origen como una string
+        // y el nombre de la carpeta a ser creada en otra
         char** splitpath = calloc(2, sizeof(char*));
         int index = 0;
 
-        char* path2[strlen(path)]
-        int pathleng = strlen(path2);
-        char pathto[pathleng]; strcpy(pathto, path2);
+        int pathleng = strlen(path);
+        char path2[pathleng]; 
+        char pathto[pathleng]; 
+        strcpy(path2, path);
+        strcpy(pathto, path);
 
         // Hacemos brujería para splittear la string path
+        ///// PATHSEARCH START
         char* token = strtok(path2, "/");
         while(token != NULL)
         {
@@ -596,6 +619,13 @@ int os_rmdir(char* path) {
             strcpy(splitpath[index++], token);
             token = strtok(NULL, "/");
         }
+        // Remove dangling Windows (\r) and Unix (\n) newlines
+        int len = strlen(splitpath[index - 1]);
+        if (len > 1 && splitpath[index - 1][len - 2] == '\r')
+            splitpath[index - 1][len - 2] = '\0';
+        else if (len && splitpath[index - 1][len - 1] == '\n')
+            splitpath[index - 1][len - 1] = '\0';
+        ///// PATHSEARCH END
 
         // filename es solo el nombre de la carpeta
         char* filename = splitpath[index-1];
@@ -604,13 +634,60 @@ int os_rmdir(char* path) {
         // pathto es el path de la carpeta origen
         pathto[pathleng-leng-1] = '\0';
 
-        printf("El path es: %s\n", pathto);
-        printf("El nombre es: %s\n", filename);
+        if (leng > 27) {
+            printf("Máximo 27 carcteres de largo para el nombre.");
+            free(splitpath);
+            return 0;
+        }
 
-        // Veo en qué bloque está el directorio origen
-        int writeblock = pathfinder(pathto);
+        int block_parent = pathfinder(pathto);
+
+        printf("El numero path: %d\n", block_path);
+        printf("El numero parent path: %d\n", block_parent);
+        printf("El parent path: %s\n", pathto);
+        printf("El nombre es: %s\n", filename);
+        
+        mark_as_unused(block_path);
+
         FILE *f = fopen(global_diskname, "rb+");
-        fseek(f, writeblock * BLOCK_SIZE, SEEK_SET);
+        fseek(f, block_parent * BLOCK_SIZE, SEEK_SET);
+
+        // Son 32768 entradas en un bloque de directorio
+        for (int i = 0; i < DIR_ENTRIES_PER_BLOCK; i++) {
+            unsigned char buffer[DIR_ENTRY_SIZE];
+            // Buffer para guardar los bytes de una entrada
+            fread(buffer, sizeof(buffer), 1, f); // Leo una entrada
+
+            if (buffer[0] == 1){ // Entrada folder
+                char path3[30] = ""; // path inicial
+                char path4[30];
+                char aux[2]; // variable para concatenar char
+                for (int j = 5; j < DIR_ENTRY_SIZE; j++) { // Printear nombre del directorio
+                    if (buffer[j] == 0){
+                        aux[1] = '\0';
+                        aux[0] = '\0';
+                        strcat(path3, aux); // Concatenar char
+                        break;
+                    } else {
+                        aux[1] = '\0';
+                        aux[0] = buffer[j];
+                        strcat(path3, aux); // Concatenar char   
+                    }
+                }
+                strcpy(path4, filename);
+                if(strcmp(path4, path3)==0){
+                    printf("\n\nSE ENCONTRÓ\n\n");
+                    fseek(f, -DIR_ENTRY_SIZE, SEEK_CUR);
+                    long int cero = 0;
+                    fwrite(&cero, sizeof(long int), 1, f); // Escribo la entrada
+                    break;
+                }   
+            } else {continue;}
+        }
+        for(int i=0;i<index;i++){
+            free(splitpath[i]);
+        }
+        free(splitpath);
         fclose(f);
     }
     return 0;
