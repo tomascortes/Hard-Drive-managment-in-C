@@ -620,6 +620,18 @@ int os_mkdir(char* path) {  // TODO: Pendiente
     // pathto es el path de la carpeta origen
     pathto[pathleng-leng-1] = '\0';
 
+    // Checks
+    if (strchr(filename, '/')){
+        printf("/ es un caracter inválido.");
+        free(splitpath);
+        return 0;
+    }
+    if (leng > 27) {
+        printf("Máximo 27 carcteres de largo para el nombre.");
+        free(splitpath);
+        return 0;
+    }
+
     printf("El path es: %s\n", pathto);
     printf("El nombre es: %s\n", filename);
 
@@ -636,7 +648,10 @@ int os_mkdir(char* path) {  // TODO: Pendiente
 
         if (buffer[0] == 0){ // Entrada libre
             fseek(f, -DIR_ENTRY_SIZE, SEEK_CUR); // Retrocedo para escribir en
-            //printf("File pointer libre: %ld\n", ftell(f));
+            int byte_a_escribir = ftell(f);
+            int page_relativa_a_escribir = 
+                                    (byte_a_escribir % BLOCK_SIZE) / PAGE_SIZE;
+            update_rotten_page(bloquel, page_relativa_a_escribir);
             buffer[0] = 1;
             buffer[1] = bloquel & 0xFF;
             buffer[2] = (bloquel >> 8) & 0xFF;
@@ -645,12 +660,15 @@ int os_mkdir(char* path) {  // TODO: Pendiente
             for (int j = 0; j < leng; j++) { // Escribo el nombre del archivo
                 buffer[j + 5] = filename[j];
             }
+            for (int k = 5 + leng; k < 32; k++){ // Relleno con 0s
+                buffer[k] = NULL;
+            }
             fwrite(buffer, sizeof(buffer), 1, f); // Escribo la entrada
             break;
         } else {continue;}
     }
     fclose(f);
-    
+    free(splitpath);
     return 0;
 }
 

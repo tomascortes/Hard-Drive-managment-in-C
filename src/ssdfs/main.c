@@ -30,13 +30,12 @@ int main (int argc, char* const argv[]) {
     mark_as_used(1);
     mark_as_used(2);
     mark_as_used(3);
-    for (int i = 5; i<100;i++){
-        mark_as_unused(i);
-    }
+    // for (int i = 5; i<100;i++){
+    //     mark_as_unused(i);
+    // }
 
 
-    // Crear archivo nuevo
-    printf("Comienza open\n");
+
     osFile* os_file = os_open("~/drums.mp4", 'w');
     if (os_file != NULL){
         char buffer[10] = "AAABBBCCCD";
@@ -45,25 +44,16 @@ int main (int argc, char* const argv[]) {
         os_lifemap(6*PAGES_PER_BLOCK, 7*PAGES_PER_BLOCK);
         os_tree();
     }
-    os_tree(0);
-
+    
+    
     os_rm("~/drums.mp4");
-    os_tree(0);
-    return 0;
-    // os_close(os_file);
+    os_tree();
 
-    //Test
-    /*char test[] = "AAAAAAAA";
-    int num = 321;
-    test[3] = (num >> 24) & 0xFF;
-    test[2] = (num >> 16) & 0xFF;
-    test[1] = (num >> 8) & 0xFF;
-    test[0] = num & 0xFF;
-    for (int i=0; i<9; i++){
-        printf("El byte es: %i\n", test[i]);
-    }
-    printf("La string es %s\n", test);
-    int puntero = *(int*) (test);
-    printf("EL N° ES: %i\n", puntero);
-    return 0;*/
+
+
+    char testdir[] = "~/carpeta/ggramo";
+    os_mkdir(testdir);
+    os_tree();
+
+    return 0;
 }
