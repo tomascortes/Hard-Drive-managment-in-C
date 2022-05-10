@@ -32,6 +32,7 @@ int main (int argc, char* const argv[]) {
     mark_as_used(3);
 
     os_tree();
-    os_rmdir("~/dir1");
+    os_mkdir("~/nosequevola");
+    // os_rmdir("~/carpeta");
     os_tree();
 }

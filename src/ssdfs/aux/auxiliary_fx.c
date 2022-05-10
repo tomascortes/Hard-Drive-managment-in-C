@@ -621,7 +621,7 @@ int is_empty(char* path){
     return 1;
 }
 
-int is_empty(int block){
+int is_empty_block(int block){
 
     FILE *f = fopen(global_diskname, "rb");
 

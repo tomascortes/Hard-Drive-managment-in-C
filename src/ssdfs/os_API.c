@@ -680,7 +680,7 @@ int os_rmdir(char* path) {
     char path_aux[strlen(path)+1];
     strcpy(path_aux, path);
     strcat(path_aux, "/\0");
-    if (dir_exists(path_aux)){
+    if (dir_exists(path_aux) && is_empty_block(block_path)){
         // Creo splitpath para contener el path a la carpeta origen como una string
         // y el nombre de la carpeta a ser creada en otra
         char** splitpath = calloc(2, sizeof(char*));
@@ -779,7 +779,7 @@ int os_rmdir(char* path) {
  * subdirectorios correspondientes. Esto incrementa en 1 el contador P/E de las páginas
  * que sea necesario actualizar para borrar las referencias a este directorio. */
 int os_rmrfdir(char* path) {
-    if is_empty(path){
+    if (is_empty(path)){
         os_rmdir(path);
     } else {
         FILE *f = fopen(global_diskname, "rb");
