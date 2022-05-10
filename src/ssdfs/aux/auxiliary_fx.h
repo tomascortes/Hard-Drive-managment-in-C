@@ -78,3 +78,4 @@ void mark_as_unused(int bloque);
 void update_rotten_page(int block, int page_inside_block);
 int min(int a1, int a2);
 int get_usable_block();
+int is_empty(char* path);

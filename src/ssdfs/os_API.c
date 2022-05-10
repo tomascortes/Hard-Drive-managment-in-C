@@ -676,15 +676,14 @@ int os_mkdir(char* path) {  // TODO: Pendiente
  * el contador P/E de las páginas que sea necesario actualizar para borrar las referencias
  * a este directorio. */
 int os_rmdir(char* path) {
-
+    return 1;
 }
 
 /* Esta función elimina un directorio con el nombre indicado, todos sus archivos y
  * subdirectorios correspondientes. Esto incrementa en 1 el contador P/E de las páginas
  * que sea necesario actualizar para borrar las referencias a este directorio. */
 int os_rmrfdir(char* path) {
-    target = pathfinder(path);
-    if is_empty(target){
+    if (is_empty(path)){
         os_rmdir(path);
     } else {
         FILE *f = fopen(global_diskname, "rb");

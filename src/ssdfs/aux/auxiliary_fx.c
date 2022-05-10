@@ -603,7 +603,7 @@ void update_rotten_page(int block, int page_inside_block){
 }
 
 // Revisa si el directorio está vacío
-int is_empty(int block){
+int is_empty(char* path){
 
     FILE *f = fopen(global_diskname, "rb");
 
@@ -622,4 +622,5 @@ int is_empty(int block){
         }
 
     return 1;
+}
 }
