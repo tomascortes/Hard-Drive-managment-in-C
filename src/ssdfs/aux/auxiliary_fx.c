@@ -89,7 +89,7 @@ int pathfinder_internal(char* path, int bloque_final, char* path_parcial){
                     aux[1] = '\0';
                     aux[0] = buffer[j];
                     strcat(path_parcial_r, aux); // Concatenar char
-                } // Debuggear acá
+                }
             }
             
             int bloque_final = *(int*) (buffer + 1);
@@ -598,4 +598,26 @@ void update_rotten_page(int block, int page_inside_block){
     fseek(open_file, 1 * BLOCK_SIZE + real_page, SEEK_SET);
     fwrite(&buffer, sizeof(int), 1, open_file);
     fclose(open_file);
+}
+
+// Revisa si el directorio está vacío
+int is_empty(int block){
+
+    FILE *f = fopen(global_diskname, "rb");
+
+    // Me muevo 3 MiB, para llegar al bloque N°3, de directorio.
+    fseek(f, 3 * BLOCK_SIZE, SEEK_SET);
+    int target = pathfinder(path);
+
+    // Son 32768 entradas en un bloque de directorio
+    for (int i = 0; i < DIR_ENTRIES_PER_BLOCK; i++) {
+        unsigned char buffer[DIR_ENTRY_SIZE];
+        // Buffer para guardar los bytes de una entrada
+        fread(buffer, sizeof(buffer), 1, f); // Leo una entrada
+        if(buffer[0] != 0){
+            fclose(f);
+            return 0;
+        }
+
+    return 1;
 }
