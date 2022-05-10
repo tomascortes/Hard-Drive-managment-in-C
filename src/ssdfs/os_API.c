@@ -598,7 +598,10 @@ int os_mkdir(char* path) {  // TODO: Pendiente
  * a este directorio. */
 int os_rmdir(char* path) { 
     int block_path = pathfinder(path);
-    if (block_path){
+    char path_aux[strlen(path)+1];
+    strcpy(path_aux, path);
+    strcat(path_aux, "/\0");
+    if (dir_exists(path_aux)){
         // Creo splitpath para contener el path a la carpeta origen como una string
         // y el nombre de la carpeta a ser creada en otra
         char** splitpath = calloc(2, sizeof(char*));

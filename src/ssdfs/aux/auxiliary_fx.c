@@ -53,9 +53,7 @@ int is_page_rotten(int page, char* diskname) {
 
 // Esta es para llamar a la otra con los parámetros iniciales
 int pathfinder(char* path){
-
     if (strcmp(path, "~") == 0){
-
         return 3;
     } else {
         return pathfinder_internal(path, 3, "~/");
